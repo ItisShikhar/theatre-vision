@@ -59,6 +59,9 @@
   // ------------------------------------------------------------
 
   function createExitHint() {
+    if (exitHint?.isConnected) return exitHint;
+    if (!document.body) return null;
+
     exitHint = document.createElement("div");
 
     exitHint.className = "vpm-exit-hint";
@@ -66,6 +69,8 @@
     exitHint.textContent = "Press Esc or use the button to exit theatre mode.";
 
     document.body.appendChild(exitHint);
+
+    return exitHint;
   }
 
   // ------------------------------------------------------------
@@ -73,14 +78,15 @@
   // ------------------------------------------------------------
 
   function showExitHint() {
-    if (!exitHint) createExitHint();
+    const hint = exitHint || createExitHint();
+    if (!hint) return;
 
-    exitHint.classList.add("vpm-show");
+    hint.classList.add("vpm-show");
 
     clearTimeout(showExitHint.timer);
 
     showExitHint.timer = setTimeout(() => {
-      exitHint.classList.remove("vpm-show");
+      hint.classList.remove("vpm-show");
     }, 2500);
   }
 
@@ -237,43 +243,17 @@
   }
 
   // ============================================================
-  // Overlay Page Mode
+  // In-place Page Mode
   // ============================================================
 
-  let overlay = null;
   let placeholder = null;
 
-  let originalParent = null;
-  let originalNextSibling = null;
-
-  function restoreElementPosition(element) {
-    if (!originalParent) return;
-
-    if (originalNextSibling?.parentNode === originalParent) {
-      originalParent.insertBefore(element, originalNextSibling);
-    } else {
-      originalParent.appendChild(element);
-    }
-  }
-
-  function createOverlay() {
-    if (overlay) return overlay;
-
-    overlay = document.createElement("div");
-
-    overlay.className = "vpm-overlay";
-
-    overlay.style.position = "fixed";
-    overlay.style.left = "0";
-    overlay.style.top = "0";
-    overlay.style.width = "100vw";
-    overlay.style.height = "100vh";
-    overlay.style.zIndex = "2147483645";
-    overlay.style.background = "#000";
-
-    document.documentElement.appendChild(overlay);
-
-    return overlay;
+  function createPlaceholder(element) {
+    placeholder = document.createElement("div");
+    placeholder.className = "vpm-placeholder";
+    placeholder.style.width = element.offsetWidth + "px";
+    placeholder.style.height = element.offsetHeight + "px";
+    element.parentNode.insertBefore(placeholder, element);
   }
 
   function enterPageMode(container, button) {
@@ -283,39 +263,35 @@
     activeButton = button;
     activeButton.title = "Exit theatre mode";
 
-    originalParent = container.parentNode;
-    originalNextSibling = container.nextSibling;
-
-    placeholder = document.createElement("div");
-    placeholder.style.width = container.offsetWidth + "px";
-    placeholder.style.height = container.offsetHeight + "px";
-
-    originalParent.insertBefore(placeholder, container);
+    createPlaceholder(container);
 
     saveOriginalStyles(container);
     container.querySelectorAll("iframe,video").forEach(saveOriginalStyles);
     saveOriginalStyles(document.body);
 
-    createOverlay();
-
-    overlay.appendChild(container);
-
     Object.assign(container.style, {
-      position: "absolute",
-      left: "0",
-      top: "0",
+      position: "fixed",
+      inset: "0",
       width: "100vw",
       height: "100vh",
       maxWidth: "100vw",
       maxHeight: "100vh",
+      zIndex: "2147483645",
       margin: "0",
       padding: "0",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
       overflow: "hidden",
       background: "#000",
     });
+
+    if (container instanceof HTMLVideoElement) {
+      container.style.objectFit = "contain";
+    } else {
+      Object.assign(container.style, {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      });
+    }
 
     container.querySelectorAll("iframe,video").forEach((el) => {
       Object.assign(el.style, {
@@ -327,6 +303,10 @@
         maxHeight: "100%",
         border: "0",
       });
+
+      if (el instanceof HTMLVideoElement) {
+        el.style.objectFit = "contain";
+      }
     });
 
     document.body.style.overflow = "hidden";
@@ -338,27 +318,19 @@
     if (activeContainer || activeFrame) return;
 
     activeFrame = frame;
-    originalParent = frame.parentNode;
-    originalNextSibling = frame.nextSibling;
-
-    placeholder = document.createElement("div");
-    placeholder.style.width = frame.offsetWidth + "px";
-    placeholder.style.height = frame.offsetHeight + "px";
-    originalParent.insertBefore(placeholder, frame);
+    createPlaceholder(frame);
 
     saveOriginalStyles(frame);
     saveOriginalStyles(document.body);
 
-    createOverlay();
-    overlay.appendChild(frame);
-
     Object.assign(frame.style, {
-      position: "absolute",
+      position: "fixed",
       inset: "0",
       width: "100%",
       height: "100%",
       maxWidth: "100%",
       maxHeight: "100%",
+      zIndex: "2147483645",
       margin: "0",
       border: "0",
     });
@@ -377,15 +349,10 @@
 
     const frame = activeFrame;
     restoreOriginalStyles(frame);
-    restoreElementPosition(frame);
     placeholder?.remove();
-    overlay?.remove();
     restoreOriginalStyles(document.body);
 
     placeholder = null;
-    overlay = null;
-    originalParent = null;
-    originalNextSibling = null;
     activeFrame = null;
 
     notifyParentFrameMode("exit");
@@ -402,15 +369,10 @@
     const container = activeContainer;
     restoreOriginalStyles(container);
     container.querySelectorAll("iframe,video").forEach(restoreOriginalStyles);
-    restoreElementPosition(container);
     placeholder?.remove();
-    overlay?.remove();
     restoreOriginalStyles(document.body);
 
     placeholder = null;
-    overlay = null;
-    originalParent = null;
-    originalNextSibling = null;
     if (activeButton) activeButton.title = "Enter theatre mode";
     activeContainer = null;
     activeButton = null;
@@ -497,7 +459,7 @@
       if (container === activeContainer) {
         positionButton(video, button);
         button.classList.add("vpm-visible");
-      } else if (visible && hovering) {
+      } else if (visible && (hovering || button.matches(":hover"))) {
         positionButton(video, button);
 
         button.classList.add("vpm-visible");
@@ -514,8 +476,14 @@
 
     video.addEventListener("mouseleave", () => {
       hovering = false;
+    });
 
-      if (container !== activeContainer) button.classList.remove("vpm-visible");
+    button.addEventListener("mouseenter", () => {
+      hovering = true;
+    });
+
+    button.addEventListener("mouseleave", () => {
+      hovering = false;
     });
 
     requestAnimationFrame(update);
@@ -657,6 +625,12 @@
 
     if (extensionDisabled()) return;
 
-    createExitHint();
+    if (document.body) {
+      createExitHint();
+    } else {
+      document.addEventListener("DOMContentLoaded", createExitHint, {
+        once: true,
+      });
+    }
   })();
 })();

@@ -51,44 +51,6 @@
 }
 
 /* ==========================================================
-   Overlay
-========================================================== */
-
-.vpm-overlay {
-  position: fixed;
-
-  inset: 0;
-
-  background: black;
-
-  z-index: 2147483645;
-
-  display: flex;
-
-  justify-content: center;
-
-  align-items: center;
-}
-
-.vpm-overlay > * {
-  width: 100% !important;
-
-  height: 100% !important;
-
-  max-width: none !important;
-
-  max-height: none !important;
-}
-
-.vpm-overlay video {
-  width: 100% !important;
-
-  height: 100% !important;
-
-  object-fit: contain !important;
-}
-
-/* ==========================================================
    Placeholder
 ========================================================== */
 
