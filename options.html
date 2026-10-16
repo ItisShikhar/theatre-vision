@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Video Page Mode Settings</title>
+
+    <link rel="stylesheet" href="options.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Video Page Mode</h1>
+
+        <p class="subtitle">
+            Disable the extension on specific websites.
+        </p>
+
+        <div class="section">
+
+            <label for="domainInput">
+                Domain
+            </label>
+
+            <div class="row">
+
+                <input
+                    id="domainInput"
+                    type="text"
+                    placeholder="youtube.com">
+
+                <button id="addButton">
+                    Add
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="section">
+
+            <h2>Disabled Websites</h2>
+
+            <div id="domainList" class="domain-list">
+
+                <div class="empty">
+                    No disabled websites.
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer">
+
+            <button id="saveButton" class="save">
+
+                Save
+
+            </button>
+
+            <span id="status"></span>
+
+        </div>
+
+    </div>
+
+    <script src="options.js"></script>
+
+</body>
+
+</html>

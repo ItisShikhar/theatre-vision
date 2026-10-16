@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Video Page Mode",
+  "description": "Expand any HTML5 video to fill the browser page while keeping the site's native player and captions.",
+  "version": "1.0.0",
+
+  "permissions": ["storage"],
+
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ],
+  "options_page": "options.html",
+
+  "action": {
+    "default_title": "Video Page Mode"
+  }
+}

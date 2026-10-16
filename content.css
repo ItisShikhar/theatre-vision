@@ -1,0 +1,141 @@
+/* ==========================================================
+   Floating Button
+========================================================== */
+
+.vpm-button {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  z-index: 2147483646;
+
+  opacity: 0;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    background 0.15s ease;
+
+  padding: 0;
+}
+
+.vpm-button:hover {
+  background: rgba(0, 0, 0, 0.9);
+
+  transform: scale(1.08);
+}
+
+.vpm-button svg {
+  width: 22px;
+  height: 22px;
+
+  fill: white;
+}
+
+.vpm-visible {
+  opacity: 1;
+}
+
+/* ==========================================================
+   Overlay
+========================================================== */
+
+.vpm-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  background: black;
+
+  z-index: 2147483645;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+.vpm-overlay > * {
+  width: 100% !important;
+
+  height: 100% !important;
+
+  max-width: none !important;
+
+  max-height: none !important;
+}
+
+.vpm-overlay video {
+  width: 100% !important;
+
+  height: 100% !important;
+
+  object-fit: contain !important;
+}
+
+/* ==========================================================
+   Placeholder
+========================================================== */
+
+.vpm-placeholder {
+  display: block;
+}
+
+/* ==========================================================
+   Body
+========================================================== */
+
+body.vpm-body-lock {
+  overflow: hidden !important;
+}
+
+/* ==========================================================
+   Hint
+========================================================== */
+
+.vpm-exit-hint {
+  position: fixed;
+
+  bottom: 30px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  background: rgba(0, 0, 0, 0.75);
+
+  color: white;
+
+  padding: 10px 16px;
+
+  border-radius: 999px;
+
+  font-family: Arial;
+
+  z-index: 2147483647;
+
+  opacity: 0;
+
+  transition: opacity 0.2s;
+
+  pointer-events: none;
+}
+
+.vpm-show {
+  opacity: 1;
+}
