@@ -123,6 +123,8 @@ body.vpm-body-lock {
   border-radius: 999px;
 
   font-family: Arial;
+  font-size: 15px;
+  line-height: 1.4;
 
   z-index: 2147483647;
 
@@ -131,6 +133,25 @@ body.vpm-body-lock {
   transition: opacity 0.2s;
 
   pointer-events: none;
+}
+
+.vpm-exit-hint .hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font: inherit;
+}
+
+.vpm-exit-hint kbd {
+  padding: 1px 5px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font: inherit;
+  font-size: 0.9em;
+  line-height: 1.3;
 }
 
 @media (prefers-reduced-motion: reduce) {

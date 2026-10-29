@@ -309,29 +309,6 @@ h1 {
   color: var(--error);
 }
 
-.keyboard-hint {
-  display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  margin-top: var(--space-1);
-  padding-top: var(--space-1);
-  border-top: 1px solid var(--subtle-border);
-  color: var(--muted-foreground);
-  font-size: 12px;
-}
-
-kbd {
-  padding: 0 var(--space-1);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  corner-shape: squircle;
-  background: var(--subtle-surface);
-  color: var(--strong-foreground);
-  font: inherit;
-  font-size: 11px;
-  box-shadow: inset 0 -1px 0 var(--border);
-}
-
 .footer {
   display: flex;
   align-items: center;

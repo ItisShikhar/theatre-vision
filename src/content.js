@@ -96,7 +96,12 @@
 
     exitHint.className = "vpm-exit-hint";
 
-    exitHint.textContent = "Press Esc or use the button to exit theatre mode.";
+    const hint = document.createElement("p");
+    const escapeKey = document.createElement("kbd");
+    hint.className = "hint";
+    escapeKey.textContent = "Esc";
+    hint.append("Press ", escapeKey, " to exit theatre mode");
+    exitHint.appendChild(hint);
 
     document.body.appendChild(exitHint);
 
