@@ -2,6 +2,7 @@ const siteName = document.getElementById("siteName");
 const siteAddress = document.getElementById("siteAddress");
 const siteFavicon = document.getElementById("siteFavicon");
 const siteIconFallback = document.getElementById("siteIconFallback");
+const siteIconUnavailable = document.getElementById("siteIconUnavailable");
 const siteToggle = document.getElementById("siteToggle");
 const savedStatus = document.getElementById("savedStatus");
 const statusMessage = document.getElementById("status");
@@ -68,6 +69,7 @@ function showSavedStatus(message = "") {
 
 function setSiteFavicon(faviconUrl) {
   siteIconFallback.hidden = false;
+  siteIconUnavailable.hidden = true;
   siteFavicon.hidden = true;
   siteFavicon.removeAttribute("src");
 
@@ -91,6 +93,13 @@ function setSiteFavicon(faviconUrl) {
     siteIconFallback.hidden = false;
   };
   siteFavicon.src = url.href;
+}
+
+function showUnavailableSiteIcon() {
+  siteFavicon.hidden = true;
+  siteFavicon.removeAttribute("src");
+  siteIconFallback.hidden = true;
+  siteIconUnavailable.hidden = false;
 }
 
 function setToggleDisabled(isDisabled) {
@@ -137,6 +146,7 @@ async function loadPopup() {
     if (!hostname) {
       siteName.textContent = "Unavailable on this page";
       siteAddress.textContent = "Open a website to change its rule";
+      showUnavailableSiteIcon();
       showStatus("Site rules are unavailable on Chrome pages and local files.");
       return;
     }

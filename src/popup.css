@@ -53,6 +53,7 @@
 body {
   width: 360px;
   margin: 0;
+  font-family: var(--font-display);
   background: var(--page-background);
   color: var(--foreground);
 }
@@ -166,7 +167,6 @@ h1 {
   overflow: hidden;
   border-radius: 12px;
   corner-shape: squircle;
-  background: var(--muted-surface);
   color: var(--muted-foreground);
 }
 
@@ -188,8 +188,21 @@ h1 {
 }
 
 .site-icon-fallback[hidden],
+.site-icon-question[hidden],
 .site-favicon[hidden] {
   display: none;
+}
+
+.site-icon-question {
+  grid-area: 1 / 1;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  color: currentColor;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1;
 }
 
 .site-icon-globe {
