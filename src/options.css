@@ -1,5 +1,9 @@
 :root {
   color-scheme: dark light;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
   --page-background: #fafafa;
   --surface: #ffffff;
   --muted-surface: #f4f4f5;
@@ -49,7 +53,7 @@
 
 body {
   margin: 0;
-  padding: 40px 20px;
+  padding: 40px 24px;
   background: var(--page-background);
   color: var(--foreground);
 }
@@ -62,9 +66,10 @@ input {
 .container {
   width: min(100%, 720px);
   margin: 0 auto;
-  padding: 28px;
+  padding: var(--space-4);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
+  corner-shape: squircle;
   background: var(--surface);
   box-shadow: 0 1px 2px var(--shadow);
 }
@@ -72,8 +77,8 @@ input {
 .header {
   display: flex;
   align-items: center;
-  gap: 13px;
-  padding-bottom: 22px;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border);
 }
 
@@ -103,13 +108,13 @@ h1 {
 }
 
 .subtitle {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   color: var(--muted-foreground);
   font-size: 13px;
 }
 
 .section {
-  margin-top: 24px;
+  margin-top: var(--space-3);
 }
 
 h2 {
@@ -119,24 +124,25 @@ h2 {
 }
 
 .section-copy {
-  margin-top: 5px;
+  margin-top: var(--space-1);
   color: var(--muted-foreground);
   font-size: 13px;
 }
 
 .row {
   display: flex;
-  gap: 8px;
-  margin-top: 14px;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
 }
 
 input {
   min-width: 0;
-  min-height: 36px;
+  min-height: 40px;
   flex: 1;
-  padding: 7px 11px;
+  padding: var(--space-1) var(--space-2);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 8px;
+  corner-shape: squircle;
   outline: none;
   background: var(--surface);
   color: var(--foreground);
@@ -154,10 +160,11 @@ input::placeholder {
 }
 
 button {
-  min-height: 36px;
-  padding: 0 14px;
+  min-height: 40px;
+  padding: 0 var(--space-2);
   border: 1px solid var(--button-background);
-  border-radius: 7px;
+  border-radius: 8px;
+  corner-shape: squircle;
   background: var(--button-background);
   color: var(--button-foreground);
   cursor: pointer;
@@ -182,19 +189,20 @@ button:disabled {
 
 .domain-list {
   overflow: hidden;
-  margin-top: 11px;
+  margin-top: var(--space-2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 12px;
+  corner-shape: squircle;
   background: var(--surface);
 }
 
 .domain-item {
   display: flex;
-  min-height: 44px;
+  min-height: 48px;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 6px 9px 6px 12px;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
   border-bottom: 1px solid var(--subtle-border);
 }
 
@@ -209,10 +217,12 @@ button:disabled {
 }
 
 .remove {
-  min-height: 28px;
+  min-height: 32px;
   flex: 0 0 auto;
-  padding: 0 8px;
+  padding: 0 var(--space-1);
   border-color: transparent;
+  border-radius: 8px;
+  corner-shape: squircle;
   background: transparent;
   color: var(--muted-foreground);
   font-size: 12px;
@@ -226,7 +236,7 @@ button:disabled {
 }
 
 .empty {
-  padding: 13px;
+  padding: var(--space-2);
   color: var(--muted-foreground);
   font-size: 13px;
 }
@@ -235,7 +245,7 @@ button:disabled {
   display: flex;
   align-items: center;
   min-height: 48px;
-  margin-top: 18px;
+  margin-top: var(--space-2);
   border-top: 1px solid var(--border);
 }
 
@@ -253,8 +263,8 @@ button:disabled {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 16px;
-  padding-top: 14px;
+  gap: var(--space-1) var(--space-2);
+  padding-top: var(--space-2);
   border-top: 1px solid var(--subtle-border);
   color: var(--muted-foreground);
   font-size: 12px;
@@ -269,7 +279,7 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 14px;
+  gap: var(--space-1) var(--space-2);
 }
 
 .author-links a {
@@ -298,11 +308,11 @@ button:disabled {
 
 @media (max-width: 520px) {
   body {
-    padding: 16px 10px;
+    padding: 16px 8px;
   }
 
   .container {
-    padding: 20px;
+    padding: 24px;
   }
 }
 

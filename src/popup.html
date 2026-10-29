@@ -22,10 +22,8 @@
           <section class="site-card" aria-labelledby="siteName">
             <div class="site-details">
               <span class="site-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="9"></circle>
-                  <path d="M3.5 12h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path>
-                </svg>
+                <img id="siteFavicon" class="site-favicon" alt="" hidden>
+                <span id="siteIconFallback" class="site-icon-fallback">?</span>
               </span>
               <div class="site-copy">
                 <h2 id="siteName">Loading site...</h2>
@@ -33,7 +31,7 @@
               </div>
             </div>
             <div class="switch-control">
-              <span id="toggleLabel" class="switch-label">Theatre mode on this site</span>
+              <span id="toggleLabel" class="switch-label">Theatre mode</span>
               <button
                 id="siteToggle"
                 class="switch"
@@ -43,9 +41,9 @@
                 aria-checked="false"
                 aria-disabled="true"
               >
-                  <span class="switch-track" aria-hidden="true">
-                    <span class="switch-thumb"></span>
-                  </span>
+                <span class="switch-track" aria-hidden="true">
+                  <span class="switch-thumb"></span>
+                </span>
               </button>
             </div>
           </section>

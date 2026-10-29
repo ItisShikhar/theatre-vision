@@ -1,5 +1,7 @@
 const siteName = document.getElementById("siteName");
 const siteAddress = document.getElementById("siteAddress");
+const siteFavicon = document.getElementById("siteFavicon");
+const siteIconFallback = document.getElementById("siteIconFallback");
 const siteToggle = document.getElementById("siteToggle");
 const statusMessage = document.getElementById("status");
 const manageButton = document.getElementById("manageButton");
@@ -57,6 +59,34 @@ function showStatus(message, isError = false) {
   statusMessage.dataset.state = isError ? "error" : "info";
 }
 
+function setSiteFavicon(faviconUrl, hostname) {
+  siteIconFallback.textContent = hostname.charAt(0).toUpperCase() || "?";
+  siteIconFallback.hidden = false;
+  siteFavicon.hidden = true;
+  siteFavicon.removeAttribute("src");
+
+  if (typeof faviconUrl !== "string" || !faviconUrl) return;
+
+  let url;
+  try {
+    url = new URL(faviconUrl);
+  } catch {
+    return;
+  }
+
+  if (!["http:", "https:", "data:"].includes(url.protocol)) return;
+
+  siteFavicon.onload = () => {
+    siteFavicon.hidden = false;
+    siteIconFallback.hidden = true;
+  };
+  siteFavicon.onerror = () => {
+    siteFavicon.hidden = true;
+    siteIconFallback.hidden = false;
+  };
+  siteFavicon.src = url.href;
+}
+
 function setToggleDisabled(isDisabled) {
   siteToggle.setAttribute("aria-disabled", String(isDisabled));
 }
@@ -99,6 +129,7 @@ async function loadPopup() {
     currentHostname = hostname;
     siteName.textContent = hostname;
     siteAddress.textContent = "Theatre mode for this site";
+    setSiteFavicon(tab.favIconUrl, hostname);
 
     const settings = await getStorage({
       disabledDomains: [],
