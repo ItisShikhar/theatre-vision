@@ -3,11 +3,13 @@ const siteAddress = document.getElementById("siteAddress");
 const siteFavicon = document.getElementById("siteFavicon");
 const siteIconFallback = document.getElementById("siteIconFallback");
 const siteToggle = document.getElementById("siteToggle");
+const savedStatus = document.getElementById("savedStatus");
 const statusMessage = document.getElementById("status");
 const manageButton = document.getElementById("manageButton");
 
 let currentHostname = null;
 let currentRules = { disabledDomains: [], enabledDomains: [] };
+let isSavingSiteRule = false;
 
 function getStorage(defaults) {
   return new Promise((resolve, reject) => {
@@ -57,10 +59,14 @@ function getActiveTab() {
 function showStatus(message, isError = false) {
   statusMessage.textContent = message;
   statusMessage.dataset.state = isError ? "error" : "info";
+  statusMessage.hidden = !message;
 }
 
-function setSiteFavicon(faviconUrl, hostname) {
-  siteIconFallback.textContent = hostname.charAt(0).toUpperCase() || "?";
+function showSavedStatus(message = "") {
+  savedStatus.textContent = message;
+}
+
+function setSiteFavicon(faviconUrl) {
   siteIconFallback.hidden = false;
   siteFavicon.hidden = true;
   siteFavicon.removeAttribute("src");
@@ -97,6 +103,13 @@ function normalizeDomains(domains) {
   return [...new Set(domains.map(TheatreVisionSiteRules.normalizeDomain).filter(Boolean))];
 }
 
+function hasSameDomains(domains, currentDomains) {
+  const normalizedDomains = normalizeDomains(domains).sort();
+  const sortedCurrentDomains = currentDomains.slice().sort();
+
+  return JSON.stringify(normalizedDomains) === JSON.stringify(sortedCurrentDomains);
+}
+
 function renderSiteState() {
   const isEnabled = TheatreVisionSiteRules.isEnabled(
     currentHostname,
@@ -105,11 +118,13 @@ function renderSiteState() {
   );
 
   siteToggle.setAttribute("aria-checked", String(isEnabled));
-  showStatus(isEnabled ? "Theatre mode is on for this site." : "Theatre mode is off for this site.");
+  showStatus("");
 }
 
 async function loadPopup() {
   setToggleDisabled(true);
+  showSavedStatus();
+  showStatus("");
 
   try {
     const tab = await getActiveTab();
@@ -122,14 +137,14 @@ async function loadPopup() {
     if (!hostname) {
       siteName.textContent = "Unavailable on this page";
       siteAddress.textContent = "Open a website to change its rule";
-      showStatus("Chrome pages and local files do not support site rules.", true);
+      showStatus("Site rules are unavailable on Chrome pages and local files.");
       return;
     }
 
     currentHostname = hostname;
     siteName.textContent = hostname;
     siteAddress.textContent = "Theatre mode for this site";
-    setSiteFavicon(tab.favIconUrl, hostname);
+    setSiteFavicon(tab.favIconUrl);
 
     const settings = await getStorage({
       disabledDomains: [],
@@ -171,17 +186,21 @@ async function saveSiteRule() {
 
   siteToggle.setAttribute("aria-checked", String(shouldEnable));
   setToggleDisabled(true);
+  showSavedStatus();
+  showStatus("");
+  isSavingSiteRule = true;
 
   try {
     await setStorage({ disabledDomains, enabledDomains });
     currentRules = { disabledDomains, enabledDomains };
     renderSiteState();
-    showStatus("Site rule saved.");
+    showSavedStatus("Saved");
   } catch (error) {
     console.error("[Theatre Vision] Could not save the site rule.", error);
     siteToggle.setAttribute("aria-checked", String(wasEnabled));
     showStatus("Could not save this site rule.", true);
   } finally {
+    isSavingSiteRule = false;
     setToggleDisabled(false);
   }
 }
@@ -193,10 +212,20 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   if (
     areaName !== "sync" ||
     (!changes.disabledDomains && !changes.enabledDomains) ||
-    !currentHostname
+    !currentHostname ||
+    isSavingSiteRule
   ) {
     return;
   }
+
+  const disabledDomainsMatch =
+    !changes.disabledDomains ||
+    hasSameDomains(changes.disabledDomains.newValue, currentRules.disabledDomains);
+  const enabledDomainsMatch =
+    !changes.enabledDomains ||
+    hasSameDomains(changes.enabledDomains.newValue, currentRules.enabledDomains);
+
+  if (disabledDomainsMatch && enabledDomainsMatch) return;
 
   loadPopup();
 });

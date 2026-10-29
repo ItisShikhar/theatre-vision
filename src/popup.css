@@ -2,6 +2,7 @@
   color-scheme: dark light;
   --space-1: 8px;
   --space-2: 16px;
+  --font-display: Oswald, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --page-background: #ffffff;
   --surface: #ffffff;
   --subtle-surface: #fafafa;
@@ -18,10 +19,9 @@
   --button-foreground: #fafafa;
   --error: #b91c1c;
   --shadow: rgb(9 9 11 / 4%);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-display);
   background: var(--page-background);
   color: var(--foreground);
-  font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
 
@@ -93,9 +93,14 @@ p {
   margin: 0;
 }
 
+h1,
+h2 {
+  font-family: var(--font-display);
+}
+
 h1 {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.02em;
 }
 
@@ -109,11 +114,26 @@ h1 {
   padding-top: var(--space-2);
 }
 
-.section-title {
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
   margin-bottom: var(--space-1);
+}
+
+.section-title {
+  margin-bottom: 0;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.01em;
+}
+
+.saved-status {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: right;
 }
 
 .site-card {
@@ -151,14 +171,35 @@ h1 {
 }
 
 .site-favicon {
+  grid-area: 1 / 1;
   width: 100%;
   height: 100%;
+  border-radius: 12px;
+  corner-shape: squircle;
   object-fit: contain;
 }
 
 .site-icon-fallback {
-  font-size: 14px;
-  font-weight: 600;
+  grid-area: 1 / 1;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+}
+
+.site-icon-fallback[hidden],
+.site-favicon[hidden] {
+  display: none;
+}
+
+.site-icon-globe {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
 }
 
 .site-copy {
@@ -168,7 +209,7 @@ h1 {
 .site-copy h2 {
   overflow: hidden;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -180,18 +221,6 @@ h1 {
   font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.switch-control {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  flex: 0 0 auto;
-}
-
-.switch-label {
-  color: var(--secondary-foreground);
-  font-size: 12px;
 }
 
 .switch {
@@ -253,10 +282,14 @@ h1 {
 }
 
 .status {
-  min-height: 16px;
   margin-top: var(--space-1);
-  color: var(--secondary-foreground);
+  color: var(--muted-foreground);
   font-size: 12px;
+  line-height: 1.4;
+}
+
+.status[hidden] {
+  display: none;
 }
 
 .status[data-state="error"] {
