@@ -1,13 +1,14 @@
 const domainInput = document.getElementById("domainInput");
 const addButton = document.getElementById("addButton");
-const saveButton = document.getElementById("saveButton");
 const domainList = document.getElementById("domainList");
 const enabledList = document.getElementById("enabledList");
 const status = document.getElementById("status");
 
+const DEFAULT_STATUS = "Changes save automatically.";
 let disabledDomains = [];
 let enabledDomains = [];
 let statusTimer = 0;
+let saveQueue = Promise.resolve();
 
 function getStorage(defaults) {
   return new Promise((resolve, reject) => {
@@ -47,12 +48,12 @@ function normalizeDomains(domains) {
 
 function showStatus(message, isError = false) {
   clearTimeout(statusTimer);
-  status.textContent = message;
+  status.textContent = message || DEFAULT_STATUS;
   status.dataset.state = isError ? "error" : "info";
 
   if (message && !isError) {
     statusTimer = setTimeout(() => {
-      status.textContent = "";
+      status.textContent = DEFAULT_STATUS;
     }, 1800);
   }
 }
@@ -89,6 +90,7 @@ function renderDomainList(list, domains, emptyMessage) {
       }
 
       render();
+      void saveRules();
     });
 
     row.append(label, removeButton);
@@ -137,25 +139,28 @@ function addDomain() {
   domainInput.value = "";
   showStatus("");
   render();
+  void saveRules();
   domainInput.focus();
 }
 
-async function save() {
-  saveButton.disabled = true;
+async function saveRules() {
+  const rules = {
+    disabledDomains: [...disabledDomains],
+    enabledDomains: [...enabledDomains],
+  };
+  const saveOperation = saveQueue.catch(() => {}).then(() => setStorage(rules));
+  saveQueue = saveOperation;
 
   try {
-    await setStorage({ disabledDomains, enabledDomains });
-    showStatus("Site rules saved.");
+    await saveOperation;
+    showStatus("Saved automatically.");
   } catch (error) {
     console.error("[Theatre Vision] Could not save site rules.", error);
     showStatus("Could not save site rules.", true);
-  } finally {
-    saveButton.disabled = false;
   }
 }
 
 addButton.addEventListener("click", addDomain);
-saveButton.addEventListener("click", save);
 domainInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") addDomain();
 });

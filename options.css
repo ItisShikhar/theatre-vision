@@ -190,14 +190,9 @@ button:disabled {
 .footer {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 24px;
-  padding-top: 17px;
+  min-height: 48px;
+  margin-top: 18px;
   border-top: 1px solid #e4e4e7;
-}
-
-.save {
-  min-width: 100px;
 }
 
 #status {
@@ -207,6 +202,44 @@ button:disabled {
 
 #status[data-state="error"] {
   color: #b91c1c;
+}
+
+.author {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f4f4f5;
+  color: #71717a;
+  font-size: 12px;
+}
+
+.author strong {
+  color: #18181b;
+  font-weight: 500;
+}
+
+.author-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
+.author-links a {
+  color: #18181b;
+  text-decoration: none;
+}
+
+.author-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.source-placeholder {
+  color: #a1a1aa;
 }
 
 .visually-hidden {

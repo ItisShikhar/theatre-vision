@@ -11,7 +11,7 @@ Theatre Vision expands HTML5 and embedded videos to fill the page. It keeps nati
 ## Features
 
 - Toggle theatre mode for the active site from the toolbar.
-- Block domains or add enabled exceptions for subdomains.
+- Add or remove blocked domains and enabled exceptions. Changes save automatically.
 - Press `Esc` to exit theatre mode.
 
 The most specific matching domain rule wins. Add `video.example.com` under enabled exceptions to override a rule for `example.com`.
@@ -32,8 +32,14 @@ Hover tooltips use the browser language. Supported languages include English, Hi
 1. Open a site with a video.
 2. Select the Theatre Vision toolbar icon.
 3. Turn theatre mode on or off for that site.
-4. Select **Manage** to edit site rules.
+4. Select **Manage** to edit site rules. Changes save when you add or remove a domain.
 5. Hover over a video and select the theatre control.
+
+## Author
+
+Made by [Shikhar Srivastava](https://www.linkedin.com/in/itisshikhar).
+
+[GitHub](https://github.com/ItisShikhar) · Source code coming soon.
 
 ## Test
 
