@@ -274,6 +274,7 @@
   // ============================================================
 
   let placeholder = null;
+  let elevatedAncestors = [];
 
   function isDedicatedPlayer(container) {
     return (
@@ -301,6 +302,26 @@
     element.parentNode.insertBefore(placeholder, element);
   }
 
+  function elevateAncestors(target) {
+    let curr = target.parentElement;
+    while (curr && curr !== document.documentElement) {
+      saveOriginalStyles(curr);
+      curr.style.zIndex = "2147483645";
+      if (getComputedStyle(curr).position === "static") {
+        curr.style.position = "relative";
+      }
+      elevatedAncestors.push(curr);
+      curr = curr.parentElement;
+    }
+  }
+
+  function restoreElevatedAncestors() {
+    for (const ancestor of elevatedAncestors) {
+      restoreOriginalStyles(ancestor);
+    }
+    elevatedAncestors = [];
+  }
+
   function enterPageMode(container, button) {
     if (activeContainer || activeFrame) return;
 
@@ -309,6 +330,7 @@
     setButtonMode(activeButton, true);
 
     createPlaceholder(container);
+    elevateAncestors(container);
 
     saveOriginalStyles(container);
     if (!isDedicatedPlayer(container)) {
@@ -370,6 +392,7 @@
     activeButton = buttonStates.get(frame)?.button ?? null;
     if (activeButton) setButtonMode(activeButton, true);
     createPlaceholder(frame);
+    elevateAncestors(frame);
 
     saveOriginalStyles(frame);
     saveOriginalStyles(document.body);
@@ -403,6 +426,7 @@
     restoreOriginalStyles(frame);
     placeholder?.remove();
     restoreOriginalStyles(document.body);
+    restoreElevatedAncestors();
 
     placeholder = null;
     activeFrame = null;
@@ -428,6 +452,7 @@
     }
     placeholder?.remove();
     restoreOriginalStyles(document.body);
+    restoreElevatedAncestors();
 
     placeholder = null;
     if (activeButton) setButtonMode(activeButton, false);
