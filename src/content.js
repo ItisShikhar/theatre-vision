@@ -648,7 +648,6 @@
         hideTooltip(state);
         state.button.classList.remove("vpm-visible");
       } else if (
-        isActive ||
         state.isFocused ||
         (visible && isHovered)
       ) {
@@ -685,12 +684,27 @@
 
     button.removeAttribute("title");
     button.setAttribute("aria-label", label);
+    if (isActive) button.setAttribute("aria-keyshortcuts", "Escape");
+    else button.removeAttribute("aria-keyshortcuts");
 
     if (currentIcon) currentIcon.outerHTML = icon;
     else button.insertAdjacentHTML("afterbegin", icon);
 
     const tooltip = buttonTooltips.get(button);
-    if (tooltip) tooltip.textContent = label;
+    if (tooltip) {
+      tooltip.replaceChildren();
+
+      const tooltipLabel = document.createElement("span");
+      tooltipLabel.className = "vpm-tooltip-label";
+      tooltipLabel.textContent = label;
+      tooltip.appendChild(tooltipLabel);
+
+      if (isActive) {
+        const shortcut = document.createElement("kbd");
+        shortcut.textContent = "Esc";
+        tooltip.appendChild(shortcut);
+      }
+    }
   }
 
   function createButton(video, container) {
@@ -826,6 +840,16 @@
 
   window.addEventListener("scroll", scheduleButtonUpdate, true);
   window.addEventListener("resize", scheduleButtonUpdate);
+
+  document.documentElement.addEventListener("mouseleave", () => {
+    for (const state of buttonStates.values()) {
+      state.hovering = false;
+      state.isHovered = false;
+      hideTooltip(state);
+    }
+
+    scheduleButtonUpdate();
+  });
 
   // ------------------------------------------------------------
   // ESC exits page mode

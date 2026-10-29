@@ -31,12 +31,12 @@
       </section>
 
       <section class="section" aria-labelledby="enabledHeading">
-        <h2 id="enabledHeading">Enabled exceptions</h2>
-        <p class="section-copy">These domains stay enabled inside a blocked parent domain.</p>
+        <h2 id="enabledHeading">Allowed subdomains</h2>
+        <p class="section-copy">Allow a subdomain of a blocked domain, such as video.example.com.</p>
         <div class="row">
-          <label class="visually-hidden" for="enabledDomainInput">Domain to enable</label>
-          <input id="enabledDomainInput" type="text" placeholder="subdomain.youtube.com" autocomplete="url">
-          <button id="enableButton" type="button">Enable domain</button>
+          <label class="visually-hidden" for="enabledDomainInput">Subdomain to allow</label>
+          <input id="enabledDomainInput" type="text" placeholder="video.example.com" autocomplete="url">
+          <button id="enableButton" type="button">Allow subdomain</button>
         </div>
         <p id="enabledStatus" class="field-status" role="status" aria-live="polite" hidden></p>
         <div id="enabledList" class="domain-list" aria-live="polite"></div>

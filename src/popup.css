@@ -347,6 +347,7 @@ h1 {
 
 .footer svg {
   width: 14px;
+  height: 14px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;

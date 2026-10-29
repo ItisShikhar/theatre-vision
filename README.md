@@ -11,10 +11,10 @@ Theatre Vision expands HTML5 and embedded videos to fill the page. It keeps nati
 ## Features
 
 - Toggle theatre mode for the active site from the toolbar.
-- Add or remove blocked domains and enabled exceptions. Changes save automatically.
+- Add or remove blocked domains and allowed subdomains. Changes save automatically.
 - Press `Esc` to exit theatre mode.
 
-The most specific matching domain rule wins. Add `video.example.com` under enabled exceptions to override a rule for `example.com`.
+The most specific matching domain rule wins. Add `video.example.com` under allowed subdomains to override a block for `example.com`.
 
 ## Languages
 

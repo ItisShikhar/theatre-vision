@@ -137,7 +137,7 @@ function renderDomainList(list, domains, emptyMessage) {
 
 function render() {
   renderDomainList(domainList, disabledDomains, "No disabled websites.");
-  renderDomainList(enabledList, enabledDomains, "No enabled exceptions.");
+  renderDomainList(enabledList, enabledDomains, "No allowed subdomains.");
 }
 
 async function load() {
@@ -172,10 +172,23 @@ function addDomain(input, fieldStatus, isException) {
 
   const targetDomains = isException ? enabledDomains : disabledDomains;
 
+  if (
+    isException &&
+    !disabledDomains.some(
+      (blockedDomain) =>
+        blockedDomain !== domain &&
+        TheatreVisionSiteRules.matchesDomain(domain, blockedDomain),
+    )
+  ) {
+    showFieldStatus(fieldStatus, "Enter a subdomain of a blocked domain.");
+    input.focus();
+    return;
+  }
+
   if (targetDomains.includes(domain)) {
     showFieldStatus(
       fieldStatus,
-      isException ? "This domain is already enabled." : "This domain is already disabled.",
+      isException ? "This subdomain is already allowed." : "This domain is already blocked.",
     );
     input.focus();
     return;
