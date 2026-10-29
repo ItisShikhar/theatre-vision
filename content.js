@@ -17,7 +17,8 @@
   let activeButton = null;
   let exitHint = null;
 
-  const processedVideos = new WeakSet();
+  const processedPlayers = new WeakSet();
+  const observedPlayers = new WeakSet();
 
   let disabledDomains = [];
 
@@ -109,13 +110,13 @@
   // Smart Player Detection
   // ============================================================
 
-  function findPlayerContainer(video) {
-    const videoRect = video.getBoundingClientRect();
+  function findPlayerContainer(player) {
+    const playerRect = player.getBoundingClientRect();
 
-    let best = video;
+    let best = player;
     let bestScore = -Infinity;
 
-    let node = video;
+    let node = player;
 
     while (
       node &&
@@ -131,19 +132,16 @@
 
       let score = 0;
 
-      // Similar size to video
-      score += Math.max(0, 40 - Math.abs(rect.width - videoRect.width) / 15);
+      score += Math.max(0, 40 - Math.abs(rect.width - playerRect.width) / 15);
 
-      score += Math.max(0, 40 - Math.abs(rect.height - videoRect.height) / 15);
+      score += Math.max(0, 40 - Math.abs(rect.height - playerRect.height) / 15);
 
-      // Similar aspect ratio
       const aspect = rect.width / rect.height;
-      const videoAspect = videoRect.width / videoRect.height;
+      const playerAspect = playerRect.width / playerRect.height;
 
-      score += Math.max(0, 25 - Math.abs(aspect - videoAspect) * 20);
+      score += Math.max(0, 25 - Math.abs(aspect - playerAspect) * 20);
 
-      // Contains exactly one video
-      if (node.querySelectorAll("video").length === 1) score += 30;
+      if (node.querySelectorAll("video,iframe,frame").length === 1) score += 30;
 
       // Good player keywords
       const cls = (node.className || "").toString().toLowerCase();
@@ -191,8 +189,8 @@
 
       // Prefer shallower ancestors near the player
       const distance =
-        Math.abs(rect.width - videoRect.width) +
-        Math.abs(rect.height - videoRect.height);
+        Math.abs(rect.width - playerRect.width) +
+        Math.abs(rect.height - playerRect.height);
 
       score -= distance / 50;
 
@@ -431,24 +429,24 @@
     return button;
   }
 
-  function attachButton(video) {
-    if (processedVideos.has(video)) return;
+  function attachButton(player) {
+    if (processedPlayers.has(player) || !document.body) return;
 
-    if (!isVisible(video)) return;
+    if (!isVisible(player)) return;
 
-    const container = findPlayerContainer(video);
+    const container = findPlayerContainer(player);
 
-    const button = createButton(video, container);
+    const button = createButton(player, container);
 
     let hovering = false;
 
     function update() {
-      if (!document.contains(video)) {
+      if (!document.contains(player)) {
         button.remove();
         return;
       }
 
-      const rect = video.getBoundingClientRect();
+      const rect = player.getBoundingClientRect();
 
       const visible =
         rect.width > 120 &&
@@ -457,10 +455,10 @@
         rect.top < window.innerHeight;
 
       if (container === activeContainer) {
-        positionButton(video, button);
+        positionButton(player, button);
         button.classList.add("vpm-visible");
       } else if (visible && (hovering || button.matches(":hover"))) {
-        positionButton(video, button);
+        positionButton(player, button);
 
         button.classList.add("vpm-visible");
       } else {
@@ -470,11 +468,11 @@
       requestAnimationFrame(update);
     }
 
-    video.addEventListener("mouseenter", () => {
+    player.addEventListener("mouseenter", () => {
       hovering = true;
     });
 
-    video.addEventListener("mouseleave", () => {
+    player.addEventListener("mouseleave", () => {
       hovering = false;
     });
 
@@ -488,7 +486,7 @@
 
     requestAnimationFrame(update);
 
-    processedVideos.add(video);
+    processedPlayers.add(player);
   }
 
   // ------------------------------------------------------------
@@ -534,38 +532,49 @@
 
   const resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
-      const video = entry.target;
+      const player = entry.target;
 
-      if (processedVideos.has(video)) continue;
+      if (processedPlayers.has(player)) continue;
 
-      const rect = video.getBoundingClientRect();
+      const rect = player.getBoundingClientRect();
 
       if (rect.width < 100 || rect.height < 60) continue;
 
-      attachButton(video);
+      attachButton(player);
     }
   });
 
-  function observeVideo(video) {
-    if (video.__vpmObserved) return;
+  function observePlayer(player) {
+    if (!observedPlayers.has(player)) {
+      observedPlayers.add(player);
+      resizeObserver.observe(player);
+    }
 
-    video.__vpmObserved = true;
-
-    resizeObserver.observe(video);
+    attachButton(player);
   }
 
   function scanNode(root) {
     if (extensionDisabled()) return;
 
-    if (root instanceof HTMLVideoElement) {
-      observeVideo(root);
+    if (
+      root instanceof HTMLVideoElement ||
+      root instanceof HTMLIFrameElement ||
+      root instanceof HTMLFrameElement
+    ) {
+      observePlayer(root);
 
       return;
     }
 
-    if (!(root instanceof Element)) return;
+    if (
+      !(root instanceof Element) &&
+      !(root instanceof Document) &&
+      !(root instanceof ShadowRoot)
+    ) {
+      return;
+    }
 
-    root.querySelectorAll("video").forEach(observeVideo);
+    root.querySelectorAll("video,iframe,frame").forEach(observePlayer);
 
     // Shadow DOM support
 
@@ -582,14 +591,30 @@
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      mutation.addedNodes.forEach(scanNode);
+      if (mutation.type === "attributes") {
+        const target = mutation.target;
+        if (
+          target instanceof HTMLVideoElement ||
+          target instanceof HTMLIFrameElement ||
+          target instanceof HTMLFrameElement
+        ) {
+          attachButton(target);
+        } else if (target instanceof Element) {
+          target
+            .querySelectorAll("video,iframe,frame")
+            .forEach(attachButton);
+        }
+      } else {
+        mutation.addedNodes.forEach(scanNode);
+      }
     }
   });
 
   observer.observe(document.documentElement, {
     childList: true,
-
     subtree: true,
+    attributes: true,
+    attributeFilter: ["class", "src", "style"],
   });
 
   // ============================================================
