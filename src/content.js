@@ -335,6 +335,14 @@
   }
 
   function enterPageMode(container, button) {
+    if (activeContainer && !document.contains(activeContainer)) {
+      activeContainer = null;
+      activeButton = null;
+    }
+    if (activeFrame && !document.contains(activeFrame)) {
+      activeFrame = null;
+      activeButton = null;
+    }
     if (activeContainer || activeFrame) return;
 
     activeContainer = container;
@@ -387,6 +395,10 @@
         if (el instanceof HTMLVideoElement) {
           el.style.objectFit = "contain";
         }
+
+        try {
+          el.contentWindow?.postMessage({ source: "theatre-vision", type: "enter" }, "*");
+        } catch {}
       });
     }
 
@@ -398,6 +410,14 @@
   }
 
   function enterFrameMode(frame) {
+    if (activeContainer && !document.contains(activeContainer)) {
+      activeContainer = null;
+      activeButton = null;
+    }
+    if (activeFrame && !document.contains(activeFrame)) {
+      activeFrame = null;
+      activeButton = null;
+    }
     if (activeContainer || activeFrame) return;
 
     activeFrame = frame;
@@ -421,6 +441,10 @@
       border: "0",
     });
 
+    try {
+      frame.contentWindow?.postMessage({ source: "theatre-vision", type: "enter" }, "*");
+    } catch {}
+
     document.body.style.overflow = "hidden";
     scheduleButtonUpdate();
   }
@@ -435,6 +459,10 @@
     if (!activeFrame) return;
 
     const frame = activeFrame;
+    try {
+      frame.contentWindow?.postMessage({ source: "theatre-vision", type: "exit" }, "*");
+    } catch {}
+
     restoreOriginalStyles(frame);
     placeholder?.remove();
     restoreOriginalStyles(document.body);
@@ -460,7 +488,12 @@
     const container = activeContainer;
     restoreOriginalStyles(container);
     if (!isDedicatedPlayer(container)) {
-      container.querySelectorAll("iframe,video").forEach(restoreOriginalStyles);
+      container.querySelectorAll("iframe,video").forEach((el) => {
+        restoreOriginalStyles(el);
+        try {
+          el.contentWindow?.postMessage({ source: "theatre-vision", type: "exit" }, "*");
+        } catch {}
+      });
     }
     placeholder?.remove();
     restoreOriginalStyles(document.body);
@@ -477,8 +510,17 @@
   }
 
   function togglePageMode(container, button, player) {
+    if (activeContainer && !document.contains(activeContainer)) {
+      activeContainer = null;
+      activeButton = null;
+    }
+    if (activeFrame && !document.contains(activeFrame)) {
+      activeFrame = null;
+      activeButton = null;
+    }
+
     if (player === activeFrame) {
-      activeFrame.contentWindow.postMessage({ source: "theatre-vision", type: "exit" }, "*");
+      exitFrameMode();
       return;
     }
 
@@ -548,6 +590,21 @@
   function updateButtons() {
     buttonUpdateFrame = 0;
 
+    if (activeContainer && !document.contains(activeContainer)) {
+      activeContainer = null;
+      activeButton = null;
+      placeholder?.remove();
+      placeholder = null;
+      restoreElevatedAncestors();
+    }
+    if (activeFrame && !document.contains(activeFrame)) {
+      activeFrame = null;
+      activeButton = null;
+      placeholder?.remove();
+      placeholder = null;
+      restoreElevatedAncestors();
+    }
+
     for (const [player, state] of buttonStates) {
       if (!document.contains(player)) {
         state.abortController.abort();
@@ -557,12 +614,15 @@
         continue;
       }
 
+      if (state.container && !document.contains(state.container)) {
+        state.container = findPlayerContainer(player);
+      }
+
       const rect = player.getBoundingClientRect();
+      const containerRect = state.container ? state.container.getBoundingClientRect() : null;
       const visible =
-        rect.width > 120 &&
-        rect.height > 80 &&
-        rect.bottom > 0 &&
-        rect.top < window.innerHeight;
+        (rect.width > 80 && rect.height > 60 && rect.bottom > 0 && rect.top < window.innerHeight) ||
+        (containerRect && containerRect.width > 120 && containerRect.height > 80 && containerRect.bottom > 0 && containerRect.top < window.innerHeight);
       const isActive =
         state.container === activeContainer ||
         state.container === activeFrame ||
@@ -647,7 +707,11 @@
       e.preventDefault();
       e.stopPropagation();
 
-      togglePageMode(container, button, video);
+      const currentContainer = (container && document.contains(container))
+        ? container
+        : (buttonStates.get(video)?.container || findPlayerContainer(video));
+
+      togglePageMode(currentContainer, button, video);
       button.blur();
     });
 
@@ -657,9 +721,30 @@
   function attachButton(player) {
     if (buttonStates.has(player) || !document.body || !isSiteEnabled()) return;
 
-    if (!isVisible(player)) return;
-
     const container = findPlayerContainer(player);
+    const rect = player.getBoundingClientRect();
+    const containerRect = container ? container.getBoundingClientRect() : null;
+    const isPlayerVisible =
+      (rect.width > 30 && rect.height > 30 && getComputedStyle(player).display !== "none") ||
+      (containerRect && containerRect.width > 80 && containerRect.height > 60 && getComputedStyle(container).display !== "none");
+
+    if (!isPlayerVisible) {
+      if (player instanceof HTMLIFrameElement || player instanceof HTMLFrameElement) {
+        player.addEventListener("load", () => {
+          attachButton(player);
+          scheduleButtonUpdate();
+        }, { once: true });
+      } else if (player instanceof HTMLMediaElement) {
+        ["loadeddata", "loadedmetadata", "canplay", "play"].forEach((evt) => {
+          player.addEventListener(evt, () => {
+            attachButton(player);
+            scheduleButtonUpdate();
+          }, { once: true });
+        });
+      }
+      return;
+    }
+
     const button = createButton(player, container);
     const abortController = new AbortController();
     const state = {
@@ -703,11 +788,10 @@
     }
 
     if (player instanceof HTMLMediaElement) {
-      player.addEventListener("loadedmetadata", () => scheduleButtonUpdate(), {
-        signal: abortController.signal,
-      });
-      player.addEventListener("playing", () => scheduleButtonUpdate(), {
-        signal: abortController.signal,
+      ["loadeddata", "loadedmetadata", "canplay", "play", "playing"].forEach((evt) => {
+        player.addEventListener(evt, () => scheduleButtonUpdate(), {
+          signal: abortController.signal,
+        });
       });
     }
 
@@ -753,16 +837,34 @@
 
     if (!message || message.source !== "theatre-vision") return;
 
-    if (
-      window !== window.top &&
-      event.source === window.parent &&
-      message.type === "exit"
-    ) {
-      exitPageMode();
-      return;
+    if (window !== window.top && event.source === window.parent) {
+      if (message.type === "exit") {
+        exitPageMode();
+        return;
+      }
+      if (message.type === "enter") {
+        if (!activeContainer && !activeFrame) {
+          const firstPlayer = Array.from(buttonStates.keys())[0] || document.querySelector("video,iframe");
+          if (firstPlayer) {
+            const container = buttonStates.get(firstPlayer)?.container || findPlayerContainer(firstPlayer);
+            const btn = buttonStates.get(firstPlayer)?.button;
+            enterPageMode(container, btn);
+          }
+        }
+        return;
+      }
     }
 
     if (message.type !== "enter" && message.type !== "exit") return;
+
+    if (activeFrame && !document.contains(activeFrame)) {
+      activeFrame = null;
+      activeButton = null;
+    }
+    if (activeContainer && !document.contains(activeContainer)) {
+      activeContainer = null;
+      activeButton = null;
+    }
 
     const frame = Array.from(document.querySelectorAll("iframe,frame")).find(
       (element) => element.contentWindow === event.source,
@@ -809,11 +911,16 @@
       resizeObserver.observe(player);
 
       if (player instanceof HTMLMediaElement) {
-        player.addEventListener("loadedmetadata", () => attachButton(player), {
-          once: true,
+        ["loadeddata", "loadedmetadata", "canplay", "play", "playing"].forEach((evt) => {
+          player.addEventListener(evt, () => {
+            attachButton(player);
+            scheduleButtonUpdate();
+          });
         });
-        player.addEventListener("canplay", () => attachButton(player), {
-          once: true,
+      } else if (player instanceof HTMLIFrameElement || player instanceof HTMLFrameElement) {
+        player.addEventListener("load", () => {
+          attachButton(player);
+          scheduleButtonUpdate();
         });
       }
     }
@@ -878,7 +985,15 @@
         }
       } else {
         mutation.addedNodes.forEach(scanNode);
-        if (mutation.removedNodes.length > 0) shouldUpdateButtons = true;
+        if (mutation.removedNodes.length > 0) {
+          shouldUpdateButtons = true;
+          if (activeContainer && !document.contains(activeContainer)) {
+            exitPageMode();
+          }
+          if (activeFrame && !document.contains(activeFrame)) {
+            exitFrameMode();
+          }
+        }
       }
     }
 
@@ -891,6 +1006,27 @@
     attributes: true,
     attributeFilter: ["class", "src", "style"],
   });
+
+  // Server switch / player swap clicks (common on streaming video sites)
+  document.addEventListener("click", (e) => {
+    const target = e.target;
+    if (
+      target &&
+      typeof target.closest === "function" &&
+      target.closest(".singlemv, [data-server], .server, .server-tab, .server-item, .episode")
+    ) {
+      setTimeout(() => {
+        if (activeContainer && !document.contains(activeContainer)) {
+          exitPageMode();
+        }
+        if (activeFrame && !document.contains(activeFrame)) {
+          exitFrameMode();
+        }
+        scanNode(document);
+        scheduleButtonUpdate();
+      }, 350);
+    }
+  }, true);
 
   // ============================================================
   // SPA navigation
@@ -922,8 +1058,10 @@
     if (location.href !== previousHref) {
       previousHref = location.href;
       handleNavigation();
+    } else {
+      scanNode(document);
     }
-  }, 400);
+  }, 1000);
 
   // ============================================================
   // Storage updates
