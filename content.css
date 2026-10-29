@@ -10,7 +10,7 @@
   border: none;
   border-radius: 999px;
 
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(63, 63, 70, 0.82);
   backdrop-filter: blur(6px);
 
   color: white;
@@ -27,16 +27,13 @@
 
   transition:
     opacity 0.15s ease,
-    transform 0.15s ease,
     background 0.15s ease;
 
   padding: 0;
 }
 
 .vpm-button:hover {
-  background: rgba(0, 0, 0, 0.9);
-
-  transform: scale(1.08);
+  background: rgba(24, 24, 27, 0.95);
 }
 
 .vpm-button svg {
