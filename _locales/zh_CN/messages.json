@@ -1,0 +1,8 @@
+{
+  "enterTheatreMode": {
+    "message": "进入影院模式"
+  },
+  "exitTheatreMode": {
+    "message": "退出影院模式"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "enterTheatreMode": {
+    "message": "シアターモードに入る"
+  },
+  "exitTheatreMode": {
+    "message": "シアターモードを終了"
+  }
+}

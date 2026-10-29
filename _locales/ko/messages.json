@@ -1,0 +1,8 @@
+{
+  "enterTheatreMode": {
+    "message": "극장 모드 시작"
+  },
+  "exitTheatreMode": {
+    "message": "극장 모드 종료"
+  }
+}

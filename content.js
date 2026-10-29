@@ -11,8 +11,9 @@
   const WRAPPER_CLASS = "vpm-wrapper";
   const PAGE_MODE_CLASS = "vpm-page-mode";
   const BODY_LOCK_CLASS = "vpm-body-lock";
-  const ENTER_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" role="img" aria-label="Theatre mode">
-  <title>Theatre mode</title>
+  const TOOLTIP_EDGE_GUTTER = 8;
+  const TOOLTIP_GAP = 8;
+  const ENTER_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" aria-hidden="true">
   <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
     <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
     <line x1="8" y1="30" x2="40" y2="30"/>
@@ -20,8 +21,7 @@
     <polyline points="27,16.5 31,20.5 27,24.5"/>
   </g>
 </svg>`;
-  const EXIT_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" role="img" aria-label="Exit theatre mode">
-  <title>Exit theatre mode</title>
+  const EXIT_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" aria-hidden="true">
   <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
     <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
     <line x1="8" y1="30" x2="40" y2="30"/>
@@ -36,6 +36,7 @@
   let exitHint = null;
 
   const observedPlayers = new WeakSet();
+  const buttonTooltips = new WeakMap();
 
   let disabledDomains = [];
   let enabledDomains = [];
@@ -442,6 +443,43 @@
     button.style.top = rect.top + 12 + "px";
   }
 
+  function positionTooltip(button, tooltip) {
+    const buttonRect = button.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const maxLeft = Math.max(
+      TOOLTIP_EDGE_GUTTER,
+      viewportWidth - tooltipRect.width - TOOLTIP_EDGE_GUTTER,
+    );
+    const maxTop = Math.max(
+      TOOLTIP_EDGE_GUTTER,
+      viewportHeight - tooltipRect.height - TOOLTIP_EDGE_GUTTER,
+    );
+    let left = buttonRect.left + (buttonRect.width - tooltipRect.width) / 2;
+    let top = buttonRect.top - tooltipRect.height - TOOLTIP_GAP;
+    const isBelow = top < TOOLTIP_EDGE_GUTTER;
+
+    if (isBelow) top = buttonRect.bottom + TOOLTIP_GAP;
+
+    left = Math.min(Math.max(left, TOOLTIP_EDGE_GUTTER), maxLeft);
+    top = Math.min(Math.max(top, TOOLTIP_EDGE_GUTTER), maxTop);
+
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  function showTooltip(state) {
+    state.tooltipVisible = true;
+    state.tooltip.classList.add("vpm-tooltip-visible");
+    positionTooltip(state.button, state.tooltip);
+  }
+
+  function hideTooltip(state) {
+    state.tooltipVisible = false;
+    state.tooltip.classList.remove("vpm-tooltip-visible");
+  }
+
   function updateButtons() {
     buttonUpdateFrame = 0;
 
@@ -449,6 +487,7 @@
       if (!document.contains(player)) {
         state.abortController.abort();
         state.button.remove();
+        state.tooltip.remove();
         buttonStates.delete(player);
         continue;
       }
@@ -470,12 +509,21 @@
       }
 
       if (!isSiteEnabled()) {
+        hideTooltip(state);
         state.button.classList.remove("vpm-visible");
-      } else if (isActive || (visible && (state.hovering || state.button.matches(":hover")))) {
+      } else if (
+        isActive ||
+        state.isFocused ||
+        (visible && (state.hovering || state.button.matches(":hover")))
+      ) {
         positionButton(player, state.button);
         state.button.classList.add("vpm-visible");
       } else {
         state.button.classList.remove("vpm-visible");
+      }
+
+      if (state.tooltipVisible) {
+        positionTooltip(state.button, state.tooltip);
       }
     }
   }
@@ -487,21 +535,42 @@
   }
 
   function setButtonMode(button, isActive) {
-    const label = isActive ? "Exit theatre mode" : "Enter theatre mode";
+    const messageKey = isActive ? "exitTheatreMode" : "enterTheatreMode";
+    const fallbackLabel = isActive ? "Exit Theatre Mode" : "Enter Theatre Mode";
+    const localizedLabel = chrome.i18n.getMessage(messageKey);
 
-    button.title = label;
+    if (!localizedLabel) {
+      console.error(`[Theatre Vision] Missing localization message: ${messageKey}`);
+    }
+
+    const label = localizedLabel || fallbackLabel;
+    const icon = isActive ? EXIT_THEATRE_ICON : ENTER_THEATRE_ICON;
+    const currentIcon = button.querySelector("svg");
+
+    button.removeAttribute("title");
     button.setAttribute("aria-label", label);
-    button.innerHTML = isActive ? EXIT_THEATRE_ICON : ENTER_THEATRE_ICON;
+
+    if (currentIcon) currentIcon.outerHTML = icon;
+    else button.insertAdjacentHTML("afterbegin", icon);
+
+    const tooltip = buttonTooltips.get(button);
+    if (tooltip) tooltip.textContent = label;
   }
 
   function createButton(video, container) {
     const button = document.createElement("button");
+    const tooltip = document.createElement("span");
 
     button.className = BUTTON_CLASS;
     button.type = "button";
+    tooltip.className = "vpm-tooltip";
+    tooltip.setAttribute("aria-hidden", "true");
+    tooltip.dir = "auto";
+    buttonTooltips.set(button, tooltip);
     setButtonMode(button, false);
 
     document.body.appendChild(button);
+    document.body.appendChild(tooltip);
 
     button.addEventListener("click", (e) => {
       e.preventDefault();
@@ -521,7 +590,17 @@
     const container = findPlayerContainer(player);
     const button = createButton(player, container);
     const abortController = new AbortController();
-    const state = { abortController, button, container, hovering: false, isActive: false };
+    const state = {
+      abortController,
+      button,
+      container,
+      hovering: false,
+      isActive: false,
+      isFocused: false,
+      isHovered: false,
+      tooltip: buttonTooltips.get(button),
+      tooltipVisible: false,
+    };
     const setHovering = (hovering) => {
       state.hovering = hovering;
       scheduleButtonUpdate();
@@ -535,12 +614,26 @@
     player.addEventListener("mouseleave", () => setHovering(false), {
       signal: abortController.signal,
     });
-    button.addEventListener("mouseenter", () => setHovering(true), {
-      signal: abortController.signal,
-    });
-    button.addEventListener("mouseleave", () => setHovering(false), {
-      signal: abortController.signal,
-    });
+    button.addEventListener("mouseenter", () => {
+      state.isHovered = true;
+      setHovering(true);
+      showTooltip(state);
+    }, { signal: abortController.signal });
+    button.addEventListener("mouseleave", () => {
+      state.isHovered = false;
+      setHovering(false);
+      if (!state.isFocused) hideTooltip(state);
+    }, { signal: abortController.signal });
+    button.addEventListener("focus", () => {
+      state.isFocused = true;
+      showTooltip(state);
+      scheduleButtonUpdate();
+    }, { signal: abortController.signal });
+    button.addEventListener("blur", () => {
+      state.isFocused = false;
+      if (!state.isHovered) hideTooltip(state);
+      scheduleButtonUpdate();
+    }, { signal: abortController.signal });
 
     scheduleButtonUpdate();
   }
@@ -722,6 +815,7 @@
         for (const [player, state] of buttonStates) {
           state.abortController.abort();
           state.button.remove();
+          state.tooltip.remove();
           buttonStates.delete(player);
         }
       })

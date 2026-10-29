@@ -16,6 +16,10 @@ Theatre Vision expands HTML5 and embedded videos to fill the page. It keeps nati
 
 The most specific matching domain rule wins. Add `video.example.com` under enabled exceptions to override a rule for `example.com`.
 
+## Languages
+
+Hover tooltips use the browser language. Supported languages include English, Hindi, Spanish, Japanese, Korean, French, Portuguese, Bengali, Malayalam, German, Simplified Chinese, Arabic, and Russian.
+
 ## Install
 
 1. Open `chrome://extensions`.
@@ -33,4 +37,4 @@ The most specific matching domain rule wins. Add `video.example.com` under enabl
 
 ## Test
 
-Run `node --test tests/domain-utils.test.js`.
+Run `node --test tests/domain-utils.test.js tests/locales.test.js`.

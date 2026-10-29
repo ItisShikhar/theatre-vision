@@ -1,0 +1,8 @@
+{
+  "enterTheatreMode": {
+    "message": "থিয়েটার মোডে প্রবেশ করুন"
+  },
+  "exitTheatreMode": {
+    "message": "থিয়েটার মোড থেকে বেরিয়ে আসুন"
+  }
+}
