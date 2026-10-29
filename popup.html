@@ -10,47 +10,50 @@
     <div class="popup">
       <header class="header">
         <img class="brand-icon" src="icons/screenlit.svg" alt="">
-        <div>
+        <div class="brand-copy">
           <h1>Screenlit</h1>
-          <p class="eyebrow">THEATRE MODE</p>
+          <p class="eyebrow">Video theatre controls</p>
         </div>
       </header>
 
       <main>
-        <p class="section-label">THIS SITE</p>
-        <section class="site-card" aria-labelledby="siteName">
-          <div class="site-details">
-            <span class="site-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M3.5 12h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path>
-              </svg>
-            </span>
-            <div class="site-copy">
-              <h2 id="siteName">Loading site...</h2>
-              <p id="siteAddress">Reading the active tab</p>
+        <section class="site-section" aria-labelledby="sectionTitle">
+          <h2 id="sectionTitle" class="section-title">Current site</h2>
+          <section class="site-card" aria-labelledby="siteName">
+            <div class="site-details">
+              <span class="site-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M3.5 12h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path>
+                </svg>
+              </span>
+              <div class="site-copy">
+                <h2 id="siteName">Loading site...</h2>
+                <p id="siteAddress">Reading the active tab</p>
+              </div>
             </div>
+            <label class="switch" aria-label="Enable theatre mode on this site">
+              <input id="siteToggle" type="checkbox" role="switch" disabled>
+              <span class="switch-track" aria-hidden="true">
+                <span class="switch-thumb"></span>
+              </span>
+            </label>
+          </section>
+
+          <p id="status" class="status" role="status" aria-live="polite"></p>
+
+          <div class="keyboard-hint">
+            <span>Press</span>
+            <kbd>Esc</kbd>
+            <span>to exit theatre mode</span>
           </div>
-          <label class="switch" aria-label="Enable theatre mode on this site">
-            <input id="siteToggle" type="checkbox" role="switch" disabled>
-            <span class="switch-track" aria-hidden="true">
-              <span class="switch-thumb"></span>
-            </span>
-          </label>
-        </section>
-
-        <p id="status" class="status" role="status" aria-live="polite"></p>
-
-        <section class="note">
-          <span class="note-mark" aria-hidden="true">i</span>
-          <p>Expand videos into a clean, immersive view. Press <kbd>Esc</kbd> to exit.</p>
         </section>
       </main>
 
       <footer class="footer">
         <span>Site rules</span>
-        <button id="manageButton" type="button">
-          Manage
+        <button id="manageButton" class="manage-button" type="button">
+          Manage rules
           <svg viewBox="0 0 16 16" aria-hidden="true">
             <path d="M4.5 11.5 11 5m0 0H5.5M11 5v5.5"></path>
           </svg>

@@ -1,18 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-
+  <head>
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Screenlit Site Rules</title>
-
     <link rel="stylesheet" href="options.css">
-
-</head>
-
-<body>
-
+  </head>
+  <body>
     <main class="container">
       <header class="header">
         <img class="brand-icon" src="icons/screenlit.svg" alt="">
@@ -23,19 +17,19 @@
       </header>
 
       <section class="section" aria-labelledby="blockedHeading">
-        <h2 id="blockedHeading">Disabled websites</h2>
+        <h2 id="blockedHeading">Blocked domains</h2>
         <p class="section-copy">Theatre mode stays off on these domains.</p>
         <div class="row">
-          <label class="visually-hidden" for="domainInput">Domain to disable</label>
+          <label class="visually-hidden" for="domainInput">Domain to block</label>
           <input id="domainInput" type="text" placeholder="youtube.com" autocomplete="url">
-          <button id="addButton" type="button">Add domain</button>
+          <button id="addButton" type="button">Block domain</button>
         </div>
         <div id="domainList" class="domain-list" aria-live="polite"></div>
       </section>
 
       <section class="section" aria-labelledby="enabledHeading">
         <h2 id="enabledHeading">Enabled exceptions</h2>
-        <p class="section-copy">These domains stay enabled inside a disabled parent domain.</p>
+        <p class="section-copy">These domains stay enabled inside a blocked parent domain.</p>
         <div id="enabledList" class="domain-list" aria-live="polite"></div>
       </section>
 
@@ -47,7 +41,5 @@
 
     <script src="domain-utils.js"></script>
     <script src="options.js"></script>
-
-</body>
-
+  </body>
 </html>
