@@ -4,7 +4,6 @@ const domainList = document.getElementById("domainList");
 const enabledList = document.getElementById("enabledList");
 const status = document.getElementById("status");
 
-const DEFAULT_STATUS = "Changes save automatically.";
 let disabledDomains = [];
 let enabledDomains = [];
 let statusTimer = 0;
@@ -48,12 +47,12 @@ function normalizeDomains(domains) {
 
 function showStatus(message, isError = false) {
   clearTimeout(statusTimer);
-  status.textContent = message || DEFAULT_STATUS;
+  status.textContent = message;
   status.dataset.state = isError ? "error" : "info";
 
   if (message && !isError) {
     statusTimer = setTimeout(() => {
-      status.textContent = DEFAULT_STATUS;
+      status.textContent = "";
     }, 1800);
   }
 }
