@@ -275,6 +275,24 @@
 
   let placeholder = null;
 
+  function isDedicatedPlayer(container) {
+    return (
+      container.id === "movie_player" ||
+      Boolean(container.classList?.contains("html5-video-player")) ||
+      Boolean(container.classList?.contains("video-js")) ||
+      Boolean(container.classList?.contains("jwplayer")) ||
+      Boolean(container.classList?.contains("plyr")) ||
+      location.hostname.includes("youtube.com")
+    );
+  }
+
+  function triggerPlayerResize() {
+    window.dispatchEvent(new Event("resize"));
+    requestAnimationFrame(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+  }
+
   function createPlaceholder(element) {
     placeholder = document.createElement("div");
     placeholder.className = "vpm-placeholder";
@@ -293,7 +311,9 @@
     createPlaceholder(container);
 
     saveOriginalStyles(container);
-    container.querySelectorAll("iframe,video").forEach(saveOriginalStyles);
+    if (!isDedicatedPlayer(container)) {
+      container.querySelectorAll("iframe,video").forEach(saveOriginalStyles);
+    }
     saveOriginalStyles(document.body);
 
     Object.assign(container.style, {
@@ -312,31 +332,32 @@
 
     if (container instanceof HTMLVideoElement) {
       container.style.objectFit = "contain";
-    } else {
+    } else if (!isDedicatedPlayer(container)) {
       Object.assign(container.style, {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       });
+
+      container.querySelectorAll("iframe,video").forEach((el) => {
+        Object.assign(el.style, {
+          position: "absolute",
+          inset: "0",
+          width: "100%",
+          height: "100%",
+          maxWidth: "100%",
+          maxHeight: "100%",
+          border: "0",
+        });
+
+        if (el instanceof HTMLVideoElement) {
+          el.style.objectFit = "contain";
+        }
+      });
     }
 
-    container.querySelectorAll("iframe,video").forEach((el) => {
-      Object.assign(el.style, {
-        position: "absolute",
-        inset: "0",
-        width: "100%",
-        height: "100%",
-        maxWidth: "100%",
-        maxHeight: "100%",
-        border: "0",
-      });
-
-      if (el instanceof HTMLVideoElement) {
-        el.style.objectFit = "contain";
-      }
-    });
-
     document.body.style.overflow = "hidden";
+    triggerPlayerResize();
     showExitHint();
     notifyParentFrameMode("enter");
     scheduleButtonUpdate();
@@ -402,7 +423,9 @@
 
     const container = activeContainer;
     restoreOriginalStyles(container);
-    container.querySelectorAll("iframe,video").forEach(restoreOriginalStyles);
+    if (!isDedicatedPlayer(container)) {
+      container.querySelectorAll("iframe,video").forEach(restoreOriginalStyles);
+    }
     placeholder?.remove();
     restoreOriginalStyles(document.body);
 
@@ -411,6 +434,7 @@
     activeContainer = null;
     activeButton = null;
 
+    triggerPlayerResize();
     notifyParentFrameMode("exit");
     scheduleButtonUpdate();
   }
