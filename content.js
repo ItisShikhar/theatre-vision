@@ -11,6 +11,24 @@
   const WRAPPER_CLASS = "vpm-wrapper";
   const PAGE_MODE_CLASS = "vpm-page-mode";
   const BODY_LOCK_CLASS = "vpm-body-lock";
+  const ENTER_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" role="img" aria-label="Theatre mode">
+  <title>Theatre mode</title>
+  <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
+    <line x1="8" y1="30" x2="40" y2="30"/>
+    <polyline points="21,16.5 17,20.5 21,24.5"/>
+    <polyline points="27,16.5 31,20.5 27,24.5"/>
+  </g>
+</svg>`;
+  const EXIT_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" role="img" aria-label="Exit theatre mode">
+  <title>Exit theatre mode</title>
+  <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
+    <line x1="8" y1="30" x2="40" y2="30"/>
+    <polyline points="17,16.5 21,20.5 17,24.5"/>
+    <polyline points="31,16.5 27,20.5 31,24.5"/>
+  </g>
+</svg>`;
 
   let activeContainer = null;
   let activeFrame = null;
@@ -269,7 +287,7 @@
 
     activeContainer = container;
     activeButton = button;
-    activeButton.title = "Exit theatre mode";
+    setButtonMode(activeButton, true);
 
     createPlaceholder(container);
 
@@ -327,6 +345,8 @@
     if (activeContainer || activeFrame) return;
 
     activeFrame = frame;
+    activeButton = buttonStates.get(frame)?.button ?? null;
+    if (activeButton) setButtonMode(activeButton, true);
     createPlaceholder(frame);
 
     saveOriginalStyles(frame);
@@ -364,6 +384,8 @@
 
     placeholder = null;
     activeFrame = null;
+    if (activeButton) setButtonMode(activeButton, false);
+    activeButton = null;
 
     notifyParentFrameMode("exit");
     scheduleButtonUpdate();
@@ -384,7 +406,7 @@
     restoreOriginalStyles(document.body);
 
     placeholder = null;
-    if (activeButton) activeButton.title = "Enter theatre mode";
+    if (activeButton) setButtonMode(activeButton, false);
     activeContainer = null;
     activeButton = null;
 
@@ -392,7 +414,12 @@
     scheduleButtonUpdate();
   }
 
-  function togglePageMode(container, button) {
+  function togglePageMode(container, button, player) {
+    if (player === activeFrame) {
+      activeFrame.contentWindow.postMessage({ source: "screenlit", type: "exit" }, "*");
+      return;
+    }
+
     if (container === activeContainer) {
       exitPageMode();
       return;
@@ -437,6 +464,11 @@
         state.container === activeFrame ||
         player === activeFrame;
 
+      if (state.isActive !== isActive) {
+        state.isActive = isActive;
+        setButtonMode(state.button, isActive);
+      }
+
       if (!isSiteEnabled()) {
         state.button.classList.remove("vpm-visible");
       } else if (isActive || (visible && (state.hovering || state.button.matches(":hover")))) {
@@ -454,18 +486,20 @@
     }
   }
 
+  function setButtonMode(button, isActive) {
+    const label = isActive ? "Exit theatre mode" : "Enter theatre mode";
+
+    button.title = label;
+    button.setAttribute("aria-label", label);
+    button.innerHTML = isActive ? EXIT_THEATRE_ICON : ENTER_THEATRE_ICON;
+  }
+
   function createButton(video, container) {
     const button = document.createElement("button");
 
     button.className = BUTTON_CLASS;
-
-    button.innerHTML = `
-<svg viewBox="0 0 24 24" aria-hidden="true">
-<path d="M4 5h16v14H4zM7 8h2v2H7zm0 6h2v2H7zm8-6h2v2h-2zm0 6h2v2h-2z"/>
-</svg>
-`;
-
-    button.title = "Enter theatre mode";
+    button.type = "button";
+    setButtonMode(button, false);
 
     document.body.appendChild(button);
 
@@ -473,7 +507,7 @@
       e.preventDefault();
       e.stopPropagation();
 
-      togglePageMode(container, button);
+      togglePageMode(container, button, video);
     });
 
     return button;
@@ -487,7 +521,7 @@
     const container = findPlayerContainer(player);
     const button = createButton(player, container);
     const abortController = new AbortController();
-    const state = { abortController, button, container, hovering: false };
+    const state = { abortController, button, container, hovering: false, isActive: false };
     const setHovering = (hovering) => {
       state.hovering = hovering;
       scheduleButtonUpdate();
@@ -527,13 +561,18 @@
   window.addEventListener("message", (event) => {
     const message = event.data;
 
+    if (!message || message.source !== "screenlit") return;
+
     if (
-      !message ||
-      message.source !== "screenlit" ||
-      (message.type !== "enter" && message.type !== "exit")
+      window !== window.top &&
+      event.source === window.parent &&
+      message.type === "exit"
     ) {
+      exitPageMode();
       return;
     }
+
+    if (message.type !== "enter" && message.type !== "exit") return;
 
     const frame = Array.from(document.querySelectorAll("iframe,frame")).find(
       (element) => element.contentWindow === event.source,
