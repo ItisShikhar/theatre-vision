@@ -14,7 +14,7 @@
           <img class="brand-logo" src="../assets/logo.png" alt="Theatre Vision">
         </h1>
         <div>
-          <p class="subtitle">Choose where theatre mode is available.</p>
+          <p class="subtitle">Make every video feel like a theatre experience.</p>
         </div>
       </header>
 
@@ -26,12 +26,19 @@
           <input id="domainInput" type="text" placeholder="youtube.com" autocomplete="url">
           <button id="addButton" type="button">Block domain</button>
         </div>
+        <p id="blockedStatus" class="field-status" role="status" aria-live="polite" hidden></p>
         <div id="domainList" class="domain-list" aria-live="polite"></div>
       </section>
 
       <section class="section" aria-labelledby="enabledHeading">
         <h2 id="enabledHeading">Enabled exceptions</h2>
         <p class="section-copy">These domains stay enabled inside a blocked parent domain.</p>
+        <div class="row">
+          <label class="visually-hidden" for="enabledDomainInput">Domain to enable</label>
+          <input id="enabledDomainInput" type="text" placeholder="subdomain.youtube.com" autocomplete="url">
+          <button id="enableButton" type="button">Enable domain</button>
+        </div>
+        <p id="enabledStatus" class="field-status" role="status" aria-live="polite" hidden></p>
         <div id="enabledList" class="domain-list" aria-live="polite"></div>
       </section>
 

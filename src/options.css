@@ -4,9 +4,13 @@
   --space-2: 16px;
   --space-3: 24px;
   --space-4: 32px;
-  --font-display: Oswald, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display:
+    Oswald, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
   --page-background: #fafafa;
   --surface: #ffffff;
+  --list-surface: #fafafa;
+  --list-row-alt: rgb(9 9 11 / 2%);
   --muted-surface: #f4f4f5;
   --foreground: #09090b;
   --strong-foreground: #18181b;
@@ -30,6 +34,8 @@
   :root {
     --page-background: #09090b;
     --surface: #18181b;
+    --list-surface: #202024;
+    --list-row-alt: rgb(255 255 255 / 3%);
     --muted-surface: #27272a;
     --foreground: #fafafa;
     --strong-foreground: #f4f4f5;
@@ -65,7 +71,7 @@ input {
 }
 
 .container {
-  width: min(100%, 720px);
+  width: min(100%, 560px);
   margin: 0 auto;
   padding: var(--space-4);
   border: 1px solid var(--border);
@@ -77,10 +83,12 @@ input {
 
 .header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
   padding-bottom: var(--space-3);
   border-bottom: 1px solid var(--border);
+  text-align: center;
 }
 
 .brand-heading {
@@ -93,7 +101,7 @@ input {
   width: min(250px, 100%);
   max-height: 72px;
   object-fit: contain;
-  object-position: left center;
+  object-position: center;
 }
 
 h1,
@@ -110,7 +118,7 @@ h1 {
 }
 
 .subtitle {
-  margin-top: var(--space-1);
+  margin-top: 0;
   color: var(--muted-foreground);
   font-size: 13px;
 }
@@ -138,6 +146,16 @@ h2 {
   margin-top: var(--space-2);
 }
 
+.field-status {
+  margin-top: var(--space-1);
+  color: var(--error);
+  font-size: 13px;
+}
+
+.field-status[hidden] {
+  display: none;
+}
+
 input {
   min-width: 0;
   min-height: 40px;
@@ -150,7 +168,9 @@ input {
   background: var(--surface);
   color: var(--foreground);
   font-size: 13px;
-  transition: box-shadow 140ms ease, border-color 140ms ease;
+  transition:
+    box-shadow 140ms ease,
+    border-color 140ms ease;
 }
 
 input:focus-visible {
@@ -173,7 +193,9 @@ button {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  transition: background 140ms ease, opacity 140ms ease;
+  transition:
+    background 140ms ease,
+    opacity 140ms ease;
 }
 
 button:hover {
@@ -196,7 +218,7 @@ button:disabled {
   border: 1px solid var(--border);
   border-radius: 12px;
   corner-shape: squircle;
-  background: var(--surface);
+  background: var(--list-surface);
 }
 
 .domain-item {
@@ -213,6 +235,10 @@ button:disabled {
   border-bottom: 0;
 }
 
+.domain-item:nth-child(odd) {
+  background: var(--list-row-alt);
+}
+
 .domain-name {
   overflow-wrap: anywhere;
   color: var(--strong-foreground);
@@ -220,9 +246,12 @@ button:disabled {
 }
 
 .remove {
+  display: grid;
+  width: 32px;
   min-height: 32px;
   flex: 0 0 auto;
-  padding: 0 var(--space-1);
+  place-items: center;
+  padding: 0;
   border-color: transparent;
   border-radius: 8px;
   corner-shape: squircle;
@@ -230,6 +259,11 @@ button:disabled {
   color: var(--muted-foreground);
   font-size: 12px;
   font-weight: 400;
+}
+
+.remove svg {
+  width: 16px;
+  height: 16px;
 }
 
 .remove:hover {
@@ -249,12 +283,17 @@ button:disabled {
   align-items: center;
   min-height: 48px;
   margin-top: var(--space-2);
-  border-top: 1px solid var(--border);
 }
 
 #status {
+  opacity: 0;
   color: var(--muted-foreground);
   font-size: 13px;
+  transition: opacity 180ms ease;
+}
+
+#status[data-visible="true"] {
+  opacity: 1;
 }
 
 #status[data-state="error"] {

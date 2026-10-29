@@ -1,12 +1,17 @@
 const domainInput = document.getElementById("domainInput");
 const addButton = document.getElementById("addButton");
+const enabledDomainInput = document.getElementById("enabledDomainInput");
+const enableButton = document.getElementById("enableButton");
 const domainList = document.getElementById("domainList");
 const enabledList = document.getElementById("enabledList");
+const blockedStatus = document.getElementById("blockedStatus");
+const enabledStatus = document.getElementById("enabledStatus");
 const status = document.getElementById("status");
 
 let disabledDomains = [];
 let enabledDomains = [];
 let statusTimer = 0;
+let statusClearTimer = 0;
 let saveQueue = Promise.resolve();
 
 function getStorage(defaults) {
@@ -47,13 +52,27 @@ function normalizeDomains(domains) {
 
 function showStatus(message, isError = false) {
   clearTimeout(statusTimer);
+  clearTimeout(statusClearTimer);
+
   status.textContent = message;
   status.dataset.state = isError ? "error" : "info";
+  status.dataset.visible = "false";
 
-  if (message && !isError) {
+  if (!message) return;
+
+  void status.offsetWidth;
+  status.dataset.visible = "true";
+
+  if (!isError) {
     statusTimer = setTimeout(() => {
-      status.textContent = "";
-    }, 1800);
+      status.dataset.visible = "false";
+      statusClearTimer = setTimeout(() => {
+        if (status.dataset.visible === "false") {
+          status.textContent = "";
+        }
+        statusClearTimer = 0;
+      }, 220);
+    }, 3200);
   }
 }
 
@@ -79,8 +98,27 @@ function renderDomainList(list, domains, emptyMessage) {
     const removeButton = document.createElement("button");
     removeButton.className = "remove";
     removeButton.type = "button";
-    removeButton.textContent = "Remove";
     removeButton.setAttribute("aria-label", `Remove ${domain}`);
+
+    const removeIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    removeIcon.setAttribute("viewBox", "0 0 24 24");
+    removeIcon.setAttribute("aria-hidden", "true");
+    removeIcon.setAttribute("focusable", "false");
+
+    const removeIconPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    removeIconPath.setAttribute(
+      "d",
+      "M3 6h18m-2 0-.9 14H5.9L5 6m4 0V4h6v2m-5 4v7m4-7v7",
+    );
+    removeIconPath.setAttribute("fill", "none");
+    removeIconPath.setAttribute("stroke", "currentColor");
+    removeIconPath.setAttribute("stroke-linecap", "round");
+    removeIconPath.setAttribute("stroke-linejoin", "round");
+    removeIconPath.setAttribute("stroke-width", "1.7");
+
+    removeIcon.appendChild(removeIconPath);
+    removeButton.appendChild(removeIcon);
+
     removeButton.addEventListener("click", () => {
       if (list === domainList) {
         disabledDomains = disabledDomains.filter((item) => item !== domain);
@@ -118,28 +156,45 @@ async function load() {
   }
 }
 
-function addDomain() {
-  const domain = TheatreVisionSiteRules.normalizeDomain(domainInput.value);
+function showFieldStatus(element, message) {
+  element.textContent = message;
+  element.hidden = !message;
+}
+
+function addDomain(input, fieldStatus, isException) {
+  const domain = TheatreVisionSiteRules.normalizeDomain(input.value);
 
   if (!domain) {
-    showStatus("Enter a valid website domain.", true);
-    domainInput.focus();
+    showFieldStatus(fieldStatus, "Enter a valid website domain.");
+    input.focus();
     return;
   }
 
-  if (disabledDomains.includes(domain)) {
-    showStatus("This domain is already disabled.", true);
-    domainInput.focus();
+  const targetDomains = isException ? enabledDomains : disabledDomains;
+
+  if (targetDomains.includes(domain)) {
+    showFieldStatus(
+      fieldStatus,
+      isException ? "This domain is already enabled." : "This domain is already disabled.",
+    );
+    input.focus();
     return;
   }
 
-  disabledDomains.push(domain);
-  enabledDomains = enabledDomains.filter((item) => item !== domain);
-  domainInput.value = "";
+  if (isException) {
+    enabledDomains.push(domain);
+    disabledDomains = disabledDomains.filter((item) => item !== domain);
+  } else {
+    disabledDomains.push(domain);
+    enabledDomains = enabledDomains.filter((item) => item !== domain);
+  }
+
+  input.value = "";
+  showFieldStatus(fieldStatus, "");
   showStatus("");
   render();
   void saveRules();
-  domainInput.focus();
+  input.focus();
 }
 
 async function saveRules() {
@@ -152,16 +207,24 @@ async function saveRules() {
 
   try {
     await saveOperation;
-    showStatus("Saved automatically.");
+    showStatus("Saved");
   } catch (error) {
     console.error("[Theatre Vision] Could not save site rules.", error);
     showStatus("Could not save site rules.", true);
   }
 }
 
-addButton.addEventListener("click", addDomain);
+addButton.addEventListener("click", () => addDomain(domainInput, blockedStatus, false));
+enableButton.addEventListener("click", () =>
+  addDomain(enabledDomainInput, enabledStatus, true),
+);
 domainInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") addDomain();
+  if (event.key === "Enter") addDomain(domainInput, blockedStatus, false);
+});
+enabledDomainInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    addDomain(enabledDomainInput, enabledStatus, true);
+  }
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
