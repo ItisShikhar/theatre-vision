@@ -1,135 +1,171 @@
-const input = document.getElementById("domainInput");
+const domainInput = document.getElementById("domainInput");
 const addButton = document.getElementById("addButton");
 const saveButton = document.getElementById("saveButton");
-const list = document.getElementById("domainList");
+const domainList = document.getElementById("domainList");
+const enabledList = document.getElementById("enabledList");
 const status = document.getElementById("status");
 
-let domains = [];
+let disabledDomains = [];
+let enabledDomains = [];
+let statusTimer = 0;
 
-// ------------------------------------------------------------
-// Normalize domain
-// ------------------------------------------------------------
+function getStorage(defaults) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(defaults, (result) => {
+      const error = chrome.runtime.lastError;
 
-function normalizeDomain(value) {
-  value = value.trim().toLowerCase();
+      if (error) {
+        reject(new Error(error.message));
+        return;
+      }
 
-  value = value.replace(/^https?:\/\//, "");
-  value = value.replace(/^www\./, "");
-  value = value.replace(/\/.*$/, "");
-
-  return value;
+      resolve(result);
+    });
+  });
 }
 
-// ------------------------------------------------------------
-// Render list
-// ------------------------------------------------------------
+function setStorage(values) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.set(values, () => {
+      const error = chrome.runtime.lastError;
 
-function render() {
-  list.innerHTML = "";
+      if (error) {
+        reject(new Error(error.message));
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
+function normalizeDomains(domains) {
+  if (!Array.isArray(domains)) return [];
+
+  return [...new Set(domains.map(ScreenlitSiteRules.normalizeDomain).filter(Boolean))];
+}
+
+function showStatus(message, isError = false) {
+  clearTimeout(statusTimer);
+  status.textContent = message;
+  status.dataset.state = isError ? "error" : "info";
+
+  if (message && !isError) {
+    statusTimer = setTimeout(() => {
+      status.textContent = "";
+    }, 1800);
+  }
+}
+
+function renderDomainList(list, domains, emptyMessage) {
+  list.replaceChildren();
 
   if (domains.length === 0) {
-    list.innerHTML = '<div class="empty">No disabled websites.</div>';
-
+    const empty = document.createElement("p");
+    empty.className = "empty";
+    empty.textContent = emptyMessage;
+    list.appendChild(empty);
     return;
   }
 
-  domains
-    .slice()
-    .sort()
-    .forEach((domain) => {
-      const row = document.createElement("div");
-      row.className = "domain-item";
+  domains.slice().sort().forEach((domain) => {
+    const row = document.createElement("div");
+    row.className = "domain-item";
 
-      const label = document.createElement("span");
-      label.textContent = domain;
+    const label = document.createElement("span");
+    label.className = "domain-name";
+    label.textContent = domain;
 
-      const remove = document.createElement("button");
-      remove.className = "remove";
-      remove.textContent = "Remove";
+    const removeButton = document.createElement("button");
+    removeButton.className = "remove";
+    removeButton.type = "button";
+    removeButton.textContent = "Remove";
+    removeButton.setAttribute("aria-label", `Remove ${domain}`);
+    removeButton.addEventListener("click", () => {
+      if (list === domainList) {
+        disabledDomains = disabledDomains.filter((item) => item !== domain);
+      } else {
+        enabledDomains = enabledDomains.filter((item) => item !== domain);
+      }
 
-      remove.onclick = () => {
-        domains = domains.filter((x) => x !== domain);
-
-        render();
-      };
-
-      row.appendChild(label);
-      row.appendChild(remove);
-
-      list.appendChild(row);
+      render();
     });
+
+    row.append(label, removeButton);
+    list.appendChild(row);
+  });
 }
 
-// ------------------------------------------------------------
-// Load
-// ------------------------------------------------------------
+function render() {
+  renderDomainList(domainList, disabledDomains, "No disabled websites.");
+  renderDomainList(enabledList, enabledDomains, "No enabled exceptions.");
+}
 
 async function load() {
-  const result = await chrome.storage.sync.get({
-    disabledDomains: [],
-  });
+  try {
+    const result = await getStorage({
+      disabledDomains: [],
+      enabledDomains: [],
+    });
 
-  domains = result.disabledDomains || [];
-
-  render();
+    disabledDomains = normalizeDomains(result.disabledDomains);
+    enabledDomains = normalizeDomains(result.enabledDomains);
+    render();
+  } catch (error) {
+    console.error("[Screenlit] Could not load site rules.", error);
+    showStatus("Could not load site rules.", true);
+  }
 }
 
-// ------------------------------------------------------------
-// Add
-// ------------------------------------------------------------
-
 function addDomain() {
-  const domain = normalizeDomain(input.value);
+  const domain = ScreenlitSiteRules.normalizeDomain(domainInput.value);
 
-  if (!domain) return;
-
-  if (domains.includes(domain)) {
-    input.value = "";
-
+  if (!domain) {
+    showStatus("Enter a valid website domain.", true);
+    domainInput.focus();
     return;
   }
 
-  domains.push(domain);
+  if (disabledDomains.includes(domain)) {
+    showStatus("This domain is already disabled.", true);
+    domainInput.focus();
+    return;
+  }
 
-  input.value = "";
-
+  disabledDomains.push(domain);
+  enabledDomains = enabledDomains.filter((item) => item !== domain);
+  domainInput.value = "";
+  showStatus("");
   render();
-
-  input.focus();
+  domainInput.focus();
 }
-
-// ------------------------------------------------------------
-// Save
-// ------------------------------------------------------------
 
 async function save() {
-  await chrome.storage.sync.set({
-    disabledDomains: domains,
-  });
+  saveButton.disabled = true;
 
-  status.textContent = "Saved!";
-
-  setTimeout(() => {
-    status.textContent = "";
-  }, 1500);
+  try {
+    await setStorage({ disabledDomains, enabledDomains });
+    showStatus("Site rules saved.");
+  } catch (error) {
+    console.error("[Screenlit] Could not save site rules.", error);
+    showStatus("Could not save site rules.", true);
+  } finally {
+    saveButton.disabled = false;
+  }
 }
 
-// ------------------------------------------------------------
-// Events
-// ------------------------------------------------------------
-
 addButton.addEventListener("click", addDomain);
-
 saveButton.addEventListener("click", save);
-
-input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    addDomain();
-  }
+domainInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") addDomain();
 });
 
-// ------------------------------------------------------------
-// Init
-// ------------------------------------------------------------
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== "sync" || (!changes.disabledDomains && !changes.enabledDomains)) {
+    return;
+  }
+
+  load();
+});
 
 load();

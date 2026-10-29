@@ -1,0 +1,275 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background: #10131d;
+  color: #f5f6fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 352px;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 92% 0%, rgba(52, 94, 185, 0.18), transparent 46%),
+    #10131d;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.popup {
+  padding: 22px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 22px;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.eyebrow,
+.section-label {
+  color: #8490a8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.eyebrow {
+  margin-top: 4px;
+}
+
+.section-label {
+  margin-bottom: 9px;
+}
+
+.site-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 76px;
+  padding: 14px;
+  border: 1px solid #293147;
+  border-radius: 14px;
+  background: rgba(25, 30, 45, 0.9);
+}
+
+.site-details {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.site-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 11px;
+  background: #242d43;
+  color: #a8b7d8;
+}
+
+.site-icon svg {
+  width: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.site-copy {
+  min-width: 0;
+}
+
+.site-copy h2 {
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-copy p {
+  margin-top: 5px;
+  color: #8f99ad;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  width: 42px;
+  height: 24px;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.switch-track {
+  display: flex;
+  width: 42px;
+  height: 24px;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid #46506a;
+  border-radius: 999px;
+  background: #2a3040;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.switch-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #c4cad7;
+  transition: transform 140ms ease, background 140ms ease;
+}
+
+.switch input:checked + .switch-track {
+  border-color: #ff5266;
+  background: #e84459;
+}
+
+.switch input:checked + .switch-track .switch-thumb {
+  transform: translateX(18px);
+  background: #fff;
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 2px solid #91aaff;
+  outline-offset: 3px;
+}
+
+.switch input:disabled + .switch-track {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.status {
+  min-height: 18px;
+  margin-top: 9px;
+  color: #a9b5cb;
+  font-size: 11px;
+}
+
+.status[data-state="error"] {
+  color: #ff8792;
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 4px;
+  padding: 12px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #aab3c5;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.note-mark {
+  display: grid;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #ff6576;
+  border-radius: 50%;
+  color: #ff6576;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+kbd {
+  padding: 1px 5px;
+  border: 1px solid #414a5d;
+  border-radius: 4px;
+  color: #e1e5ee;
+  font: inherit;
+  font-size: 10px;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 19px;
+  padding-top: 13px;
+  border-top: 1px solid #252b3a;
+  color: #909aae;
+  font-size: 11px;
+}
+
+.footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0 4px 8px;
+  border: 0;
+  background: transparent;
+  color: #f3f5fa;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.footer button:hover {
+  color: #ff7785;
+}
+
+.footer button:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid #91aaff;
+  outline-offset: 3px;
+}
+
+.footer svg {
+  width: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}

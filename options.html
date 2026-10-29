@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8">
 
-    <title>Video Page Mode Settings</title>
+    <title>Screenlit Site Rules</title>
 
     <link rel="stylesheet" href="options.css">
 
@@ -13,63 +13,39 @@
 
 <body>
 
-    <div class="container">
-
-        <h1>Video Page Mode</h1>
-
-        <p class="subtitle">
-            Disable the extension on specific websites.
-        </p>
-
-        <div class="section">
-
-            <label for="domainInput">
-                Domain
-            </label>
-
-            <div class="row">
-
-                <input
-                    id="domainInput"
-                    type="text"
-                    placeholder="youtube.com">
-
-                <button id="addButton">
-                    Add
-                </button>
-
-            </div>
-
+    <main class="container">
+      <header class="header">
+        <img class="brand-icon" src="icons/screenlit.svg" alt="">
+        <div>
+          <h1>Screenlit</h1>
+          <p class="subtitle">Choose where theatre mode is available.</p>
         </div>
+      </header>
 
-        <div class="section">
-
-            <h2>Disabled Websites</h2>
-
-            <div id="domainList" class="domain-list">
-
-                <div class="empty">
-                    No disabled websites.
-                </div>
-
-            </div>
-
+      <section class="section" aria-labelledby="blockedHeading">
+        <h2 id="blockedHeading">Disabled websites</h2>
+        <p class="section-copy">Theatre mode stays off on these domains.</p>
+        <div class="row">
+          <label class="visually-hidden" for="domainInput">Domain to disable</label>
+          <input id="domainInput" type="text" placeholder="youtube.com" autocomplete="url">
+          <button id="addButton" type="button">Add domain</button>
         </div>
+        <div id="domainList" class="domain-list" aria-live="polite"></div>
+      </section>
 
-        <div class="footer">
+      <section class="section" aria-labelledby="enabledHeading">
+        <h2 id="enabledHeading">Enabled exceptions</h2>
+        <p class="section-copy">These domains stay enabled inside a disabled parent domain.</p>
+        <div id="enabledList" class="domain-list" aria-live="polite"></div>
+      </section>
 
-            <button id="saveButton" class="save">
+      <footer class="footer">
+        <button id="saveButton" class="save" type="button">Save rules</button>
+        <span id="status" role="status" aria-live="polite"></span>
+      </footer>
+    </main>
 
-                Save
-
-            </button>
-
-            <span id="status"></span>
-
-        </div>
-
-    </div>
-
+    <script src="domain-utils.js"></script>
     <script src="options.js"></script>
 
 </body>

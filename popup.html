@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screenlit</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <div class="popup">
+      <header class="header">
+        <img class="brand-icon" src="icons/screenlit.svg" alt="">
+        <div>
+          <h1>Screenlit</h1>
+          <p class="eyebrow">THEATRE MODE</p>
+        </div>
+      </header>
+
+      <main>
+        <p class="section-label">THIS SITE</p>
+        <section class="site-card" aria-labelledby="siteName">
+          <div class="site-details">
+            <span class="site-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3.5 12h17M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path>
+              </svg>
+            </span>
+            <div class="site-copy">
+              <h2 id="siteName">Loading site...</h2>
+              <p id="siteAddress">Reading the active tab</p>
+            </div>
+          </div>
+          <label class="switch" aria-label="Enable theatre mode on this site">
+            <input id="siteToggle" type="checkbox" role="switch" disabled>
+            <span class="switch-track" aria-hidden="true">
+              <span class="switch-thumb"></span>
+            </span>
+          </label>
+        </section>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+
+        <section class="note">
+          <span class="note-mark" aria-hidden="true">i</span>
+          <p>Expand videos into a clean, immersive view. Press <kbd>Esc</kbd> to exit.</p>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Site rules</span>
+        <button id="manageButton" type="button">
+          Manage
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4.5 11.5 11 5m0 0H5.5M11 5v5.5"></path>
+          </svg>
+        </button>
+      </footer>
+    </div>
+
+    <script src="domain-utils.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

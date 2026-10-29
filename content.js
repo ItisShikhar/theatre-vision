@@ -1,11 +1,11 @@
 // ============================================================
-// Video Page Mode
+// Screenlit
 // Content Script
 // Part 1 - Foundation
 // ============================================================
 
 (() => {
-  console.log("[VPM] Loaded", location.href, window === top ? "TOP" : "IFRAME");
+  console.log("[Screenlit] Loaded", location.href, window === top ? "TOP" : "IFRAME");
 
   const BUTTON_CLASS = "vpm-button";
   const WRAPPER_CLASS = "vpm-wrapper";
@@ -17,25 +17,34 @@
   let activeButton = null;
   let exitHint = null;
 
-  const processedPlayers = new WeakSet();
   const observedPlayers = new WeakSet();
 
   let disabledDomains = [];
+  let enabledDomains = [];
+  let settingsLoaded = false;
 
   // ------------------------------------------------------------
   // Load settings
   // ------------------------------------------------------------
 
   async function loadSettings() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       chrome.storage.sync.get(
         {
           disabledDomains: [],
+          enabledDomains: [],
         },
         (result) => {
-          disabledDomains = result.disabledDomains
-            .map((x) => x.trim().toLowerCase())
-            .filter(Boolean);
+          const error = chrome.runtime.lastError;
+
+          if (error) {
+            reject(new Error(error.message));
+            return;
+          }
+
+          disabledDomains = normalizeDomains(result.disabledDomains);
+          enabledDomains = normalizeDomains(result.enabledDomains);
+          settingsLoaded = true;
 
           resolve();
         },
@@ -43,16 +52,17 @@
     });
   }
 
-  // ------------------------------------------------------------
-  // Is extension disabled on current domain?
-  // ------------------------------------------------------------
+  function normalizeDomains(domains) {
+    if (!Array.isArray(domains)) return [];
 
-  function extensionDisabled() {
-    const host = location.hostname.toLowerCase();
+    return [...new Set(domains.map(ScreenlitSiteRules.normalizeDomain).filter(Boolean))];
+  }
 
-    return disabledDomains.some((domain) => {
-      return host === domain || host.endsWith("." + domain);
-    });
+  function isSiteEnabled() {
+    return (
+      settingsLoaded &&
+      ScreenlitSiteRules.isEnabled(location.hostname, disabledDomains, enabledDomains)
+    );
   }
 
   // ------------------------------------------------------------
@@ -202,7 +212,7 @@
       node = node.parentElement;
     }
 
-    console.debug("[VPM] Selected container:", best, "Score:", bestScore);
+    console.debug("[Screenlit] Selected container:", best, "Score:", bestScore);
 
     return best;
   }
@@ -310,6 +320,7 @@
     document.body.style.overflow = "hidden";
     showExitHint();
     notifyParentFrameMode("enter");
+    scheduleButtonUpdate();
   }
 
   function enterFrameMode(frame) {
@@ -334,11 +345,12 @@
     });
 
     document.body.style.overflow = "hidden";
+    scheduleButtonUpdate();
   }
 
   function notifyParentFrameMode(type) {
     if (window !== window.top) {
-      window.parent.postMessage({ source: "video-page-mode", type }, "*");
+      window.parent.postMessage({ source: "screenlit", type }, "*");
     }
   }
 
@@ -354,6 +366,7 @@
     activeFrame = null;
 
     notifyParentFrameMode("exit");
+    scheduleButtonUpdate();
   }
 
   function exitPageMode() {
@@ -376,11 +389,10 @@
     activeButton = null;
 
     notifyParentFrameMode("exit");
+    scheduleButtonUpdate();
   }
 
   function togglePageMode(container, button) {
-    console.log("[VPM] CLICK", container);
-
     if (container === activeContainer) {
       exitPageMode();
       return;
@@ -393,7 +405,8 @@
   // Floating Button
   // ============================================================
 
-  const buttonMap = new WeakMap();
+  const buttonStates = new Map();
+  let buttonUpdateFrame = 0;
 
   function positionButton(video, button) {
     const rect = video.getBoundingClientRect();
@@ -402,14 +415,53 @@
     button.style.top = rect.top + 12 + "px";
   }
 
+  function updateButtons() {
+    buttonUpdateFrame = 0;
+
+    for (const [player, state] of buttonStates) {
+      if (!document.contains(player)) {
+        state.abortController.abort();
+        state.button.remove();
+        buttonStates.delete(player);
+        continue;
+      }
+
+      const rect = player.getBoundingClientRect();
+      const visible =
+        rect.width > 120 &&
+        rect.height > 80 &&
+        rect.bottom > 0 &&
+        rect.top < window.innerHeight;
+      const isActive =
+        state.container === activeContainer ||
+        state.container === activeFrame ||
+        player === activeFrame;
+
+      if (!isSiteEnabled()) {
+        state.button.classList.remove("vpm-visible");
+      } else if (isActive || (visible && (state.hovering || state.button.matches(":hover")))) {
+        positionButton(player, state.button);
+        state.button.classList.add("vpm-visible");
+      } else {
+        state.button.classList.remove("vpm-visible");
+      }
+    }
+  }
+
+  function scheduleButtonUpdate() {
+    if (!buttonUpdateFrame) {
+      buttonUpdateFrame = requestAnimationFrame(updateButtons);
+    }
+  }
+
   function createButton(video, container) {
     const button = document.createElement("button");
 
     button.className = BUTTON_CLASS;
 
     button.innerHTML = `
-<svg viewBox="0 0 24 24">
-<path d="M4 9h2V6h3V4H4zm10-5v2h3v3h2V4zm3 13h-3v2h5v-5h-2zM6 14H4v5h5v-2H6z"/>
+<svg viewBox="0 0 24 24" aria-hidden="true">
+<path d="M4 5h16v14H4zM7 8h2v2H7zm0 6h2v2H7zm8-6h2v2h-2zm0 6h2v2h-2z"/>
 </svg>
 `;
 
@@ -424,70 +476,43 @@
       togglePageMode(container, button);
     });
 
-    buttonMap.set(video, button);
-
     return button;
   }
 
   function attachButton(player) {
-    if (processedPlayers.has(player) || !document.body) return;
+    if (buttonStates.has(player) || !document.body || !isSiteEnabled()) return;
 
     if (!isVisible(player)) return;
 
     const container = findPlayerContainer(player);
-
     const button = createButton(player, container);
+    const abortController = new AbortController();
+    const state = { abortController, button, container, hovering: false };
+    const setHovering = (hovering) => {
+      state.hovering = hovering;
+      scheduleButtonUpdate();
+    };
 
-    let hovering = false;
+    buttonStates.set(player, state);
 
-    function update() {
-      if (!document.contains(player)) {
-        button.remove();
-        return;
-      }
-
-      const rect = player.getBoundingClientRect();
-
-      const visible =
-        rect.width > 120 &&
-        rect.height > 80 &&
-        rect.bottom > 0 &&
-        rect.top < window.innerHeight;
-
-      if (container === activeContainer) {
-        positionButton(player, button);
-        button.classList.add("vpm-visible");
-      } else if (visible && (hovering || button.matches(":hover"))) {
-        positionButton(player, button);
-
-        button.classList.add("vpm-visible");
-      } else {
-        button.classList.remove("vpm-visible");
-      }
-
-      requestAnimationFrame(update);
-    }
-
-    player.addEventListener("mouseenter", () => {
-      hovering = true;
+    player.addEventListener("mouseenter", () => setHovering(true), {
+      signal: abortController.signal,
+    });
+    player.addEventListener("mouseleave", () => setHovering(false), {
+      signal: abortController.signal,
+    });
+    button.addEventListener("mouseenter", () => setHovering(true), {
+      signal: abortController.signal,
+    });
+    button.addEventListener("mouseleave", () => setHovering(false), {
+      signal: abortController.signal,
     });
 
-    player.addEventListener("mouseleave", () => {
-      hovering = false;
-    });
-
-    button.addEventListener("mouseenter", () => {
-      hovering = true;
-    });
-
-    button.addEventListener("mouseleave", () => {
-      hovering = false;
-    });
-
-    requestAnimationFrame(update);
-
-    processedPlayers.add(player);
+    scheduleButtonUpdate();
   }
+
+  window.addEventListener("scroll", scheduleButtonUpdate, true);
+  window.addEventListener("resize", scheduleButtonUpdate);
 
   // ------------------------------------------------------------
   // ESC exits page mode
@@ -504,7 +529,7 @@
 
     if (
       !message ||
-      message.source !== "video-page-mode" ||
+      message.source !== "screenlit" ||
       (message.type !== "enter" && message.type !== "exit")
     ) {
       return;
@@ -534,7 +559,7 @@
     for (const entry of entries) {
       const player = entry.target;
 
-      if (processedPlayers.has(player)) continue;
+      if (buttonStates.has(player) || !document.contains(player)) continue;
 
       const rect = player.getBoundingClientRect();
 
@@ -554,7 +579,7 @@
   }
 
   function scanNode(root) {
-    if (extensionDisabled()) return;
+    if (!isSiteEnabled()) return;
 
     if (
       root instanceof HTMLVideoElement ||
@@ -583,13 +608,13 @@
     });
   }
 
-  scanNode(document);
-
   // ============================================================
   // Mutation Observer
   // ============================================================
 
   const observer = new MutationObserver((mutations) => {
+    scheduleButtonUpdate();
+
     for (const mutation of mutations) {
       if (mutation.type === "attributes") {
         const target = mutation.target;
@@ -637,8 +662,33 @@
   // Storage updates
   // ============================================================
 
-  chrome.storage.onChanged.addListener(async () => {
-    await loadSettings();
+  chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (
+      areaName !== "sync" ||
+      (!changes.disabledDomains && !changes.enabledDomains)
+    ) {
+      return;
+    }
+
+    loadSettings()
+      .then(() => {
+        if (isSiteEnabled()) {
+          scanNode(document);
+          scheduleButtonUpdate();
+          return;
+        }
+
+        if (activeContainer || activeFrame) exitPageMode();
+
+        for (const [player, state] of buttonStates) {
+          state.abortController.abort();
+          state.button.remove();
+          buttonStates.delete(player);
+        }
+      })
+      .catch((error) => {
+        console.error("[Screenlit] Could not update site settings.", error);
+      });
   });
 
   // ============================================================
@@ -646,16 +696,22 @@
   // ============================================================
 
   (async () => {
-    await loadSettings();
+    try {
+      await loadSettings();
 
-    if (extensionDisabled()) return;
+      if (!isSiteEnabled()) return;
 
-    if (document.body) {
-      createExitHint();
-    } else {
-      document.addEventListener("DOMContentLoaded", createExitHint, {
-        once: true,
-      });
+      scanNode(document);
+
+      if (document.body) {
+        createExitHint();
+      } else {
+        document.addEventListener("DOMContentLoaded", createExitHint, {
+          once: true,
+        });
+      }
+    } catch (error) {
+      console.error("[Screenlit] Could not load site settings.", error);
     }
   })();
 })();

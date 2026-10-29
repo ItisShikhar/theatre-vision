@@ -1,151 +1,220 @@
+:root {
+  color-scheme: dark;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background: #10131d;
+  color: #f5f6fa;
+  font-synthesis: none;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  padding: 40px 20px;
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(52, 94, 185, 0.18), transparent 42%),
+    #10131d;
+}
 
-  padding: 40px;
-
-  background: #f5f5f5;
-
-  font-family: Arial, Helvetica, sans-serif;
-
-  color: #222;
+button,
+input {
+  font: inherit;
 }
 
 .container {
-  max-width: 700px;
-
-  margin: auto;
-
-  background: white;
-
+  width: min(100%, 720px);
+  margin: 0 auto;
   padding: 30px;
+  border: 1px solid #293147;
+  border-radius: 18px;
+  background: rgba(20, 24, 36, 0.96);
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.28);
+}
 
-  border-radius: 12px;
+.header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid #293147;
+}
 
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
 }
 
 h1 {
-  margin-top: 0;
-
-  margin-bottom: 8px;
+  font-size: 22px;
+  letter-spacing: -0.025em;
 }
 
 .subtitle {
-  color: #666;
-
-  margin-bottom: 30px;
+  margin-top: 5px;
+  color: #9da7bb;
+  font-size: 13px;
 }
 
 .section {
-  margin-bottom: 30px;
+  margin-top: 26px;
 }
 
-label {
-  display: block;
+h2 {
+  font-size: 14px;
+  font-weight: 650;
+}
 
-  margin-bottom: 8px;
-
-  font-weight: bold;
+.section-copy {
+  margin-top: 6px;
+  color: #9da7bb;
+  font-size: 12px;
 }
 
 .row {
   display: flex;
-
-  gap: 10px;
+  gap: 9px;
+  margin-top: 15px;
 }
 
 input {
+  min-width: 0;
   flex: 1;
+  padding: 11px 13px;
+  border: 1px solid #374159;
+  border-radius: 9px;
+  outline: none;
+  background: #171d2a;
+  color: #f5f6fa;
+  font-size: 13px;
+}
 
-  padding: 10px 12px;
+input:focus-visible {
+  border-color: #91aaff;
+  box-shadow: 0 0 0 3px rgba(145, 170, 255, 0.14);
+}
 
-  font-size: 15px;
-
-  border: 1px solid #ccc;
-
-  border-radius: 8px;
+input::placeholder {
+  color: #778198;
 }
 
 button {
+  padding: 10px 15px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: #ee4b60;
+  color: #fff;
   cursor: pointer;
-
-  border: none;
-
-  border-radius: 8px;
-
-  padding: 10px 16px;
-
-  font-size: 14px;
-
-  background: #1976d2;
-
-  color: white;
-
-  transition: background 0.15s ease;
+  font-size: 12px;
+  font-weight: 650;
+  transition: background 140ms ease;
 }
 
 button:hover {
-  background: #125ca8;
+  background: #ff5b70;
+}
+
+button:focus-visible {
+  outline: 2px solid #91aaff;
+  outline-offset: 3px;
 }
 
 .domain-list {
-  border: 1px solid #ddd;
-
-  border-radius: 8px;
-
   overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid #293147;
+  border-radius: 10px;
+  background: #171d2a;
 }
 
 .domain-item {
   display: flex;
-
-  justify-content: space-between;
-
+  min-height: 46px;
   align-items: center;
-
-  padding: 12px 16px;
-
-  border-bottom: 1px solid #eee;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 11px 8px 14px;
+  border-bottom: 1px solid #293147;
 }
 
 .domain-item:last-child {
-  border-bottom: none;
+  border-bottom: 0;
+}
+
+.domain-name {
+  overflow-wrap: anywhere;
+  color: #e6e9f1;
+  font-size: 12px;
 }
 
 .remove {
-  background: #d32f2f;
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-color: #41495a;
+  background: transparent;
+  color: #c0c6d3;
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .remove:hover {
-  background: #b71c1c;
+  border-color: #ff6477;
+  background: rgba(238, 75, 96, 0.12);
+  color: #ff9aa5;
 }
 
 .empty {
-  padding: 20px;
-
-  color: #888;
-
-  text-align: center;
+  padding: 14px;
+  color: #828da3;
+  font-size: 12px;
 }
 
 .footer {
   display: flex;
-
   align-items: center;
-
-  gap: 15px;
+  gap: 14px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid #293147;
 }
 
 .save {
-  min-width: 100px;
+  min-width: 108px;
 }
 
 #status {
-  color: green;
+  color: #9da7bb;
+  font-size: 12px;
+}
 
-  font-weight: bold;
+#status[data-state="error"] {
+  color: #ff8792;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+@media (max-width: 520px) {
+  body {
+    padding: 14px 10px;
+  }
+
+  .container {
+    padding: 20px;
+  }
 }
