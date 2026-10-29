@@ -1,12 +1,12 @@
-# Screenlit
+# Theatre Vision
 
-![Screenlit icon](./icons/screenlit.svg)
+![Theatre Vision icon](./icons/theatre-vision.svg)
 
-Screenlit expands HTML5 and embedded videos to fill the page. It keeps native player controls and captions.
+Theatre Vision expands HTML5 and embedded videos to fill the page. It keeps native player controls and captions.
 
-![Screenlit toolbar popup](./screenshots/popup.png)
+![Theatre Vision toolbar popup](./screenshots/popup.png)
 
-![Screenlit site rules](./screenshots/site-rules.png)
+![Theatre Vision site rules](./screenshots/site-rules.png)
 
 ## Features
 
@@ -26,7 +26,7 @@ The most specific matching domain rule wins. Add `video.example.com` under enabl
 ## Use
 
 1. Open a site with a video.
-2. Select the Screenlit toolbar icon.
+2. Select the Theatre Vision toolbar icon.
 3. Turn theatre mode on or off for that site.
 4. Select **Manage** to edit site rules.
 5. Hover over a video and select the theatre control.

@@ -78,7 +78,7 @@
     return matchingRule?.enabled ?? true;
   }
 
-  globalThis.ScreenlitSiteRules = Object.freeze({
+  globalThis.TheatreVisionSiteRules = Object.freeze({
     isEnabled,
     matchesDomain,
     normalizeDomain,

@@ -1,11 +1,11 @@
 // ============================================================
-// Screenlit
+// Theatre Vision
 // Content Script
 // Part 1 - Foundation
 // ============================================================
 
 (() => {
-  console.log("[Screenlit] Loaded", location.href, window === top ? "TOP" : "IFRAME");
+  console.log("[Theatre Vision] Loaded", location.href, window === top ? "TOP" : "IFRAME");
 
   const BUTTON_CLASS = "vpm-button";
   const WRAPPER_CLASS = "vpm-wrapper";
@@ -73,13 +73,13 @@
   function normalizeDomains(domains) {
     if (!Array.isArray(domains)) return [];
 
-    return [...new Set(domains.map(ScreenlitSiteRules.normalizeDomain).filter(Boolean))];
+    return [...new Set(domains.map(TheatreVisionSiteRules.normalizeDomain).filter(Boolean))];
   }
 
   function isSiteEnabled() {
     return (
       settingsLoaded &&
-      ScreenlitSiteRules.isEnabled(location.hostname, disabledDomains, enabledDomains)
+      TheatreVisionSiteRules.isEnabled(location.hostname, disabledDomains, enabledDomains)
     );
   }
 
@@ -230,7 +230,7 @@
       node = node.parentElement;
     }
 
-    console.debug("[Screenlit] Selected container:", best, "Score:", bestScore);
+    console.debug("[Theatre Vision] Selected container:", best, "Score:", bestScore);
 
     return best;
   }
@@ -370,7 +370,7 @@
 
   function notifyParentFrameMode(type) {
     if (window !== window.top) {
-      window.parent.postMessage({ source: "screenlit", type }, "*");
+      window.parent.postMessage({ source: "theatre-vision", type }, "*");
     }
   }
 
@@ -416,7 +416,7 @@
 
   function togglePageMode(container, button, player) {
     if (player === activeFrame) {
-      activeFrame.contentWindow.postMessage({ source: "screenlit", type: "exit" }, "*");
+      activeFrame.contentWindow.postMessage({ source: "theatre-vision", type: "exit" }, "*");
       return;
     }
 
@@ -561,7 +561,7 @@
   window.addEventListener("message", (event) => {
     const message = event.data;
 
-    if (!message || message.source !== "screenlit") return;
+    if (!message || message.source !== "theatre-vision") return;
 
     if (
       window !== window.top &&
@@ -726,7 +726,7 @@
         }
       })
       .catch((error) => {
-        console.error("[Screenlit] Could not update site settings.", error);
+        console.error("[Theatre Vision] Could not update site settings.", error);
       });
   });
 
@@ -750,7 +750,7 @@
         });
       }
     } catch (error) {
-      console.error("[Screenlit] Could not load site settings.", error);
+      console.error("[Theatre Vision] Could not load site settings.", error);
     }
   })();
 })();

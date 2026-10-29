@@ -60,11 +60,11 @@ function showStatus(message, isError = false) {
 function normalizeDomains(domains) {
   if (!Array.isArray(domains)) return [];
 
-  return [...new Set(domains.map(ScreenlitSiteRules.normalizeDomain).filter(Boolean))];
+  return [...new Set(domains.map(TheatreVisionSiteRules.normalizeDomain).filter(Boolean))];
 }
 
 function renderSiteState() {
-  const isEnabled = ScreenlitSiteRules.isEnabled(
+  const isEnabled = TheatreVisionSiteRules.isEnabled(
     currentHostname,
     currentRules.disabledDomains,
     currentRules.enabledDomains,
@@ -80,7 +80,7 @@ async function loadPopup() {
     const tabUrl = tab?.url;
     const url = tabUrl ? new URL(tabUrl) : null;
     const hostname = url && ["http:", "https:"].includes(url.protocol)
-      ? ScreenlitSiteRules.normalizeDomain(url.hostname)
+      ? TheatreVisionSiteRules.normalizeDomain(url.hostname)
       : null;
 
     if (!hostname) {
@@ -107,7 +107,7 @@ async function loadPopup() {
     siteToggle.disabled = false;
     renderSiteState();
   } catch (error) {
-    console.error("[Screenlit] Could not load site settings.", error);
+    console.error("[Theatre Vision] Could not load site settings.", error);
     siteName.textContent = "Settings unavailable";
     siteAddress.textContent = "Try reopening this popup";
     showStatus("Could not load site settings.", true);
@@ -137,7 +137,7 @@ async function saveSiteRule() {
     renderSiteState();
     showStatus("Site rule saved.");
   } catch (error) {
-    console.error("[Screenlit] Could not save the site rule.", error);
+    console.error("[Theatre Vision] Could not save the site rule.", error);
     siteToggle.checked = !shouldEnable;
     showStatus("Could not save this site rule.", true);
   } finally {

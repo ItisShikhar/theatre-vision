@@ -42,7 +42,7 @@ function setStorage(values) {
 function normalizeDomains(domains) {
   if (!Array.isArray(domains)) return [];
 
-  return [...new Set(domains.map(ScreenlitSiteRules.normalizeDomain).filter(Boolean))];
+  return [...new Set(domains.map(TheatreVisionSiteRules.normalizeDomain).filter(Boolean))];
 }
 
 function showStatus(message, isError = false) {
@@ -112,13 +112,13 @@ async function load() {
     enabledDomains = normalizeDomains(result.enabledDomains);
     render();
   } catch (error) {
-    console.error("[Screenlit] Could not load site rules.", error);
+    console.error("[Theatre Vision] Could not load site rules.", error);
     showStatus("Could not load site rules.", true);
   }
 }
 
 function addDomain() {
-  const domain = ScreenlitSiteRules.normalizeDomain(domainInput.value);
+  const domain = TheatreVisionSiteRules.normalizeDomain(domainInput.value);
 
   if (!domain) {
     showStatus("Enter a valid website domain.", true);
@@ -147,7 +147,7 @@ async function save() {
     await setStorage({ disabledDomains, enabledDomains });
     showStatus("Site rules saved.");
   } catch (error) {
-    console.error("[Screenlit] Could not save site rules.", error);
+    console.error("[Theatre Vision] Could not save site rules.", error);
     showStatus("Could not save site rules.", true);
   } finally {
     saveButton.disabled = false;

@@ -1,16 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Screenlit",
+  "name": "Theatre Vision",
   "description": "Expand videos into a theatre view while keeping the site's native player and captions.",
   "version": "1.1.0",
 
   "permissions": ["storage"],
 
   "icons": {
-    "16": "icons/screenlit-16.png",
-    "32": "icons/screenlit-32.png",
-    "48": "icons/screenlit-48.png",
-    "128": "icons/screenlit-128.png"
+    "16": "icons/theatre-vision-16.png",
+    "32": "icons/theatre-vision-32.png",
+    "48": "icons/theatre-vision-48.png",
+    "128": "icons/theatre-vision-128.png"
   },
 
   "host_permissions": ["<all_urls>"],
@@ -28,10 +28,10 @@
   "options_page": "options.html",
 
   "action": {
-    "default_title": "Screenlit",
+    "default_title": "Theatre Vision",
     "default_icon": {
-      "16": "icons/screenlit-16.png",
-      "32": "icons/screenlit-32.png"
+      "16": "icons/theatre-vision-16.png",
+      "32": "icons/theatre-vision-32.png"
     },
     "default_popup": "popup.html"
   }

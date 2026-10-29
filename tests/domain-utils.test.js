@@ -3,7 +3,7 @@ const test = require("node:test");
 
 require("../domain-utils.js");
 
-const { isEnabled, matchesDomain, normalizeDomain } = globalThis.ScreenlitSiteRules;
+const { isEnabled, matchesDomain, normalizeDomain } = globalThis.TheatreVisionSiteRules;
 
 test("normalizeDomain accepts URLs and domain names", () => {
   assert.equal(normalizeDomain(" HTTPS://WWW.YouTube.com/watch?v=1 "), "www.youtube.com");
