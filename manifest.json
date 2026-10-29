@@ -1,17 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Theatre Vision",
-  "description": "Expand videos into a theatre view while keeping the site's native player and captions.",
+  "name": "__MSG_extensionName__",
+  "short_name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
   "version": "1.1.0",
+  "author": "Shikhar Srivastava",
+  "homepage_url": "https://github.com/ItisShikhar/theatre-vision",
   "default_locale": "en",
 
   "permissions": ["storage"],
 
   "icons": {
-    "16": "assets/logo_compact_bg_x512.png",
-    "32": "assets/logo_compact_bg_x512.png",
-    "48": "assets/logo_compact_bg_x512.png",
-    "128": "assets/logo_compact_bg_x512.png"
+    "16": "assets/logo_compact_bg_16.png",
+    "32": "assets/logo_compact_bg_32.png",
+    "48": "assets/logo_compact_bg_48.png",
+    "128": "assets/logo_compact_bg_128.png",
+    "512": "assets/logo_compact_bg_512.png"
   },
 
   "host_permissions": ["<all_urls>"],
@@ -30,13 +34,19 @@
       "match_about_blank": true
     }
   ],
-  "options_page": "src/options.html",
+  "options_ui": {
+    "page": "src/options.html",
+    "open_in_tab": true
+  },
 
   "action": {
-    "default_title": "Theatre Vision",
+    "default_title": "__MSG_actionTitle__",
     "default_icon": {
-      "16": "assets/logo_compact_bg_x512.png",
-      "32": "assets/logo_compact_bg_x512.png"
+      "16": "assets/logo_compact_bg_16.png",
+      "32": "assets/logo_compact_bg_32.png",
+      "48": "assets/logo_compact_bg_48.png",
+      "128": "assets/logo_compact_bg_128.png",
+      "512": "assets/logo_compact_bg_512.png"
     },
     "default_popup": "src/popup.html"
   }

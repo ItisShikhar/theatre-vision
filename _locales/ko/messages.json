@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "사이트 기본 플레이어와 자막을 유지하면서 동영상을 시어터 화면으로 확장합니다."
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "극장 모드 시작"
   },
   "exitTheatreMode": {
     "message": "극장 모드 종료"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision 사이트 규칙"
+  },
+  "optionsSubtitle": {
+    "message": "모든 동영상을 극장처럼 즐겨 보세요."
+  },
+  "blockedDomainsHeading": {
+    "message": "차단된 도메인"
+  },
+  "blockedDomainsDescription": {
+    "message": "이 도메인에서는 극장 모드가 꺼집니다."
+  },
+  "domainToBlockLabel": {
+    "message": "차단할 도메인"
+  },
+  "blockDomainButton": {
+    "message": "도메인 차단"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "허용된 하위 도메인"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "차단된 도메인의 하위 도메인을 허용합니다. 예: video.example.com"
+  },
+  "subdomainToAllowLabel": {
+    "message": "허용할 하위 도메인"
+  },
+  "allowSubdomainButton": {
+    "message": "하위 도메인 허용"
+  },
+  "noBlockedDomains": {
+    "message": "차단된 도메인이 없습니다."
+  },
+  "noAllowedSubdomains": {
+    "message": "허용된 하위 도메인이 없습니다."
+  },
+  "removeDomainLabel": {
+    "message": "$1 삭제"
+  },
+  "saved": {
+    "message": "저장됨"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "사이트 규칙을 불러오지 못했습니다."
+  },
+  "enterValidDomain": {
+    "message": "올바른 웹사이트 도메인을 입력하세요."
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "차단된 도메인의 하위 도메인을 입력하세요."
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "이 하위 도메인은 이미 허용되어 있습니다."
+  },
+  "domainAlreadyBlocked": {
+    "message": "이 도메인은 이미 차단되어 있습니다."
+  },
+  "couldNotSaveSiteRules": {
+    "message": "사이트 규칙을 저장하지 못했습니다."
+  },
+  "videoTheatreControls": {
+    "message": "동영상 시어터 컨트롤"
+  },
+  "currentSiteHeading": {
+    "message": "현재 사이트"
+  },
+  "loadingSite": {
+    "message": "사이트를 불러오는 중..."
+  },
+  "readingActiveTab": {
+    "message": "활성 탭을 확인하는 중"
+  },
+  "theatreModeLabel": {
+    "message": "시어터 모드"
+  },
+  "unavailableOnPage": {
+    "message": "이 페이지에서는 사용할 수 없음"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "규칙을 변경하려면 웹사이트를 여세요"
+  },
+  "siteRulesUnavailable": {
+    "message": "Chrome 페이지와 로컬 파일에서는 사이트 규칙을 사용할 수 없습니다."
+  },
+  "theatreModeForSite": {
+    "message": "이 사이트의 시어터 모드"
+  },
+  "settingsUnavailable": {
+    "message": "설정을 사용할 수 없음"
+  },
+  "reopenPopup": {
+    "message": "팝업을 다시 열어 보세요"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "사이트 설정을 불러오지 못했습니다."
+  },
+  "couldNotSaveSiteRule": {
+    "message": "이 사이트 규칙을 저장하지 못했습니다."
+  },
+  "siteRulesLabel": {
+    "message": "사이트 규칙"
+  },
+  "manageRulesButton": {
+    "message": "규칙 관리"
+  },
+  "madeBy": {
+    "message": "제작"
+  },
+  "aboutAuthor": {
+    "message": "제작자 정보"
+  },
+  "authorLinks": {
+    "message": "제작자 링크"
+  },
+  "sourceCodeLabel": {
+    "message": "소스 코드"
+  },
+  "authorProfileLink": {
+    "message": "$2의 $1"
   }
 }

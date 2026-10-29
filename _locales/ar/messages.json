@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "وسّع الفيديو إلى عرض مسرحي مع الإبقاء على المشغل الأصلي والترجمات."
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "الدخول إلى وضع المسرح"
   },
   "exitTheatreMode": {
     "message": "الخروج من وضع المسرح"
+  },
+  "optionsPageTitle": {
+    "message": "قواعد المواقع في Theatre Vision"
+  },
+  "optionsSubtitle": {
+    "message": "اجعل كل فيديو تجربة مسرحية."
+  },
+  "blockedDomainsHeading": {
+    "message": "النطاقات المحظورة"
+  },
+  "blockedDomainsDescription": {
+    "message": "يظل وضع المسرح متوقفًا على هذه النطاقات."
+  },
+  "domainToBlockLabel": {
+    "message": "النطاق المراد حظره"
+  },
+  "blockDomainButton": {
+    "message": "حظر النطاق"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "النطاقات الفرعية المسموح بها"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "اسمح بنطاق فرعي من نطاق محظور، مثل video.example.com."
+  },
+  "subdomainToAllowLabel": {
+    "message": "النطاق الفرعي المراد السماح به"
+  },
+  "allowSubdomainButton": {
+    "message": "السماح بالنطاق الفرعي"
+  },
+  "noBlockedDomains": {
+    "message": "لا توجد نطاقات محظورة."
+  },
+  "noAllowedSubdomains": {
+    "message": "لا توجد نطاقات فرعية مسموح بها."
+  },
+  "removeDomainLabel": {
+    "message": "إزالة $1"
+  },
+  "saved": {
+    "message": "تم الحفظ"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "تعذر تحميل قواعد المواقع."
+  },
+  "enterValidDomain": {
+    "message": "أدخل نطاق موقع صالحًا."
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "أدخل نطاقًا فرعيًا لنطاق محظور."
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "هذا النطاق الفرعي مسموح به بالفعل."
+  },
+  "domainAlreadyBlocked": {
+    "message": "هذا النطاق محظور بالفعل."
+  },
+  "couldNotSaveSiteRules": {
+    "message": "تعذر حفظ قواعد المواقع."
+  },
+  "videoTheatreControls": {
+    "message": "عناصر التحكم في وضع المسرح للفيديو"
+  },
+  "currentSiteHeading": {
+    "message": "الموقع الحالي"
+  },
+  "loadingSite": {
+    "message": "جارٍ تحميل الموقع..."
+  },
+  "readingActiveTab": {
+    "message": "جارٍ قراءة علامة التبويب النشطة"
+  },
+  "theatreModeLabel": {
+    "message": "وضع المسرح"
+  },
+  "unavailableOnPage": {
+    "message": "غير متاح في هذه الصفحة"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "افتح موقعًا لتغيير قاعدته"
+  },
+  "siteRulesUnavailable": {
+    "message": "قواعد المواقع غير متاحة في صفحات Chrome والملفات المحلية."
+  },
+  "theatreModeForSite": {
+    "message": "وضع المسرح لهذا الموقع"
+  },
+  "settingsUnavailable": {
+    "message": "الإعدادات غير متاحة"
+  },
+  "reopenPopup": {
+    "message": "حاول فتح هذه النافذة المنبثقة مرة أخرى"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "تعذر تحميل إعدادات الموقع."
+  },
+  "couldNotSaveSiteRule": {
+    "message": "تعذر حفظ قاعدة هذا الموقع."
+  },
+  "siteRulesLabel": {
+    "message": "قواعد المواقع"
+  },
+  "manageRulesButton": {
+    "message": "إدارة القواعد"
+  },
+  "madeBy": {
+    "message": "من إعداد"
+  },
+  "aboutAuthor": {
+    "message": "حول المؤلف"
+  },
+  "authorLinks": {
+    "message": "روابط المؤلف"
+  },
+  "sourceCodeLabel": {
+    "message": "الكود المصدري"
+  },
+  "authorProfileLink": {
+    "message": "ملف $1 على $2"
   }
 }

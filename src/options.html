@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Theatre Vision Site Rules</title>
+    <title data-i18n="optionsPageTitle">Theatre Vision Site Rules</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300..700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="options.css">
   </head>
@@ -11,32 +11,32 @@
     <main class="container">
       <header class="header">
         <h1 class="brand-heading">
-          <img class="brand-logo" src="../assets/logo.png" alt="Theatre Vision">
+          <img class="brand-logo" src="../assets/logo_sm.png" alt="Theatre Vision">
         </h1>
         <div>
-          <p class="subtitle">Make every video feel like a theatre experience.</p>
+          <p class="subtitle" data-i18n="optionsSubtitle">Make every video feel like a theatre experience.</p>
         </div>
       </header>
 
       <section class="section" aria-labelledby="blockedHeading">
-        <h2 id="blockedHeading">Blocked domains</h2>
-        <p class="section-copy">Theatre mode stays off on these domains.</p>
+        <h2 id="blockedHeading" data-i18n="blockedDomainsHeading">Blocked domains</h2>
+        <p class="section-copy" data-i18n="blockedDomainsDescription">Theatre mode stays off on these domains.</p>
         <div class="row">
-          <label class="visually-hidden" for="domainInput">Domain to block</label>
+          <label class="visually-hidden" for="domainInput" data-i18n="domainToBlockLabel">Domain to block</label>
           <input id="domainInput" type="text" placeholder="youtube.com" autocomplete="url">
-          <button id="addButton" type="button">Block domain</button>
+          <button id="addButton" type="button" data-i18n="blockDomainButton">Block domain</button>
         </div>
         <p id="blockedStatus" class="field-status" role="status" aria-live="polite" hidden></p>
         <div id="domainList" class="domain-list" aria-live="polite"></div>
       </section>
 
       <section class="section" aria-labelledby="enabledHeading">
-        <h2 id="enabledHeading">Allowed subdomains</h2>
-        <p class="section-copy">Allow a subdomain of a blocked domain, such as video.example.com.</p>
+        <h2 id="enabledHeading" data-i18n="allowedSubdomainsHeading">Allowed subdomains</h2>
+        <p class="section-copy" data-i18n="allowedSubdomainsDescription">Allow a subdomain of a blocked domain, such as video.example.com.</p>
         <div class="row">
-          <label class="visually-hidden" for="enabledDomainInput">Subdomain to allow</label>
+          <label class="visually-hidden" for="enabledDomainInput" data-i18n="subdomainToAllowLabel">Subdomain to allow</label>
           <input id="enabledDomainInput" type="text" placeholder="video.example.com" autocomplete="url">
-          <button id="enableButton" type="button">Allow subdomain</button>
+          <button id="enableButton" type="button" data-i18n="allowSubdomainButton">Allow subdomain</button>
         </div>
         <p id="enabledStatus" class="field-status" role="status" aria-live="polite" hidden></p>
         <div id="enabledList" class="domain-list" aria-live="polite"></div>
@@ -46,9 +46,9 @@
         <span id="status" role="status" aria-live="polite"></span>
       </footer>
 
-      <section class="author" aria-label="About the author">
-        <p>Made by <a class="author-name-link" data-author-link="linkedin" data-author-name-link><strong data-author-name></strong></a></p>
-        <nav class="author-links" aria-label="Author links">
+      <section class="author" aria-label="About the author" data-i18n-aria-label="aboutAuthor">
+        <p><span data-i18n="madeBy">Made by</span> <a class="author-name-link" data-author-link="linkedin" data-author-name-link><strong data-author-name></strong></a></p>
+        <nav class="author-links" aria-label="Author links" data-i18n-aria-label="authorLinks">
           <a data-author-link="linkedin"><img data-author-icon alt=""><span data-author-label></span></a>
           <a data-author-link="github"><img data-author-icon alt=""><span data-author-label></span></a>
           <a data-author-link="sourceCode"><span data-author-label></span></a>
@@ -57,6 +57,7 @@
     </main>
 
     <script src="domain-utils.js"></script>
+    <script src="i18n.js"></script>
     <script src="author.js"></script>
     <script src="options.js"></script>
   </body>

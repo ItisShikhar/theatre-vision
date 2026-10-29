@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "Увеличивайте видео до театрального режима, сохраняя исходный плеер и субтитры."
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "Войти в театральный режим"
   },
   "exitTheatreMode": {
     "message": "Выйти из театрального режима"
+  },
+  "optionsPageTitle": {
+    "message": "Правила сайтов Theatre Vision"
+  },
+  "optionsSubtitle": {
+    "message": "Пусть каждое видео станет театральным событием."
+  },
+  "blockedDomainsHeading": {
+    "message": "Заблокированные домены"
+  },
+  "blockedDomainsDescription": {
+    "message": "На этих доменах театральный режим выключен."
+  },
+  "domainToBlockLabel": {
+    "message": "Домен для блокировки"
+  },
+  "blockDomainButton": {
+    "message": "Заблокировать домен"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "Разрешённые поддомены"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "Разрешите поддомен заблокированного домена, например video.example.com."
+  },
+  "subdomainToAllowLabel": {
+    "message": "Поддомен для разрешения"
+  },
+  "allowSubdomainButton": {
+    "message": "Разрешить поддомен"
+  },
+  "noBlockedDomains": {
+    "message": "Нет заблокированных доменов."
+  },
+  "noAllowedSubdomains": {
+    "message": "Нет разрешённых поддоменов."
+  },
+  "removeDomainLabel": {
+    "message": "Удалить $1"
+  },
+  "saved": {
+    "message": "Сохранено"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "Не удалось загрузить правила сайта."
+  },
+  "enterValidDomain": {
+    "message": "Введите корректный домен сайта."
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "Введите поддомен заблокированного домена."
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "Этот поддомен уже разрешён."
+  },
+  "domainAlreadyBlocked": {
+    "message": "Этот домен уже заблокирован."
+  },
+  "couldNotSaveSiteRules": {
+    "message": "Не удалось сохранить правила сайта."
+  },
+  "videoTheatreControls": {
+    "message": "Управление театральным режимом видео"
+  },
+  "currentSiteHeading": {
+    "message": "Текущий сайт"
+  },
+  "loadingSite": {
+    "message": "Загрузка сайта..."
+  },
+  "readingActiveTab": {
+    "message": "Чтение активной вкладки"
+  },
+  "theatreModeLabel": {
+    "message": "Театральный режим"
+  },
+  "unavailableOnPage": {
+    "message": "Недоступно на этой странице"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "Откройте сайт, чтобы изменить его правило"
+  },
+  "siteRulesUnavailable": {
+    "message": "Правила недоступны на страницах Chrome и локальных файлах."
+  },
+  "theatreModeForSite": {
+    "message": "Театральный режим для этого сайта"
+  },
+  "settingsUnavailable": {
+    "message": "Настройки недоступны"
+  },
+  "reopenPopup": {
+    "message": "Попробуйте открыть это всплывающее окно снова"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "Не удалось загрузить настройки сайта."
+  },
+  "couldNotSaveSiteRule": {
+    "message": "Не удалось сохранить правило для этого сайта."
+  },
+  "siteRulesLabel": {
+    "message": "Правила сайта"
+  },
+  "manageRulesButton": {
+    "message": "Управление правилами"
+  },
+  "madeBy": {
+    "message": "Автор"
+  },
+  "aboutAuthor": {
+    "message": "Об авторе"
+  },
+  "authorLinks": {
+    "message": "Ссылки автора"
+  },
+  "sourceCodeLabel": {
+    "message": "Исходный код"
+  },
+  "authorProfileLink": {
+    "message": "$1 в $2"
   }
 }

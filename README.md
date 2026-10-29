@@ -1,6 +1,6 @@
 # Theatre Vision
 
-![Theatre Vision logo](./assets/logo.png)
+![Theatre Vision logo](./assets/logo_sm.png)
 
 Theatre Vision expands HTML5 and embedded videos to fill the page. It keeps native player controls and captions.
 
@@ -18,7 +18,7 @@ The most specific matching domain rule wins. Add `video.example.com` under allow
 
 ## Languages
 
-Hover tooltips use the browser language. Supported languages include English, Hindi, Spanish, Japanese, Korean, French, Portuguese, Bengali, Malayalam, German, Simplified Chinese, Arabic, and Russian.
+The popup, site rules, and video controls use the browser language. Supported languages include English, Hindi, Spanish, Japanese, Korean, French, Portuguese, Bengali, Malayalam, German, Simplified Chinese, Arabic, and Russian.
 
 ## Install
 
@@ -39,10 +39,14 @@ Hover tooltips use the browser language. Supported languages include English, Hi
 
 Made by [Shikhar Srivastava](https://www.linkedin.com/in/itisshikhar).
 
-[GitHub](https://github.com/ItisShikhar) · Source code coming soon.
+[GitHub](https://github.com/ItisShikhar) · [Source code](https://github.com/ItisShikhar/theatre-vision)
 
 ## Project files
 
 - Extension code and pages are in `src/`.
 - Brand images are in `assets/`.
 - Chrome locale catalogs remain in `_locales/`.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

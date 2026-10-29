@@ -278,6 +278,10 @@ h1 {
   transform: translateX(18px);
 }
 
+html[dir="rtl"] .switch[aria-checked="true"] .switch-thumb {
+  transform: translateX(-18px);
+}
+
 .switch:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;

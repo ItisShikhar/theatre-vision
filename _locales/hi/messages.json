@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "साइट के मूल प्लेयर और कैप्शन को बनाए रखते हुए वीडियो को थिएटर दृश्य में बड़ा करें।"
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "थिएटर मोड में जाएँ"
   },
   "exitTheatreMode": {
     "message": "थिएटर मोड से बाहर आएँ"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision साइट नियम"
+  },
+  "optionsSubtitle": {
+    "message": "हर वीडियो को थिएटर जैसा अनुभव दें।"
+  },
+  "blockedDomainsHeading": {
+    "message": "ब्लॉक किए गए डोमेन"
+  },
+  "blockedDomainsDescription": {
+    "message": "इन डोमेन पर थिएटर मोड बंद रहता है।"
+  },
+  "domainToBlockLabel": {
+    "message": "ब्लॉक करने के लिए डोमेन"
+  },
+  "blockDomainButton": {
+    "message": "डोमेन ब्लॉक करें"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "अनुमत सबडोमेन"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "ब्लॉक किए गए डोमेन के सबडोमेन को अनुमति दें, जैसे video.example.com।"
+  },
+  "subdomainToAllowLabel": {
+    "message": "अनुमति देने के लिए सबडोमेन"
+  },
+  "allowSubdomainButton": {
+    "message": "सबडोमेन की अनुमति दें"
+  },
+  "noBlockedDomains": {
+    "message": "कोई डोमेन ब्लॉक नहीं है।"
+  },
+  "noAllowedSubdomains": {
+    "message": "कोई सबडोमेन अनुमत नहीं है।"
+  },
+  "removeDomainLabel": {
+    "message": "$1 हटाएं"
+  },
+  "saved": {
+    "message": "सहेजा गया"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "साइट नियम लोड नहीं किए जा सके।"
+  },
+  "enterValidDomain": {
+    "message": "एक मान्य वेबसाइट डोमेन दर्ज करें।"
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "ब्लॉक किए गए डोमेन का सबडोमेन दर्ज करें।"
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "इस सबडोमेन की पहले से अनुमति है।"
+  },
+  "domainAlreadyBlocked": {
+    "message": "यह डोमेन पहले से ब्लॉक है।"
+  },
+  "couldNotSaveSiteRules": {
+    "message": "साइट नियम सहेजे नहीं जा सके।"
+  },
+  "videoTheatreControls": {
+    "message": "वीडियो थिएटर नियंत्रण"
+  },
+  "currentSiteHeading": {
+    "message": "वर्तमान साइट"
+  },
+  "loadingSite": {
+    "message": "साइट लोड हो रही है..."
+  },
+  "readingActiveTab": {
+    "message": "सक्रिय टैब पढ़ा जा रहा है"
+  },
+  "theatreModeLabel": {
+    "message": "थिएटर मोड"
+  },
+  "unavailableOnPage": {
+    "message": "इस पेज पर उपलब्ध नहीं है"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "नियम बदलने के लिए वेबसाइट खोलें"
+  },
+  "siteRulesUnavailable": {
+    "message": "Chrome पेज और स्थानीय फ़ाइलों पर साइट नियम उपलब्ध नहीं हैं।"
+  },
+  "theatreModeForSite": {
+    "message": "इस साइट के लिए थिएटर मोड"
+  },
+  "settingsUnavailable": {
+    "message": "सेटिंग उपलब्ध नहीं हैं"
+  },
+  "reopenPopup": {
+    "message": "इस पॉपअप को फिर से खोलें"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "साइट सेटिंग लोड नहीं की जा सकी।"
+  },
+  "couldNotSaveSiteRule": {
+    "message": "इस साइट का नियम सहेजा नहीं जा सका।"
+  },
+  "siteRulesLabel": {
+    "message": "साइट नियम"
+  },
+  "manageRulesButton": {
+    "message": "नियम प्रबंधित करें"
+  },
+  "madeBy": {
+    "message": "निर्माता"
+  },
+  "aboutAuthor": {
+    "message": "लेखक के बारे में"
+  },
+  "authorLinks": {
+    "message": "लेखक के लिंक"
+  },
+  "sourceCodeLabel": {
+    "message": "सोर्स कोड"
+  },
+  "authorProfileLink": {
+    "message": "$2 पर $1"
   }
 }

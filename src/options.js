@@ -7,6 +7,8 @@ const enabledList = document.getElementById("enabledList");
 const blockedStatus = document.getElementById("blockedStatus");
 const enabledStatus = document.getElementById("enabledStatus");
 const status = document.getElementById("status");
+const t = (key, substitutions = [], fallback = "") =>
+  TheatreVisionI18n.getMessage(key, substitutions, fallback);
 
 let disabledDomains = [];
 let enabledDomains = [];
@@ -98,7 +100,10 @@ function renderDomainList(list, domains, emptyMessage) {
     const removeButton = document.createElement("button");
     removeButton.className = "remove";
     removeButton.type = "button";
-    removeButton.setAttribute("aria-label", `Remove ${domain}`);
+    removeButton.setAttribute(
+      "aria-label",
+      t("removeDomainLabel", [domain], `Remove ${domain}`),
+    );
 
     const removeIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     removeIcon.setAttribute("viewBox", "0 0 24 24");
@@ -136,8 +141,16 @@ function renderDomainList(list, domains, emptyMessage) {
 }
 
 function render() {
-  renderDomainList(domainList, disabledDomains, "No disabled websites.");
-  renderDomainList(enabledList, enabledDomains, "No allowed subdomains.");
+  renderDomainList(
+    domainList,
+    disabledDomains,
+    t("noBlockedDomains", [], "No blocked domains."),
+  );
+  renderDomainList(
+    enabledList,
+    enabledDomains,
+    t("noAllowedSubdomains", [], "No allowed subdomains."),
+  );
 }
 
 async function load() {
@@ -152,7 +165,7 @@ async function load() {
     render();
   } catch (error) {
     console.error("[Theatre Vision] Could not load site rules.", error);
-    showStatus("Could not load site rules.", true);
+    showStatus(t("couldNotLoadSiteRules", [], "Could not load site rules."), true);
   }
 }
 
@@ -165,7 +178,10 @@ function addDomain(input, fieldStatus, isException) {
   const domain = TheatreVisionSiteRules.normalizeDomain(input.value);
 
   if (!domain) {
-    showFieldStatus(fieldStatus, "Enter a valid website domain.");
+    showFieldStatus(
+      fieldStatus,
+      t("enterValidDomain", [], "Enter a valid website domain."),
+    );
     input.focus();
     return;
   }
@@ -180,7 +196,14 @@ function addDomain(input, fieldStatus, isException) {
         TheatreVisionSiteRules.matchesDomain(domain, blockedDomain),
     )
   ) {
-    showFieldStatus(fieldStatus, "Enter a subdomain of a blocked domain.");
+    showFieldStatus(
+      fieldStatus,
+      t(
+        "enterSubdomainOfBlockedDomain",
+        [],
+        "Enter a subdomain of a blocked domain.",
+      ),
+    );
     input.focus();
     return;
   }
@@ -188,7 +211,9 @@ function addDomain(input, fieldStatus, isException) {
   if (targetDomains.includes(domain)) {
     showFieldStatus(
       fieldStatus,
-      isException ? "This subdomain is already allowed." : "This domain is already blocked.",
+      isException
+        ? t("subdomainAlreadyAllowed", [], "This subdomain is already allowed.")
+        : t("domainAlreadyBlocked", [], "This domain is already blocked."),
     );
     input.focus();
     return;
@@ -220,10 +245,10 @@ async function saveRules() {
 
   try {
     await saveOperation;
-    showStatus("Saved");
+    showStatus(t("saved", [], "Saved"));
   } catch (error) {
     console.error("[Theatre Vision] Could not save site rules.", error);
-    showStatus("Could not save site rules.", true);
+    showStatus(t("couldNotSaveSiteRules", [], "Could not save site rules."), true);
   }
 }
 

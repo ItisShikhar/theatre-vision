@@ -13,8 +13,20 @@
   const BODY_LOCK_CLASS = "vpm-body-lock";
   const TOOLTIP_EDGE_GUTTER = 8;
   const TOOLTIP_GAP = 8;
-  const enterTheatreMessage = chrome.i18n?.getMessage("enterTheatreMode");
-  const exitTheatreMessage = chrome.i18n?.getMessage("exitTheatreMode");
+  const enterTheatreMessage = (() => {
+    try {
+      return chrome.i18n?.getMessage("enterTheatreMode");
+    } catch {
+      return null;
+    }
+  })();
+  const exitTheatreMessage = (() => {
+    try {
+      return chrome.i18n?.getMessage("exitTheatreMode");
+    } catch {
+      return null;
+    }
+  })();
 
   if (!enterTheatreMessage) {
     console.error("[Theatre Vision] Missing localization message: enterTheatreMode");
@@ -55,32 +67,57 @@
   let enabledDomains = [];
   let settingsLoaded = false;
 
+  const globalAbortController = new AbortController();
+  let isTornDown = false;
+
+  function isExtensionValid() {
+    try {
+      return Boolean(chrome.runtime?.id);
+    } catch {
+      return false;
+    }
+  }
+
   // ------------------------------------------------------------
   // Load settings
   // ------------------------------------------------------------
 
   async function loadSettings() {
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.get(
-        {
-          disabledDomains: [],
-          enabledDomains: [],
-        },
-        (result) => {
-          const error = chrome.runtime.lastError;
+      if (!isExtensionValid()) {
+        resolve();
+        return;
+      }
 
-          if (error) {
-            reject(new Error(error.message));
-            return;
-          }
+      try {
+        chrome.storage.sync.get(
+          {
+            disabledDomains: [],
+            enabledDomains: [],
+          },
+          (result) => {
+            let error = null;
+            try {
+              error = chrome.runtime?.lastError;
+            } catch (err) {
+              error = err;
+            }
 
-          disabledDomains = normalizeDomains(result.disabledDomains);
-          enabledDomains = normalizeDomains(result.enabledDomains);
-          settingsLoaded = true;
+            if (error) {
+              reject(new Error(error.message));
+              return;
+            }
 
-          resolve();
-        },
-      );
+            disabledDomains = normalizeDomains(result?.disabledDomains);
+            enabledDomains = normalizeDomains(result?.enabledDomains);
+            settingsLoaded = true;
+
+            resolve();
+          },
+        );
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 
@@ -607,6 +644,7 @@
 
   function updateButtons() {
     buttonUpdateFrame = 0;
+    if (isTornDown) return;
 
     if (activeContainer && !document.contains(activeContainer)) {
       activeContainer = null;
@@ -677,6 +715,7 @@
   }
 
   function scheduleButtonUpdate() {
+    if (isTornDown) return;
     if (!buttonUpdateFrame) {
       buttonUpdateFrame = requestAnimationFrame(updateButtons);
     }
@@ -843,8 +882,13 @@
     scheduleButtonUpdate();
   }
 
-  window.addEventListener("scroll", scheduleButtonUpdate, true);
-  window.addEventListener("resize", scheduleButtonUpdate);
+  window.addEventListener("scroll", scheduleButtonUpdate, {
+    capture: true,
+    signal: globalAbortController.signal,
+  });
+  window.addEventListener("resize", scheduleButtonUpdate, {
+    signal: globalAbortController.signal,
+  });
 
   document.documentElement.addEventListener("mouseleave", () => {
     for (const state of buttonStates.values()) {
@@ -854,7 +898,7 @@
     }
 
     scheduleButtonUpdate();
-  });
+  }, { signal: globalAbortController.signal });
 
   // ------------------------------------------------------------
   // ESC exits page mode
@@ -864,7 +908,7 @@
     if (e.key === "Escape") {
       exitPageMode();
     }
-  });
+  }, { signal: globalAbortController.signal });
 
   window.addEventListener("message", (event) => {
     const message = event.data;
@@ -914,7 +958,7 @@
     } else if (frame === activeFrame) {
       exitFrameMode();
     }
-  });
+  }, { signal: globalAbortController.signal });
 
   // ============================================================
   // Video detection
@@ -1041,6 +1085,36 @@
     attributeFilter: ["class", "src", "style"],
   });
 
+  function teardown() {
+    if (isTornDown) return;
+    isTornDown = true;
+
+    clearInterval(pollInterval);
+    if (buttonUpdateFrame) {
+      cancelAnimationFrame(buttonUpdateFrame);
+      buttonUpdateFrame = 0;
+    }
+    observer.disconnect();
+    resizeObserver.disconnect();
+    globalAbortController.abort();
+
+    if (activeContainer || activeFrame) {
+      exitPageMode();
+    }
+
+    for (const [player, state] of buttonStates) {
+      state.abortController.abort();
+      state.button.remove();
+      state.tooltip.remove();
+      buttonStates.delete(player);
+    }
+
+    if (exitHint?.isConnected) {
+      exitHint.remove();
+      exitHint = null;
+    }
+  }
+
   // Server switch / player swap clicks (common on streaming video sites)
   document.addEventListener("click", (e) => {
     const target = e.target;
@@ -1050,6 +1124,10 @@
       target.closest(".singlemv, [data-server], .server, .server-tab, .server-item, .episode")
     ) {
       setTimeout(() => {
+        if (!isExtensionValid()) {
+          teardown();
+          return;
+        }
         if (activeContainer && !document.contains(activeContainer)) {
           exitPageMode();
         }
@@ -1060,13 +1138,18 @@
         scheduleButtonUpdate();
       }, 350);
     }
-  }, true);
+  }, { capture: true, signal: globalAbortController.signal });
 
   // ============================================================
   // SPA navigation
   // ============================================================
 
   function handleNavigation() {
+    if (!isExtensionValid()) {
+      teardown();
+      return;
+    }
+
     if (activeContainer || activeFrame) {
       exitPageMode();
     }
@@ -1081,14 +1164,27 @@
     scheduleButtonUpdate();
   }
 
-  window.addEventListener("yt-navigate-finish", handleNavigation);
-  document.addEventListener("yt-navigate-finish", handleNavigation);
-  window.addEventListener("yt-page-data-updated", handleNavigation);
-  window.addEventListener("popstate", handleNavigation);
+  window.addEventListener("yt-navigate-finish", handleNavigation, {
+    signal: globalAbortController.signal,
+  });
+  document.addEventListener("yt-navigate-finish", handleNavigation, {
+    signal: globalAbortController.signal,
+  });
+  window.addEventListener("yt-page-data-updated", handleNavigation, {
+    signal: globalAbortController.signal,
+  });
+  window.addEventListener("popstate", handleNavigation, {
+    signal: globalAbortController.signal,
+  });
 
   let previousHref = location.href;
 
-  setInterval(() => {
+  const pollInterval = setInterval(() => {
+    if (!isExtensionValid()) {
+      teardown();
+      return;
+    }
+
     if (location.href !== previousHref) {
       previousHref = location.href;
       handleNavigation();
@@ -1101,35 +1197,56 @@
   // Storage updates
   // ============================================================
 
-  chrome.storage.onChanged.addListener((changes, areaName) => {
-    if (
-      areaName !== "sync" ||
-      (!changes.disabledDomains && !changes.enabledDomains)
-    ) {
-      return;
+  try {
+    chrome.storage?.onChanged?.addListener((changes, areaName) => {
+      if (!isExtensionValid()) {
+        teardown();
+        return;
+      }
+
+      if (
+        areaName !== "sync" ||
+        (!changes.disabledDomains && !changes.enabledDomains)
+      ) {
+        return;
+      }
+
+      loadSettings()
+        .then(() => {
+          if (!isExtensionValid()) {
+            teardown();
+            return;
+          }
+
+          if (isSiteEnabled()) {
+            scanNode(document);
+            scheduleButtonUpdate();
+            return;
+          }
+
+          if (activeContainer || activeFrame) exitPageMode();
+
+          for (const [player, state] of buttonStates) {
+            state.abortController.abort();
+            state.button.remove();
+            state.tooltip.remove();
+            buttonStates.delete(player);
+          }
+        })
+        .catch((error) => {
+          console.error("[Theatre Vision] Could not update site settings.", error);
+        });
+    });
+  } catch (error) {
+    if (!isExtensionValid()) {
+      teardown();
+    } else {
+      console.error(
+        "[Theatre Vision] Could not register site settings listener.",
+        error,
+      );
     }
-
-    loadSettings()
-      .then(() => {
-        if (isSiteEnabled()) {
-          scanNode(document);
-          scheduleButtonUpdate();
-          return;
-        }
-
-        if (activeContainer || activeFrame) exitPageMode();
-
-        for (const [player, state] of buttonStates) {
-          state.abortController.abort();
-          state.button.remove();
-          state.tooltip.remove();
-          buttonStates.delete(player);
-        }
-      })
-      .catch((error) => {
-        console.error("[Theatre Vision] Could not update site settings.", error);
-      });
-  });
+  }
 
   // ============================================================
   // Init

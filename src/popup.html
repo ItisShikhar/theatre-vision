@@ -10,17 +10,17 @@
   <body>
     <div class="popup">
       <header class="header">
-        <img class="brand-icon" src="../assets/logo.png" alt="">
+        <img class="brand-icon" src="../assets/logo_sm.png" alt="">
         <div class="brand-copy">
-          <h1 class="visually-hidden">Theatre Vision</h1>
-          <p class="eyebrow">Video theatre controls</p>
+          <h1 class="visually-hidden" data-i18n="extensionName">Theatre Vision</h1>
+          <p class="eyebrow" data-i18n="videoTheatreControls">Video theatre controls</p>
         </div>
       </header>
 
       <main>
         <section class="site-section" aria-labelledby="sectionTitle">
           <div class="section-heading">
-            <h2 id="sectionTitle" class="section-title">Current site</h2>
+            <h2 id="sectionTitle" class="section-title" data-i18n="currentSiteHeading">Current site</h2>
             <span id="savedStatus" class="saved-status" role="status" aria-live="polite"></span>
           </div>
           <section class="site-card" aria-labelledby="siteName">
@@ -36,11 +36,11 @@
                 <span id="siteIconUnavailable" class="site-icon-question" aria-hidden="true" hidden>?</span>
               </span>
               <div class="site-copy">
-                <h2 id="siteName">Loading site...</h2>
-                <p id="siteAddress">Reading the active tab</p>
+                <h2 id="siteName" data-i18n="loadingSite">Loading site...</h2>
+                <p id="siteAddress" data-i18n="readingActiveTab">Reading the active tab</p>
               </div>
             </div>
-            <span id="toggleLabel" class="visually-hidden">Theatre mode</span>
+            <span id="toggleLabel" class="visually-hidden" data-i18n="theatreModeLabel">Theatre mode</span>
             <button
               id="siteToggle"
               class="switch"
@@ -62,9 +62,9 @@
       </main>
 
       <footer class="footer">
-        <span>Site rules</span>
+        <span data-i18n="siteRulesLabel">Site rules</span>
         <button id="manageButton" class="manage-button" type="button">
-          Manage rules
+          <span data-i18n="manageRulesButton">Manage rules</span>
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path>
             <circle cx="12" cy="12" r="3"></circle>
@@ -72,9 +72,9 @@
         </button>
       </footer>
 
-      <footer class="author-footer" aria-label="About the author">
-        <p>Made by <a class="author-name-link" data-author-link="linkedin" data-author-name-link><strong data-author-name></strong></a></p>
-        <nav class="author-footer-links" aria-label="Author links">
+      <footer class="author-footer" aria-label="About the author" data-i18n-aria-label="aboutAuthor">
+        <p><span data-i18n="madeBy">Made by</span> <a class="author-name-link" data-author-link="linkedin" data-author-name-link><strong data-author-name></strong></a></p>
+        <nav class="author-footer-links" aria-label="Author links" data-i18n-aria-label="authorLinks">
           <a data-author-link="linkedin"><img data-author-icon alt=""></a>
           <a data-author-link="github"><img data-author-icon alt=""></a>
         </nav>
@@ -82,6 +82,7 @@
     </div>
 
     <script src="domain-utils.js"></script>
+    <script src="i18n.js"></script>
     <script src="author.js"></script>
     <script src="popup.js"></script>
   </body>

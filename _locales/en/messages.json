@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "Expand videos into a theatre view while keeping the site's native player and captions."
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "Enter Theatre Mode"
   },
   "exitTheatreMode": {
     "message": "Exit Theatre Mode"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision Site Rules"
+  },
+  "optionsSubtitle": {
+    "message": "Make every video feel like a theatre experience."
+  },
+  "blockedDomainsHeading": {
+    "message": "Blocked domains"
+  },
+  "blockedDomainsDescription": {
+    "message": "Theatre mode stays off on these domains."
+  },
+  "domainToBlockLabel": {
+    "message": "Domain to block"
+  },
+  "blockDomainButton": {
+    "message": "Block domain"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "Allowed subdomains"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "Allow a subdomain of a blocked domain, such as video.example.com."
+  },
+  "subdomainToAllowLabel": {
+    "message": "Subdomain to allow"
+  },
+  "allowSubdomainButton": {
+    "message": "Allow subdomain"
+  },
+  "noBlockedDomains": {
+    "message": "No blocked domains."
+  },
+  "noAllowedSubdomains": {
+    "message": "No allowed subdomains."
+  },
+  "removeDomainLabel": {
+    "message": "Remove $1"
+  },
+  "saved": {
+    "message": "Saved"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "Could not load site rules."
+  },
+  "enterValidDomain": {
+    "message": "Enter a valid website domain."
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "Enter a subdomain of a blocked domain."
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "This subdomain is already allowed."
+  },
+  "domainAlreadyBlocked": {
+    "message": "This domain is already blocked."
+  },
+  "couldNotSaveSiteRules": {
+    "message": "Could not save site rules."
+  },
+  "videoTheatreControls": {
+    "message": "Video theatre controls"
+  },
+  "currentSiteHeading": {
+    "message": "Current site"
+  },
+  "loadingSite": {
+    "message": "Loading site..."
+  },
+  "readingActiveTab": {
+    "message": "Reading the active tab"
+  },
+  "theatreModeLabel": {
+    "message": "Theatre mode"
+  },
+  "unavailableOnPage": {
+    "message": "Unavailable on this page"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "Open a website to change its rule"
+  },
+  "siteRulesUnavailable": {
+    "message": "Site rules are unavailable on Chrome pages and local files."
+  },
+  "theatreModeForSite": {
+    "message": "Theatre mode for this site"
+  },
+  "settingsUnavailable": {
+    "message": "Settings unavailable"
+  },
+  "reopenPopup": {
+    "message": "Try reopening this popup"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "Could not load site settings."
+  },
+  "couldNotSaveSiteRule": {
+    "message": "Could not save this site rule."
+  },
+  "siteRulesLabel": {
+    "message": "Site rules"
+  },
+  "manageRulesButton": {
+    "message": "Manage rules"
+  },
+  "madeBy": {
+    "message": "Made by"
+  },
+  "aboutAuthor": {
+    "message": "About the author"
+  },
+  "authorLinks": {
+    "message": "Author links"
+  },
+  "sourceCodeLabel": {
+    "message": "Source code"
+  },
+  "authorProfileLink": {
+    "message": "$1 on $2"
   }
 }

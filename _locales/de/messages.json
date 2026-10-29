@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "Videos im Theatermodus anzeigen und dabei den nativen Player und Untertitel beibehalten."
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "Theatermodus starten"
   },
   "exitTheatreMode": {
     "message": "Theatermodus beenden"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision - Website-Regeln"
+  },
+  "optionsSubtitle": {
+    "message": "Mach jedes Video zu einem Theatererlebnis."
+  },
+  "blockedDomainsHeading": {
+    "message": "Blockierte Domains"
+  },
+  "blockedDomainsDescription": {
+    "message": "Der Theatermodus bleibt auf diesen Domains deaktiviert."
+  },
+  "domainToBlockLabel": {
+    "message": "Zu blockierende Domain"
+  },
+  "blockDomainButton": {
+    "message": "Domain blockieren"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "Erlaubte Subdomains"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "Erlaube eine Subdomain einer blockierten Domain, zum Beispiel video.example.com."
+  },
+  "subdomainToAllowLabel": {
+    "message": "Zuzulassende Subdomain"
+  },
+  "allowSubdomainButton": {
+    "message": "Subdomain erlauben"
+  },
+  "noBlockedDomains": {
+    "message": "Keine Domains blockiert."
+  },
+  "noAllowedSubdomains": {
+    "message": "Keine Subdomains erlaubt."
+  },
+  "removeDomainLabel": {
+    "message": "$1 entfernen"
+  },
+  "saved": {
+    "message": "Gespeichert"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "Website-Regeln konnten nicht geladen werden."
+  },
+  "enterValidDomain": {
+    "message": "Gib eine gültige Website-Domain ein."
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "Gib eine Subdomain einer blockierten Domain ein."
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "Diese Subdomain ist bereits erlaubt."
+  },
+  "domainAlreadyBlocked": {
+    "message": "Diese Domain ist bereits blockiert."
+  },
+  "couldNotSaveSiteRules": {
+    "message": "Website-Regeln konnten nicht gespeichert werden."
+  },
+  "videoTheatreControls": {
+    "message": "Video-Theatersteuerung"
+  },
+  "currentSiteHeading": {
+    "message": "Aktuelle Website"
+  },
+  "loadingSite": {
+    "message": "Website wird geladen..."
+  },
+  "readingActiveTab": {
+    "message": "Aktiver Tab wird gelesen"
+  },
+  "theatreModeLabel": {
+    "message": "Theatermodus"
+  },
+  "unavailableOnPage": {
+    "message": "Auf dieser Seite nicht verfügbar"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "Öffne eine Website, um ihre Regel zu ändern"
+  },
+  "siteRulesUnavailable": {
+    "message": "Website-Regeln sind auf Chrome-Seiten und lokalen Dateien nicht verfügbar."
+  },
+  "theatreModeForSite": {
+    "message": "Theatermodus für diese Website"
+  },
+  "settingsUnavailable": {
+    "message": "Einstellungen nicht verfügbar"
+  },
+  "reopenPopup": {
+    "message": "Öffne dieses Pop-up erneut"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "Website-Einstellungen konnten nicht geladen werden."
+  },
+  "couldNotSaveSiteRule": {
+    "message": "Diese Website-Regel konnte nicht gespeichert werden."
+  },
+  "siteRulesLabel": {
+    "message": "Website-Regeln"
+  },
+  "manageRulesButton": {
+    "message": "Regeln verwalten"
+  },
+  "madeBy": {
+    "message": "Erstellt von"
+  },
+  "aboutAuthor": {
+    "message": "Über den Autor"
+  },
+  "authorLinks": {
+    "message": "Links des Autors"
+  },
+  "sourceCodeLabel": {
+    "message": "Quellcode"
+  },
+  "authorProfileLink": {
+    "message": "$1 auf $2"
   }
 }

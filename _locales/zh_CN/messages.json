@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "将视频扩展为影院视图，同时保留网站原生播放器和字幕。"
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "进入影院模式"
   },
   "exitTheatreMode": {
     "message": "退出影院模式"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision 网站规则"
+  },
+  "optionsSubtitle": {
+    "message": "让每段视频都带来影院般的体验。"
+  },
+  "blockedDomainsHeading": {
+    "message": "已屏蔽的域名"
+  },
+  "blockedDomainsDescription": {
+    "message": "在这些域名上关闭影院模式。"
+  },
+  "domainToBlockLabel": {
+    "message": "要屏蔽的域名"
+  },
+  "blockDomainButton": {
+    "message": "屏蔽域名"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "允许的子域名"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "允许已屏蔽域名的子域名，例如 video.example.com。"
+  },
+  "subdomainToAllowLabel": {
+    "message": "要允许的子域名"
+  },
+  "allowSubdomainButton": {
+    "message": "允许子域名"
+  },
+  "noBlockedDomains": {
+    "message": "没有已屏蔽的域名。"
+  },
+  "noAllowedSubdomains": {
+    "message": "没有已允许的子域名。"
+  },
+  "removeDomainLabel": {
+    "message": "移除 $1"
+  },
+  "saved": {
+    "message": "已保存"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "无法加载网站规则。"
+  },
+  "enterValidDomain": {
+    "message": "请输入有效的网站域名。"
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "请输入已屏蔽域名的子域名。"
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "此子域名已获允许。"
+  },
+  "domainAlreadyBlocked": {
+    "message": "此域名已被屏蔽。"
+  },
+  "couldNotSaveSiteRules": {
+    "message": "无法保存网站规则。"
+  },
+  "videoTheatreControls": {
+    "message": "视频影院模式控制"
+  },
+  "currentSiteHeading": {
+    "message": "当前网站"
+  },
+  "loadingSite": {
+    "message": "正在加载网站..."
+  },
+  "readingActiveTab": {
+    "message": "正在读取当前标签页"
+  },
+  "theatreModeLabel": {
+    "message": "影院模式"
+  },
+  "unavailableOnPage": {
+    "message": "此页面不可用"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "打开网站以更改其规则"
+  },
+  "siteRulesUnavailable": {
+    "message": "Chrome 页面和本地文件不支持网站规则。"
+  },
+  "theatreModeForSite": {
+    "message": "此网站的影院模式"
+  },
+  "settingsUnavailable": {
+    "message": "设置不可用"
+  },
+  "reopenPopup": {
+    "message": "请尝试重新打开此弹出窗口"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "无法加载网站设置。"
+  },
+  "couldNotSaveSiteRule": {
+    "message": "无法保存此网站规则。"
+  },
+  "siteRulesLabel": {
+    "message": "网站规则"
+  },
+  "manageRulesButton": {
+    "message": "管理规则"
+  },
+  "madeBy": {
+    "message": "作者"
+  },
+  "aboutAuthor": {
+    "message": "关于作者"
+  },
+  "authorLinks": {
+    "message": "作者链接"
+  },
+  "sourceCodeLabel": {
+    "message": "源代码"
+  },
+  "authorProfileLink": {
+    "message": "$2 上的 $1"
   }
 }

@@ -7,6 +7,8 @@ const siteToggle = document.getElementById("siteToggle");
 const savedStatus = document.getElementById("savedStatus");
 const statusMessage = document.getElementById("status");
 const manageButton = document.getElementById("manageButton");
+const t = (key, substitutions = [], fallback = "") =>
+  TheatreVisionI18n.getMessage(key, substitutions, fallback);
 
 let currentHostname = null;
 let currentRules = { disabledDomains: [], enabledDomains: [] };
@@ -144,16 +146,34 @@ async function loadPopup() {
       : null;
 
     if (!hostname) {
-      siteName.textContent = "Unavailable on this page";
-      siteAddress.textContent = "Open a website to change its rule";
+      siteName.textContent = t(
+        "unavailableOnPage",
+        [],
+        "Unavailable on this page",
+      );
+      siteAddress.textContent = t(
+        "openWebsiteToChangeRule",
+        [],
+        "Open a website to change its rule",
+      );
       showUnavailableSiteIcon();
-      showStatus("Site rules are unavailable on Chrome pages and local files.");
+      showStatus(
+        t(
+          "siteRulesUnavailable",
+          [],
+          "Site rules are unavailable on Chrome pages and local files.",
+        ),
+      );
       return;
     }
 
     currentHostname = hostname;
     siteName.textContent = hostname;
-    siteAddress.textContent = "Theatre mode for this site";
+    siteAddress.textContent = t(
+      "theatreModeForSite",
+      [],
+      "Theatre mode for this site",
+    );
     setSiteFavicon(tab.favIconUrl);
 
     const settings = await getStorage({
@@ -170,9 +190,16 @@ async function loadPopup() {
     setToggleDisabled(false);
   } catch (error) {
     console.error("[Theatre Vision] Could not load site settings.", error);
-    siteName.textContent = "Settings unavailable";
-    siteAddress.textContent = "Try reopening this popup";
-    showStatus("Could not load site settings.", true);
+    siteName.textContent = t("settingsUnavailable", [], "Settings unavailable");
+    siteAddress.textContent = t(
+      "reopenPopup",
+      [],
+      "Try reopening this popup",
+    );
+    showStatus(
+      t("couldNotLoadSiteSettings", [], "Could not load site settings."),
+      true,
+    );
   }
 }
 
@@ -204,11 +231,14 @@ async function saveSiteRule() {
     await setStorage({ disabledDomains, enabledDomains });
     currentRules = { disabledDomains, enabledDomains };
     renderSiteState();
-    showSavedStatus("Saved");
+    showSavedStatus(t("saved", [], "Saved"));
   } catch (error) {
     console.error("[Theatre Vision] Could not save the site rule.", error);
     siteToggle.setAttribute("aria-checked", String(wasEnabled));
-    showStatus("Could not save this site rule.", true);
+    showStatus(
+      t("couldNotSaveSiteRule", [], "Could not save this site rule."),
+      true,
+    );
   } finally {
     isSavingSiteRule = false;
     setToggleDisabled(false);

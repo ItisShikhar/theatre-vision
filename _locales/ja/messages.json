@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "サイト標準のプレーヤーと字幕を保ったまま、動画をシアタービューで表示します。"
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "シアターモードに入る"
   },
   "exitTheatreMode": {
     "message": "シアターモードを終了"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision サイトルール"
+  },
+  "optionsSubtitle": {
+    "message": "すべての動画をシアター体験に。"
+  },
+  "blockedDomainsHeading": {
+    "message": "ブロック中のドメイン"
+  },
+  "blockedDomainsDescription": {
+    "message": "これらのドメインではシアターモードが無効になります。"
+  },
+  "domainToBlockLabel": {
+    "message": "ブロックするドメイン"
+  },
+  "blockDomainButton": {
+    "message": "ドメインをブロック"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "許可するサブドメイン"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "ブロックしたドメインのサブドメインを許可します。例: video.example.com"
+  },
+  "subdomainToAllowLabel": {
+    "message": "許可するサブドメイン"
+  },
+  "allowSubdomainButton": {
+    "message": "サブドメインを許可"
+  },
+  "noBlockedDomains": {
+    "message": "ブロック中のドメインはありません。"
+  },
+  "noAllowedSubdomains": {
+    "message": "許可されたサブドメインはありません。"
+  },
+  "removeDomainLabel": {
+    "message": "$1 を削除"
+  },
+  "saved": {
+    "message": "保存しました"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "サイトルールを読み込めませんでした。"
+  },
+  "enterValidDomain": {
+    "message": "有効なウェブサイトのドメインを入力してください。"
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "ブロック中のドメインのサブドメインを入力してください。"
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "このサブドメインはすでに許可されています。"
+  },
+  "domainAlreadyBlocked": {
+    "message": "このドメインはすでにブロックされています。"
+  },
+  "couldNotSaveSiteRules": {
+    "message": "サイトルールを保存できませんでした。"
+  },
+  "videoTheatreControls": {
+    "message": "動画シアターコントロール"
+  },
+  "currentSiteHeading": {
+    "message": "現在のサイト"
+  },
+  "loadingSite": {
+    "message": "サイトを読み込み中..."
+  },
+  "readingActiveTab": {
+    "message": "現在のタブを確認中"
+  },
+  "theatreModeLabel": {
+    "message": "シアターモード"
+  },
+  "unavailableOnPage": {
+    "message": "このページでは利用できません"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "ルールを変更するにはウェブサイトを開いてください"
+  },
+  "siteRulesUnavailable": {
+    "message": "Chromeのページとローカルファイルではサイトルールを利用できません。"
+  },
+  "theatreModeForSite": {
+    "message": "このサイトのシアターモード"
+  },
+  "settingsUnavailable": {
+    "message": "設定を利用できません"
+  },
+  "reopenPopup": {
+    "message": "ポップアップを開き直してください"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "サイト設定を読み込めませんでした。"
+  },
+  "couldNotSaveSiteRule": {
+    "message": "このサイトのルールを保存できませんでした。"
+  },
+  "siteRulesLabel": {
+    "message": "サイトルール"
+  },
+  "manageRulesButton": {
+    "message": "ルールを管理"
+  },
+  "madeBy": {
+    "message": "作成者"
+  },
+  "aboutAuthor": {
+    "message": "作者について"
+  },
+  "authorLinks": {
+    "message": "作者のリンク"
+  },
+  "sourceCodeLabel": {
+    "message": "ソースコード"
+  },
+  "authorProfileLink": {
+    "message": "$2 の $1"
   }
 }

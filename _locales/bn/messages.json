@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "সাইটের নিজস্ব প্লেয়ার ও ক্যাপশন রেখে ভিডিওকে থিয়েটার ভিউতে বড় করুন।"
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "থিয়েটার মোডে প্রবেশ করুন"
   },
   "exitTheatreMode": {
     "message": "থিয়েটার মোড থেকে বেরিয়ে আসুন"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision সাইটের নিয়ম"
+  },
+  "optionsSubtitle": {
+    "message": "প্রতিটি ভিডিওকে থিয়েটারের অভিজ্ঞতা দিন।"
+  },
+  "blockedDomainsHeading": {
+    "message": "ব্লক করা ডোমেইন"
+  },
+  "blockedDomainsDescription": {
+    "message": "এই ডোমেইনগুলোতে থিয়েটার মোড বন্ধ থাকবে।"
+  },
+  "domainToBlockLabel": {
+    "message": "যে ডোমেইন ব্লক করবেন"
+  },
+  "blockDomainButton": {
+    "message": "ডোমেইন ব্লক করুন"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "অনুমোদিত সাবডোমেইন"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "ব্লক করা ডোমেইনের একটি সাবডোমেইন অনুমোদন করুন, যেমন video.example.com।"
+  },
+  "subdomainToAllowLabel": {
+    "message": "যে সাবডোমেইন অনুমোদন করবেন"
+  },
+  "allowSubdomainButton": {
+    "message": "সাবডোমেইন অনুমোদন করুন"
+  },
+  "noBlockedDomains": {
+    "message": "কোনো ডোমেইন ব্লক করা নেই।"
+  },
+  "noAllowedSubdomains": {
+    "message": "কোনো সাবডোমেইন অনুমোদিত নেই।"
+  },
+  "removeDomainLabel": {
+    "message": "$1 সরান"
+  },
+  "saved": {
+    "message": "সংরক্ষিত হয়েছে"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "সাইটের নিয়ম লোড করা যায়নি।"
+  },
+  "enterValidDomain": {
+    "message": "একটি বৈধ ওয়েবসাইট ডোমেইন লিখুন।"
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "ব্লক করা ডোমেইনের একটি সাবডোমেইন লিখুন।"
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "এই সাবডোমেইনটি ইতিমধ্যে অনুমোদিত।"
+  },
+  "domainAlreadyBlocked": {
+    "message": "এই ডোমেইনটি ইতিমধ্যে ব্লক করা হয়েছে।"
+  },
+  "couldNotSaveSiteRules": {
+    "message": "সাইটের নিয়ম সংরক্ষণ করা যায়নি।"
+  },
+  "videoTheatreControls": {
+    "message": "ভিডিও থিয়েটার নিয়ন্ত্রণ"
+  },
+  "currentSiteHeading": {
+    "message": "বর্তমান সাইট"
+  },
+  "loadingSite": {
+    "message": "সাইট লোড হচ্ছে..."
+  },
+  "readingActiveTab": {
+    "message": "সক্রিয় ট্যাব পড়া হচ্ছে"
+  },
+  "theatreModeLabel": {
+    "message": "থিয়েটার মোড"
+  },
+  "unavailableOnPage": {
+    "message": "এই পৃষ্ঠায় উপলভ্য নয়"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "নিয়ম পরিবর্তন করতে একটি ওয়েবসাইট খুলুন"
+  },
+  "siteRulesUnavailable": {
+    "message": "Chrome পৃষ্ঠা ও স্থানীয় ফাইলে সাইটের নিয়ম উপলভ্য নয়।"
+  },
+  "theatreModeForSite": {
+    "message": "এই সাইটের থিয়েটার মোড"
+  },
+  "settingsUnavailable": {
+    "message": "সেটিংস উপলভ্য নয়"
+  },
+  "reopenPopup": {
+    "message": "এই পপআপটি আবার খুলে দেখুন"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "সাইটের সেটিংস লোড করা যায়নি।"
+  },
+  "couldNotSaveSiteRule": {
+    "message": "এই সাইটের নিয়ম সংরক্ষণ করা যায়নি।"
+  },
+  "siteRulesLabel": {
+    "message": "সাইটের নিয়ম"
+  },
+  "manageRulesButton": {
+    "message": "নিয়ম পরিচালনা করুন"
+  },
+  "madeBy": {
+    "message": "নির্মাতা"
+  },
+  "aboutAuthor": {
+    "message": "নির্মাতার সম্পর্কে"
+  },
+  "authorLinks": {
+    "message": "নির্মাতার লিংক"
+  },
+  "sourceCodeLabel": {
+    "message": "সোর্স কোড"
+  },
+  "authorProfileLink": {
+    "message": "$2-এ $1"
   }
 }

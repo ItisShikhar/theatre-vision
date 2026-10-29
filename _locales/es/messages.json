@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "Amplía los vídeos a una vista de cine y conserva el reproductor nativo y los subtítulos."
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "Entrar en modo teatro"
   },
   "exitTheatreMode": {
     "message": "Salir del modo teatro"
+  },
+  "optionsPageTitle": {
+    "message": "Reglas de sitios de Theatre Vision"
+  },
+  "optionsSubtitle": {
+    "message": "Disfruta cada vídeo como en una sala de cine."
+  },
+  "blockedDomainsHeading": {
+    "message": "Dominios bloqueados"
+  },
+  "blockedDomainsDescription": {
+    "message": "El modo cine permanece desactivado en estos dominios."
+  },
+  "domainToBlockLabel": {
+    "message": "Dominio que bloquear"
+  },
+  "blockDomainButton": {
+    "message": "Bloquear dominio"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "Subdominios permitidos"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "Permite un subdominio de un dominio bloqueado, como video.example.com."
+  },
+  "subdomainToAllowLabel": {
+    "message": "Subdominio que permitir"
+  },
+  "allowSubdomainButton": {
+    "message": "Permitir subdominio"
+  },
+  "noBlockedDomains": {
+    "message": "No hay dominios bloqueados."
+  },
+  "noAllowedSubdomains": {
+    "message": "No hay subdominios permitidos."
+  },
+  "removeDomainLabel": {
+    "message": "Quitar $1"
+  },
+  "saved": {
+    "message": "Guardado"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "No se pudieron cargar las reglas del sitio."
+  },
+  "enterValidDomain": {
+    "message": "Introduce un dominio web válido."
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "Introduce un subdominio de un dominio bloqueado."
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "Este subdominio ya está permitido."
+  },
+  "domainAlreadyBlocked": {
+    "message": "Este dominio ya está bloqueado."
+  },
+  "couldNotSaveSiteRules": {
+    "message": "No se pudieron guardar las reglas del sitio."
+  },
+  "videoTheatreControls": {
+    "message": "Controles de cine para vídeos"
+  },
+  "currentSiteHeading": {
+    "message": "Sitio actual"
+  },
+  "loadingSite": {
+    "message": "Cargando sitio..."
+  },
+  "readingActiveTab": {
+    "message": "Leyendo la pestaña activa"
+  },
+  "theatreModeLabel": {
+    "message": "Modo cine"
+  },
+  "unavailableOnPage": {
+    "message": "No disponible en esta página"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "Abre un sitio web para cambiar su regla"
+  },
+  "siteRulesUnavailable": {
+    "message": "Las reglas no están disponibles en páginas de Chrome ni en archivos locales."
+  },
+  "theatreModeForSite": {
+    "message": "Modo cine para este sitio"
+  },
+  "settingsUnavailable": {
+    "message": "Ajustes no disponibles"
+  },
+  "reopenPopup": {
+    "message": "Intenta volver a abrir esta ventana"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "No se pudieron cargar los ajustes del sitio."
+  },
+  "couldNotSaveSiteRule": {
+    "message": "No se pudo guardar la regla de este sitio."
+  },
+  "siteRulesLabel": {
+    "message": "Reglas del sitio"
+  },
+  "manageRulesButton": {
+    "message": "Gestionar reglas"
+  },
+  "madeBy": {
+    "message": "Creado por"
+  },
+  "aboutAuthor": {
+    "message": "Acerca del autor"
+  },
+  "authorLinks": {
+    "message": "Enlaces del autor"
+  },
+  "sourceCodeLabel": {
+    "message": "Código fuente"
+  },
+  "authorProfileLink": {
+    "message": "$1 en $2"
   }
 }

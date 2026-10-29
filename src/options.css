@@ -170,6 +170,11 @@ input {
     border-color 140ms ease;
 }
 
+html[dir="rtl"] input {
+  direction: ltr;
+  text-align: left;
+}
+
 input:focus-visible {
   border-color: var(--focus-ring);
   box-shadow: var(--focus-shadow);

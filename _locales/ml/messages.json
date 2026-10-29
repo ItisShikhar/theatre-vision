@@ -1,8 +1,137 @@
 {
+  "extensionName": {
+    "message": "Theatre Vision"
+  },
+  "extensionDescription": {
+    "message": "സൈറ്റിന്റെ സ്വന്തം പ്ലെയറും അടിക്കുറിപ്പുകളും നിലനിർത്തി വീഡിയോ തിയേറ്റർ കാഴ്ചയിലേക്ക് വലുതാക്കുക."
+  },
+  "actionTitle": {
+    "message": "Theatre Vision"
+  },
   "enterTheatreMode": {
     "message": "തിയേറ്റർ മോഡിലേക്ക് പ്രവേശിക്കുക"
   },
   "exitTheatreMode": {
     "message": "തിയേറ്റർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക"
+  },
+  "optionsPageTitle": {
+    "message": "Theatre Vision സൈറ്റ് നിയമങ്ങൾ"
+  },
+  "optionsSubtitle": {
+    "message": "ഓരോ വീഡിയോയും ഒരു തിയേറ്റർ അനുഭവമാക്കുക."
+  },
+  "blockedDomainsHeading": {
+    "message": "തടഞ്ഞ ഡൊമെയ്‌നുകൾ"
+  },
+  "blockedDomainsDescription": {
+    "message": "ഈ ഡൊമെയ്‌നുകളിൽ തിയേറ്റർ മോഡ് പ്രവർത്തിക്കില്ല."
+  },
+  "domainToBlockLabel": {
+    "message": "തടയേണ്ട ഡൊമെയ്ൻ"
+  },
+  "blockDomainButton": {
+    "message": "ഡൊമെയ്ൻ തടയുക"
+  },
+  "allowedSubdomainsHeading": {
+    "message": "അനുവദിച്ച സബ്‌ഡൊമെയ്‌നുകൾ"
+  },
+  "allowedSubdomainsDescription": {
+    "message": "തടഞ്ഞ ഡൊമെയ്‌നിലെ ഒരു സബ്‌ഡൊമെയ്ൻ അനുവദിക്കുക. ഉദാഹരണം: video.example.com"
+  },
+  "subdomainToAllowLabel": {
+    "message": "അനുവദിക്കേണ്ട സബ്‌ഡൊമെയ്ൻ"
+  },
+  "allowSubdomainButton": {
+    "message": "സബ്‌ഡൊമെയ്ൻ അനുവദിക്കുക"
+  },
+  "noBlockedDomains": {
+    "message": "തടഞ്ഞ ഡൊമെയ്‌നുകളില്ല."
+  },
+  "noAllowedSubdomains": {
+    "message": "അനുവദിച്ച സബ്‌ഡൊമെയ്‌നുകളില്ല."
+  },
+  "removeDomainLabel": {
+    "message": "$1 നീക്കം ചെയ്യുക"
+  },
+  "saved": {
+    "message": "സംരക്ഷിച്ചു"
+  },
+  "couldNotLoadSiteRules": {
+    "message": "സൈറ്റ് നിയമങ്ങൾ ലോഡ് ചെയ്യാനായില്ല."
+  },
+  "enterValidDomain": {
+    "message": "സാധുവായ വെബ്‌സൈറ്റ് ഡൊമെയ്ൻ നൽകുക."
+  },
+  "enterSubdomainOfBlockedDomain": {
+    "message": "തടഞ്ഞ ഡൊമെയ്‌നിലെ ഒരു സബ്‌ഡൊമെയ്ൻ നൽകുക."
+  },
+  "subdomainAlreadyAllowed": {
+    "message": "ഈ സബ്‌ഡൊമെയ്ൻ ഇതിനകം അനുവദിച്ചിട്ടുണ്ട്."
+  },
+  "domainAlreadyBlocked": {
+    "message": "ഈ ഡൊമെയ്ൻ ഇതിനകം തടഞ്ഞിട്ടുണ്ട്."
+  },
+  "couldNotSaveSiteRules": {
+    "message": "സൈറ്റ് നിയമങ്ങൾ സംരക്ഷിക്കാനായില്ല."
+  },
+  "videoTheatreControls": {
+    "message": "വീഡിയോ തിയേറ്റർ നിയന്ത്രണങ്ങൾ"
+  },
+  "currentSiteHeading": {
+    "message": "നിലവിലെ സൈറ്റ്"
+  },
+  "loadingSite": {
+    "message": "സൈറ്റ് ലോഡ് ചെയ്യുന്നു..."
+  },
+  "readingActiveTab": {
+    "message": "സജീവ ടാബ് വായിക്കുന്നു"
+  },
+  "theatreModeLabel": {
+    "message": "തിയേറ്റർ മോഡ്"
+  },
+  "unavailableOnPage": {
+    "message": "ഈ പേജിൽ ലഭ്യമല്ല"
+  },
+  "openWebsiteToChangeRule": {
+    "message": "നിയമം മാറ്റാൻ ഒരു വെബ്‌സൈറ്റ് തുറക്കുക"
+  },
+  "siteRulesUnavailable": {
+    "message": "Chrome പേജുകളിലും പ്രാദേശിക ഫയലുകളിലും സൈറ്റ് നിയമങ്ങൾ ലഭ്യമല്ല."
+  },
+  "theatreModeForSite": {
+    "message": "ഈ സൈറ്റിനുള്ള തിയേറ്റർ മോഡ്"
+  },
+  "settingsUnavailable": {
+    "message": "ക്രമീകരണങ്ങൾ ലഭ്യമല്ല"
+  },
+  "reopenPopup": {
+    "message": "ഈ പോപ്പ്അപ്പ് വീണ്ടും തുറക്കുക"
+  },
+  "couldNotLoadSiteSettings": {
+    "message": "സൈറ്റ് ക്രമീകരണങ്ങൾ ലോഡ് ചെയ്യാനായില്ല."
+  },
+  "couldNotSaveSiteRule": {
+    "message": "ഈ സൈറ്റ് നിയമം സംരക്ഷിക്കാനായില്ല."
+  },
+  "siteRulesLabel": {
+    "message": "സൈറ്റ് നിയമങ്ങൾ"
+  },
+  "manageRulesButton": {
+    "message": "നിയമങ്ങൾ നിയന്ത്രിക്കുക"
+  },
+  "madeBy": {
+    "message": "നിർമ്മിച്ചത്"
+  },
+  "aboutAuthor": {
+    "message": "രചയിതാവിനെക്കുറിച്ച്"
+  },
+  "authorLinks": {
+    "message": "രചയിതാവിന്റെ ലിങ്കുകൾ"
+  },
+  "sourceCodeLabel": {
+    "message": "സോഴ്‌സ് കോഡ്"
+  },
+  "authorProfileLink": {
+    "message": "$2-ലെ $1"
   }
 }
