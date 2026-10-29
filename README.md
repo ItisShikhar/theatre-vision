@@ -47,6 +47,11 @@ Made by [Shikhar Srivastava](https://www.linkedin.com/in/itisshikhar).
 - Brand images are in `assets/`.
 - Chrome locale catalogs remain in `_locales/`.
 
+## Contributing
+
+Read [CONTRIBUTING.md](./CONTRIBUTING.md) before you propose a change. Follow
+the [Code of Conduct](./CODE_OF_CONDUCT.md) in project discussions.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
