@@ -495,7 +495,7 @@
   function positionTooltip(button, tooltip) {
     const buttonRect = button.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
     const viewportHeight = window.innerHeight;
     const maxLeft = Math.max(
       TOOLTIP_EDGE_GUTTER,
@@ -505,11 +505,12 @@
       TOOLTIP_EDGE_GUTTER,
       viewportHeight - tooltipRect.height - TOOLTIP_EDGE_GUTTER,
     );
-    let left = buttonRect.left + (buttonRect.width - tooltipRect.width) / 2;
-    let top = buttonRect.top - tooltipRect.height - TOOLTIP_GAP;
-    const isBelow = top < TOOLTIP_EDGE_GUTTER;
+    let left = buttonRect.left - tooltipRect.width - TOOLTIP_GAP;
+    let top = buttonRect.top + (buttonRect.height - tooltipRect.height) / 2;
 
-    if (isBelow) top = buttonRect.bottom + TOOLTIP_GAP;
+    if (left < TOOLTIP_EDGE_GUTTER) {
+      left = buttonRect.right + TOOLTIP_GAP;
+    }
 
     left = Math.min(Math.max(left, TOOLTIP_EDGE_GUTTER), maxLeft);
     top = Math.min(Math.max(top, TOOLTIP_EDGE_GUTTER), maxTop);
