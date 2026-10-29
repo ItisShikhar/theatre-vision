@@ -137,3 +137,7 @@ the [Code of Conduct](./CODE_OF_CONDUCT.md) in project discussions.
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
 The bundled Oswald font uses the SIL Open Font License 1.1. See [OFL.txt](./assets/fonts/OFL.txt).
+
+## Third-party media
+
+The demo includes footage from _Ted Lasso_, an Apple Original series produced by Doozer Productions in association with Warner Bros. Television and Universal Television. [Source: Apple TV Press](https://www.apple.com/tv-pr/originals/ted-lasso/).
