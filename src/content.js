@@ -327,6 +327,12 @@
   let placeholder = null;
   let elevatedAncestors = [];
 
+  function applyImportantStyles(element, styles) {
+    for (const [prop, val] of Object.entries(styles)) {
+      element.style.setProperty(prop, val, "important");
+    }
+  }
+
   function isDedicatedPlayer(container) {
     return (
       container.id === "movie_player" ||
@@ -334,7 +340,10 @@
       Boolean(container.classList?.contains("video-js")) ||
       Boolean(container.classList?.contains("jwplayer")) ||
       Boolean(container.classList?.contains("plyr")) ||
-      location.hostname.includes("youtube.com")
+      Boolean(container.classList?.contains("video-player")) ||
+      Boolean(container.classList?.contains("video-player__container")) ||
+      location.hostname.includes("youtube.com") ||
+      location.hostname.includes("twitch.tv")
     );
   }
 
@@ -357,9 +366,31 @@
     let curr = target.parentElement;
     while (curr && curr !== document.documentElement) {
       saveOriginalStyles(curr);
-      curr.style.zIndex = "2147483645";
-      if (getComputedStyle(curr).position === "static") {
-        curr.style.position = "relative";
+      curr.style.setProperty("z-index", "2147483645", "important");
+      const computed = getComputedStyle(curr);
+      if (computed.position === "static") {
+        curr.style.setProperty("position", "relative", "important");
+      }
+      if (computed.transform !== "none") {
+        curr.style.setProperty("transform", "none", "important");
+      }
+      if (computed.contain !== "none") {
+        curr.style.setProperty("contain", "none", "important");
+      }
+      if (computed.filter !== "none") {
+        curr.style.setProperty("filter", "none", "important");
+      }
+      if (computed.perspective !== "none") {
+        curr.style.setProperty("perspective", "none", "important");
+      }
+      if (computed.clipPath !== "none") {
+        curr.style.setProperty("clip-path", "none", "important");
+      }
+      if (
+        computed.willChange.includes("transform") ||
+        computed.willChange.includes("filter")
+      ) {
+        curr.style.setProperty("will-change", "auto", "important");
       }
       elevatedAncestors.push(curr);
       curr = curr.parentElement;
@@ -397,7 +428,7 @@
     }
     saveOriginalStyles(document.body);
 
-    Object.assign(container.style, {
+    applyImportantStyles(container, {
       position: "fixed",
       inset: "0",
       width: "100vw",
@@ -414,14 +445,14 @@
     if (container instanceof HTMLVideoElement) {
       container.style.objectFit = "contain";
     } else if (!isDedicatedPlayer(container)) {
-      Object.assign(container.style, {
+      applyImportantStyles(container, {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
       });
 
       container.querySelectorAll("iframe,video").forEach((el) => {
-        Object.assign(el.style, {
+        applyImportantStyles(el, {
           position: "absolute",
           inset: "0",
           width: "100%",
@@ -441,6 +472,7 @@
       });
     }
 
+    document.body.classList.add(BODY_LOCK_CLASS);
     document.body.style.overflow = "hidden";
     triggerPlayerResize();
     showExitHint();
@@ -468,7 +500,7 @@
     saveOriginalStyles(frame);
     saveOriginalStyles(document.body);
 
-    Object.assign(frame.style, {
+    applyImportantStyles(frame, {
       position: "fixed",
       inset: "0",
       width: "100%",
@@ -484,6 +516,7 @@
       frame.contentWindow?.postMessage({ source: "theatre-vision", type: "enter" }, "*");
     } catch {}
 
+    document.body.classList.add(BODY_LOCK_CLASS);
     document.body.style.overflow = "hidden";
     showExitHint();
     scheduleButtonUpdate();
@@ -507,6 +540,7 @@
     placeholder?.remove();
     restoreOriginalStyles(document.body);
     restoreElevatedAncestors();
+    document.body.classList.remove(BODY_LOCK_CLASS);
 
     placeholder = null;
     activeFrame = null;
@@ -538,6 +572,7 @@
     placeholder?.remove();
     restoreOriginalStyles(document.body);
     restoreElevatedAncestors();
+    document.body.classList.remove(BODY_LOCK_CLASS);
 
     placeholder = null;
     if (activeButton) setButtonMode(activeButton, false);
