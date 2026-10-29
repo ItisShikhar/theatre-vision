@@ -19,7 +19,6 @@
   --button-foreground: #fafafa;
   --error: #b91c1c;
   --shadow: rgb(9 9 11 / 4%);
-  font-family: var(--font-display);
   background: var(--page-background);
   color: var(--foreground);
   text-rendering: optimizeLegibility;
@@ -54,6 +53,7 @@ body {
   width: 360px;
   margin: 0;
   font-family: var(--font-display);
+  letter-spacing: 0.01rem;
   background: var(--page-background);
   color: var(--foreground);
 }
@@ -61,6 +61,7 @@ body {
 button,
 input {
   font: inherit;
+  letter-spacing: inherit;
 }
 
 .popup {
@@ -94,15 +95,9 @@ p {
   margin: 0;
 }
 
-h1,
-h2 {
-  font-family: var(--font-display);
-}
-
 h1 {
   font-size: 15px;
   font-weight: 500;
-  letter-spacing: -0.02em;
 }
 
 .eyebrow {
@@ -127,7 +122,6 @@ h1 {
   margin-bottom: 0;
   font-size: 13px;
   font-weight: 500;
-  letter-spacing: -0.01em;
 }
 
 .saved-status {

@@ -13,6 +13,19 @@
   const BODY_LOCK_CLASS = "vpm-body-lock";
   const TOOLTIP_EDGE_GUTTER = 8;
   const TOOLTIP_GAP = 8;
+  const enterTheatreMessage = chrome.i18n?.getMessage("enterTheatreMode");
+  const exitTheatreMessage = chrome.i18n?.getMessage("exitTheatreMode");
+
+  if (!enterTheatreMessage) {
+    console.error("[Theatre Vision] Missing localization message: enterTheatreMode");
+  }
+  if (!exitTheatreMessage) {
+    console.error("[Theatre Vision] Missing localization message: exitTheatreMode");
+  }
+
+  const ENTER_THEATRE_LABEL = enterTheatreMessage || "Enter Theatre Mode";
+  const EXIT_THEATRE_LABEL = exitTheatreMessage || "Exit Theatre Mode";
+
   const ENTER_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" aria-hidden="true">
   <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
     <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
@@ -670,15 +683,7 @@
   }
 
   function setButtonMode(button, isActive) {
-    const messageKey = isActive ? "exitTheatreMode" : "enterTheatreMode";
-    const fallbackLabel = isActive ? "Exit Theatre Mode" : "Enter Theatre Mode";
-    const localizedLabel = chrome.i18n?.getMessage(messageKey);
-
-    if (!localizedLabel) {
-      console.error(`[Theatre Vision] Missing localization message: ${messageKey}`);
-    }
-
-    const label = localizedLabel || fallbackLabel;
+    const label = isActive ? EXIT_THEATRE_LABEL : ENTER_THEATRE_LABEL;
     const icon = isActive ? EXIT_THEATRE_ICON : ENTER_THEATRE_ICON;
     const currentIcon = button.querySelector("svg");
 
