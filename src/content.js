@@ -485,6 +485,7 @@
     } catch {}
 
     document.body.style.overflow = "hidden";
+    showExitHint();
     scheduleButtonUpdate();
   }
 
@@ -700,6 +701,7 @@
 
   function scheduleButtonUpdate() {
     if (isTornDown) return;
+    if (buttonStates.size === 0 && !activeContainer && !activeFrame) return;
     if (!buttonUpdateFrame) {
       buttonUpdateFrame = requestAnimationFrame(updateButtons);
     }
@@ -918,6 +920,7 @@
   });
 
   document.documentElement.addEventListener("mouseleave", () => {
+    if (buttonStates.size === 0) return;
     for (const state of buttonStates.values()) {
       state.hovering = false;
       state.isHovered = false;
@@ -1034,7 +1037,7 @@
   }
 
   function scanNode(root) {
-    if (!isSiteEnabled()) return;
+    if (!isSiteEnabled() || !root) return;
 
     if (
       root instanceof HTMLVideoElement ||
@@ -1054,13 +1057,25 @@
       return;
     }
 
-    root.querySelectorAll("video,iframe,frame").forEach(observePlayer);
+    const players = root.querySelectorAll("video,iframe,frame");
+    for (let i = 0; i < players.length; i++) {
+      observePlayer(players[i]);
+    }
 
-    // Shadow DOM support
+    // Shadow DOM support: inspect specific host elements rather than every DOM node
+    if (root instanceof Element && root.shadowRoot) {
+      scanNode(root.shadowRoot);
+    }
 
-    root.querySelectorAll("*").forEach((el) => {
-      if (el.shadowRoot) scanNode(el.shadowRoot);
-    });
+    const shadowHosts = root.querySelectorAll(
+      "ytd-player, ytd-watch-flexy, video-js, media-player, [class*='player'], [id*='player']"
+    );
+    for (let i = 0; i < shadowHosts.length; i++) {
+      const host = shadowHosts[i];
+      if (host.shadowRoot) {
+        scanNode(host.shadowRoot);
+      }
+    }
   }
 
   // ============================================================
@@ -1070,7 +1085,8 @@
   const observer = new MutationObserver((mutations) => {
     let shouldUpdateButtons = false;
 
-    for (const mutation of mutations) {
+    for (let m = 0; m < mutations.length; m++) {
+      const mutation = mutations[m];
       if (mutation.type === "attributes") {
         const target = mutation.target;
         if (
@@ -1080,16 +1096,28 @@
         ) {
           attachButton(target);
           if (buttonStates.has(target)) shouldUpdateButtons = true;
-        } else if (target instanceof Element) {
-          const players = target.querySelectorAll("video,iframe,frame");
-
-          if (players.length > 0) {
-            players.forEach(attachButton);
-            shouldUpdateButtons = true;
+        }
+      } else if (mutation.type === "childList") {
+        for (let i = 0; i < mutation.addedNodes.length; i++) {
+          const node = mutation.addedNodes[i];
+          if (node instanceof Element) {
+            if (
+              node instanceof HTMLVideoElement ||
+              node instanceof HTMLIFrameElement ||
+              node instanceof HTMLFrameElement
+            ) {
+              observePlayer(node);
+              shouldUpdateButtons = true;
+            } else if (
+              node.querySelector(
+                "video,iframe,frame,ytd-player,video-js,media-player,[class*='player'],[id*='player']"
+              )
+            ) {
+              scanNode(node);
+              shouldUpdateButtons = true;
+            }
           }
         }
-      } else {
-        mutation.addedNodes.forEach(scanNode);
         if (mutation.removedNodes.length > 0) {
           shouldUpdateButtons = true;
           if (activeContainer && !document.contains(activeContainer)) {
@@ -1109,7 +1137,7 @@
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["class", "src", "style"],
+    attributeFilter: ["src"],
   });
 
   function teardown() {
@@ -1148,7 +1176,9 @@
     if (
       target &&
       typeof target.closest === "function" &&
-      target.closest(".singlemv, [data-server], .server, .server-tab, .server-item, .episode")
+      target.closest(
+        ".singlemv, [data-server], .server, .server-tab, .server-item, .episode, #h, #backup, [href*='#h'], [href*='#backup'], [href*='server']"
+      )
     ) {
       setTimeout(() => {
         if (!isExtensionValid()) {
@@ -1215,8 +1245,25 @@
     if (location.href !== previousHref) {
       previousHref = location.href;
       handleNavigation();
-    } else {
+      return;
+    }
+
+    // Lightweight detector:
+    // If no players are tracked, check quickly if any video/iframe has appeared.
+    // document.querySelector is O(1) compared to full tree traversal.
+    if (buttonStates.size === 0) {
+      if (document.querySelector("video,iframe,frame,ytd-player,video-js")) {
+        scanNode(document);
+        scheduleButtonUpdate();
+      }
+      return;
+    }
+
+    // If players are already active, only rescan if player count changed or if detached
+    const domPlayers = document.querySelectorAll("video,iframe,frame");
+    if (domPlayers.length !== buttonStates.size) {
       scanNode(document);
+      scheduleButtonUpdate();
     }
   }, 1000);
 
@@ -1286,14 +1333,7 @@
       if (!isSiteEnabled()) return;
 
       scanNode(document);
-
-      if (document.body) {
-        createExitHint();
-      } else {
-        document.addEventListener("DOMContentLoaded", createExitHint, {
-          once: true,
-        });
-      }
+      scheduleButtonUpdate();
     } catch (error) {
       console.error("[Theatre Vision] Could not load site settings.", error);
     }
