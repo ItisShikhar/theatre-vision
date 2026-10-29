@@ -1,6 +1,6 @@
 # Theatre Vision
 
-![Theatre Vision icon](./icons/theatre-vision.svg)
+![Theatre Vision logo](./assets/logo.png)
 
 Theatre Vision expands HTML5 and embedded videos to fill the page. It keeps native player controls and captions.
 
@@ -41,6 +41,8 @@ Made by [Shikhar Srivastava](https://www.linkedin.com/in/itisshikhar).
 
 [GitHub](https://github.com/ItisShikhar) · Source code coming soon.
 
-## Test
+## Project files
 
-Run `node --test tests/domain-utils.test.js tests/locales.test.js`.
+- Extension code and pages are in `src/`.
+- Brand images are in `assets/`.
+- Chrome locale catalogs remain in `_locales/`.

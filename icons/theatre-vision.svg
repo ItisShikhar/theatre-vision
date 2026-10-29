@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-label="Theatre Vision">
-  <title>Theatre Vision</title>
-  <rect width="128" height="128" rx="30" fill="#18181b"/>
-  <path d="M27 33h74a7 7 0 0 1 7 7v44H20V40a7 7 0 0 1 7-7Z" fill="#18181b" stroke="#fafafa" stroke-width="7" stroke-linejoin="round"/>
-  <path d="m55 48 24 14-24 14Z" fill="#3b82f6"/>
-  <path d="M22 96h84" fill="none" stroke="#fafafa" stroke-linecap="round" stroke-width="7"/>
-  <path d="M31 91v10m66-10v10" fill="none" stroke="#60a5fa" stroke-linecap="round" stroke-width="5"/>
-</svg>

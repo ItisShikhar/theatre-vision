@@ -8,10 +8,10 @@
   "permissions": ["storage"],
 
   "icons": {
-    "16": "icons/theatre-vision-16.png",
-    "32": "icons/theatre-vision-32.png",
-    "48": "icons/theatre-vision-48.png",
-    "128": "icons/theatre-vision-128.png"
+    "16": "assets/logo_compact_bg_x512.png",
+    "32": "assets/logo_compact_bg_x512.png",
+    "48": "assets/logo_compact_bg_x512.png",
+    "128": "assets/logo_compact_bg_x512.png"
   },
 
   "host_permissions": ["<all_urls>"],
@@ -19,21 +19,21 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["domain-utils.js", "content.js"],
-      "css": ["content.css"],
+      "js": ["src/domain-utils.js", "src/content.js"],
+      "css": ["src/content.css"],
       "run_at": "document_idle",
       "all_frames": true,
       "match_about_blank": true
     }
   ],
-  "options_page": "options.html",
+  "options_page": "src/options.html",
 
   "action": {
     "default_title": "Theatre Vision",
     "default_icon": {
-      "16": "icons/theatre-vision-16.png",
-      "32": "icons/theatre-vision-32.png"
+      "16": "assets/logo_compact_bg_x512.png",
+      "32": "assets/logo_compact_bg_x512.png"
     },
-    "default_popup": "popup.html"
+    "default_popup": "src/popup.html"
   }
 }

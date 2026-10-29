@@ -36,9 +36,9 @@ input {
 }
 
 .brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
+  width: 48px;
+  height: 24px;
+  object-fit: contain;
 }
 
 h1,

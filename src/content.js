@@ -140,6 +140,14 @@
   // ============================================================
 
   function findPlayerContainer(player) {
+    // Dedicated player shortcuts
+    const dedicated = player.closest(
+      "#movie_player, .html5-video-player, .video-js, .jwplayer, .plyr",
+    );
+    if (dedicated) {
+      return dedicated;
+    }
+
     const playerRect = player.getBoundingClientRect();
 
     let best = player;
@@ -189,6 +197,10 @@
       ].forEach((keyword) => {
         if (cls.includes(keyword)) score += 10;
       });
+
+      if (cls.includes("html5-video-container")) {
+        score -= 40;
+      }
 
       const style = getComputedStyle(node);
 
@@ -485,8 +497,11 @@
   const buttonStates = new Map();
   let buttonUpdateFrame = 0;
 
-  function positionButton(video, button) {
-    const rect = video.getBoundingClientRect();
+  function positionButton(video, button, container) {
+    let rect = video.getBoundingClientRect();
+    if ((rect.width < 30 || rect.height < 30) && container) {
+      rect = container.getBoundingClientRect();
+    }
 
     button.style.left = rect.right - 52 + "px";
     button.style.top = rect.top + 12 + "px";
@@ -558,15 +573,21 @@
         setButtonMode(state.button, isActive);
       }
 
+      const isHovered =
+        state.hovering ||
+        state.button.matches(":hover") ||
+        (state.container && state.container.matches(":hover")) ||
+        player.matches(":hover");
+
       if (!isSiteEnabled()) {
         hideTooltip(state);
         state.button.classList.remove("vpm-visible");
       } else if (
         isActive ||
         state.isFocused ||
-        (visible && (state.hovering || state.button.matches(":hover")))
+        (visible && isHovered)
       ) {
-        positionButton(player, state.button);
+        positionButton(player, state.button, state.container);
         state.button.classList.add("vpm-visible");
       } else {
         state.button.classList.remove("vpm-visible");
@@ -627,6 +648,7 @@
       e.stopPropagation();
 
       togglePageMode(container, button, video);
+      button.blur();
     });
 
     return button;
@@ -658,12 +680,37 @@
 
     buttonStates.set(player, state);
 
-    player.addEventListener("mouseenter", () => setHovering(true), {
+    const onMouseEnter = () => setHovering(true);
+    const onMouseLeave = () => setHovering(false);
+
+    player.addEventListener("mouseenter", onMouseEnter, {
       signal: abortController.signal,
     });
-    player.addEventListener("mouseleave", () => setHovering(false), {
+    player.addEventListener("mouseleave", onMouseLeave, {
       signal: abortController.signal,
     });
+
+    if (container && container !== player) {
+      container.addEventListener("mouseenter", onMouseEnter, {
+        signal: abortController.signal,
+      });
+      container.addEventListener("mouseleave", onMouseLeave, {
+        signal: abortController.signal,
+      });
+      container.addEventListener("mousemove", onMouseEnter, {
+        signal: abortController.signal,
+      });
+    }
+
+    if (player instanceof HTMLMediaElement) {
+      player.addEventListener("loadedmetadata", () => scheduleButtonUpdate(), {
+        signal: abortController.signal,
+      });
+      player.addEventListener("playing", () => scheduleButtonUpdate(), {
+        signal: abortController.signal,
+      });
+    }
+
     button.addEventListener("mouseenter", () => {
       state.isHovered = true;
       setHovering(true);
@@ -760,6 +807,15 @@
     if (!observedPlayers.has(player)) {
       observedPlayers.add(player);
       resizeObserver.observe(player);
+
+      if (player instanceof HTMLMediaElement) {
+        player.addEventListener("loadedmetadata", () => attachButton(player), {
+          once: true,
+        });
+        player.addEventListener("canplay", () => attachButton(player), {
+          once: true,
+        });
+      }
     }
 
     attachButton(player);
@@ -840,17 +896,34 @@
   // SPA navigation
   // ============================================================
 
+  function handleNavigation() {
+    if (activeContainer || activeFrame) {
+      exitPageMode();
+    }
+
+    for (const [player, state] of buttonStates) {
+      if (document.contains(player)) {
+        state.container = findPlayerContainer(player);
+      }
+    }
+
+    scanNode(document);
+    scheduleButtonUpdate();
+  }
+
+  window.addEventListener("yt-navigate-finish", handleNavigation);
+  document.addEventListener("yt-navigate-finish", handleNavigation);
+  window.addEventListener("yt-page-data-updated", handleNavigation);
+  window.addEventListener("popstate", handleNavigation);
+
   let previousHref = location.href;
 
   setInterval(() => {
     if (location.href !== previousHref) {
       previousHref = location.href;
-
-      setTimeout(() => {
-        scanNode(document);
-      }, 1000);
+      handleNavigation();
     }
-  }, 500);
+  }, 400);
 
   // ============================================================
   // Storage updates
