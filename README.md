@@ -11,7 +11,7 @@
   <a href="#how-to-install">How To Install</a> |
   <a href="#usage">Usage</a> |
   <a href="#supported-browsers">Supported Browsers</a> |
-  <a href="#contributing">Contributing</a>
+  <a href="#privacy">Privacy</a>
 </p>
 
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
@@ -102,7 +102,7 @@ Supported languages include English, Hindi, Spanish, Japanese, Korean, French, P
 
 The extension reads the current site's hostname and page structure to find video players and apply rules. It stores blocked and allowed domains in `storage.sync`. When browser sync is enabled, your browser sends these domain rules to its account service. Theatre Vision does not send page content or rules to its developer. The popup can load the active site's favicon from that site.
 
-## Permissions
+### Permissions
 
 Theatre Vision requests only what it needs to find video players and resize them.
 
