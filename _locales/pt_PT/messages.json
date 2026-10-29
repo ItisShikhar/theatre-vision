@@ -1,0 +1,8 @@
+{
+  "enterTheatreMode": {
+    "message": "Entrar no modo de teatro"
+  },
+  "exitTheatreMode": {
+    "message": "Sair do modo de teatro"
+  }
+}

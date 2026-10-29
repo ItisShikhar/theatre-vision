@@ -16,7 +16,8 @@ const EXPECTED_LOCALES = [
   "ja",
   "ko",
   "ml",
-  "pt",
+  "pt_BR",
+  "pt_PT",
   "ru",
   "zh_CN",
 ];

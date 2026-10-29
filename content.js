@@ -537,7 +537,7 @@
   function setButtonMode(button, isActive) {
     const messageKey = isActive ? "exitTheatreMode" : "enterTheatreMode";
     const fallbackLabel = isActive ? "Exit Theatre Mode" : "Enter Theatre Mode";
-    const localizedLabel = chrome.i18n.getMessage(messageKey);
+    const localizedLabel = chrome.i18n?.getMessage(messageKey);
 
     if (!localizedLabel) {
       console.error(`[Theatre Vision] Missing localization message: ${messageKey}`);
@@ -691,7 +691,12 @@
     for (const entry of entries) {
       const player = entry.target;
 
-      if (buttonStates.has(player) || !document.contains(player)) continue;
+      if (!document.contains(player)) continue;
+
+      if (buttonStates.has(player)) {
+        scheduleButtonUpdate();
+        continue;
+      }
 
       const rect = player.getBoundingClientRect();
 
@@ -745,7 +750,7 @@
   // ============================================================
 
   const observer = new MutationObserver((mutations) => {
-    scheduleButtonUpdate();
+    let shouldUpdateButtons = false;
 
     for (const mutation of mutations) {
       if (mutation.type === "attributes") {
@@ -756,15 +761,22 @@
           target instanceof HTMLFrameElement
         ) {
           attachButton(target);
+          if (buttonStates.has(target)) shouldUpdateButtons = true;
         } else if (target instanceof Element) {
-          target
-            .querySelectorAll("video,iframe,frame")
-            .forEach(attachButton);
+          const players = target.querySelectorAll("video,iframe,frame");
+
+          if (players.length > 0) {
+            players.forEach(attachButton);
+            shouldUpdateButtons = true;
+          }
         }
       } else {
         mutation.addedNodes.forEach(scanNode);
+        if (mutation.removedNodes.length > 0) shouldUpdateButtons = true;
       }
     }
+
+    if (shouldUpdateButtons) scheduleButtonUpdate();
   });
 
   observer.observe(document.documentElement, {
