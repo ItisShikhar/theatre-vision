@@ -672,7 +672,7 @@
     button.addEventListener("mouseleave", () => {
       state.isHovered = false;
       setHovering(false);
-      if (!state.isFocused) hideTooltip(state);
+      hideTooltip(state);
     }, { signal: abortController.signal });
     button.addEventListener("focus", () => {
       state.isFocused = true;
