@@ -11,7 +11,7 @@
       <header class="header">
         <img class="brand-icon" src="../assets/logo.png" alt="">
         <div class="brand-copy">
-          <h1>Theatre Vision</h1>
+          <h1 class="visually-hidden">Theatre Vision</h1>
           <p class="eyebrow">Video theatre controls</p>
         </div>
       </header>
@@ -32,12 +32,22 @@
                 <p id="siteAddress">Reading the active tab</p>
               </div>
             </div>
-            <label class="switch" aria-label="Enable theatre mode on this site">
-              <input id="siteToggle" type="checkbox" role="switch" disabled>
-              <span class="switch-track" aria-hidden="true">
-                <span class="switch-thumb"></span>
-              </span>
-            </label>
+            <div class="switch-control">
+              <span id="toggleLabel" class="switch-label">Theatre mode on this site</span>
+              <button
+                id="siteToggle"
+                class="switch"
+                type="button"
+                role="switch"
+                aria-labelledby="toggleLabel"
+                aria-checked="false"
+                aria-disabled="true"
+              >
+                  <span class="switch-track" aria-hidden="true">
+                    <span class="switch-thumb"></span>
+                  </span>
+              </button>
+            </div>
           </section>
 
           <p id="status" class="status" role="status" aria-live="polite"></p>

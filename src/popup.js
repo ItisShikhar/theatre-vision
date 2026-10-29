@@ -57,6 +57,10 @@ function showStatus(message, isError = false) {
   statusMessage.dataset.state = isError ? "error" : "info";
 }
 
+function setToggleDisabled(isDisabled) {
+  siteToggle.setAttribute("aria-disabled", String(isDisabled));
+}
+
 function normalizeDomains(domains) {
   if (!Array.isArray(domains)) return [];
 
@@ -70,11 +74,13 @@ function renderSiteState() {
     currentRules.enabledDomains,
   );
 
-  siteToggle.checked = isEnabled;
+  siteToggle.setAttribute("aria-checked", String(isEnabled));
   showStatus(isEnabled ? "Theatre mode is on for this site." : "Theatre mode is off for this site.");
 }
 
 async function loadPopup() {
+  setToggleDisabled(true);
+
   try {
     const tab = await getActiveTab();
     const tabUrl = tab?.url;
@@ -104,8 +110,8 @@ async function loadPopup() {
       enabledDomains: normalizeDomains(settings.enabledDomains),
     };
 
-    siteToggle.disabled = false;
     renderSiteState();
+    setToggleDisabled(false);
   } catch (error) {
     console.error("[Theatre Vision] Could not load site settings.", error);
     siteName.textContent = "Settings unavailable";
@@ -115,7 +121,10 @@ async function loadPopup() {
 }
 
 async function saveSiteRule() {
-  const shouldEnable = siteToggle.checked;
+  if (siteToggle.getAttribute("aria-disabled") === "true") return;
+
+  const wasEnabled = siteToggle.getAttribute("aria-checked") === "true";
+  const shouldEnable = !wasEnabled;
   const disabledDomains = currentRules.disabledDomains.filter(
     (domain) => domain !== currentHostname,
   );
@@ -129,7 +138,8 @@ async function saveSiteRule() {
     disabledDomains.push(currentHostname);
   }
 
-  siteToggle.disabled = true;
+  siteToggle.setAttribute("aria-checked", String(shouldEnable));
+  setToggleDisabled(true);
 
   try {
     await setStorage({ disabledDomains, enabledDomains });
@@ -138,14 +148,14 @@ async function saveSiteRule() {
     showStatus("Site rule saved.");
   } catch (error) {
     console.error("[Theatre Vision] Could not save the site rule.", error);
-    siteToggle.checked = !shouldEnable;
+    siteToggle.setAttribute("aria-checked", String(wasEnabled));
     showStatus("Could not save this site rule.", true);
   } finally {
-    siteToggle.disabled = false;
+    setToggleDisabled(false);
   }
 }
 
-siteToggle.addEventListener("change", saveSiteRule);
+siteToggle.addEventListener("click", saveSiteRule);
 manageButton.addEventListener("click", () => chrome.runtime.openOptionsPage());
 
 chrome.storage.onChanged.addListener((changes, areaName) => {

@@ -133,6 +133,16 @@ body.vpm-body-lock {
   pointer-events: none;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .vpm-button,
+  .vpm-button *,
+  .vpm-tooltip,
+  .vpm-exit-hint {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 .vpm-show {
   opacity: 1;
 }

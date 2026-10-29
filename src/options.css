@@ -1,5 +1,5 @@
 :root {
-  color-scheme: light dark;
+  color-scheme: dark light;
   --page-background: #fafafa;
   --surface: #ffffff;
   --muted-surface: #f4f4f5;
@@ -303,5 +303,15 @@ button:disabled {
 
   .container {
     padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+    transition: none !important;
   }
 }
