@@ -30,7 +30,29 @@
         /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label),
     );
 
-    return hasValidLabels ? hostname : null;
+    if (!hasValidLabels) return null;
+    if (hostname === "localhost") return hostname;
+    if (labels.length < 2) return null;
+
+    const topLevelLabel = labels[labels.length - 1];
+    const isIpAddress = labels.length === 4 && labels.every(
+      (label) => /^\d{1,3}$/.test(label) && Number(label) <= 255,
+    );
+    const rawHostname = input
+      .replace(/^https?:\/\//i, "")
+      .split(/[/?#]/, 1)[0]
+      .split("@")
+      .pop()
+      .replace(/:\d+$/, "")
+      .replace(/\.$/, "")
+      .toLowerCase();
+    const hasValidTopLevelLabel =
+      /^[a-z]{2,63}$/.test(topLevelLabel) ||
+      /^xn--[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(topLevelLabel);
+
+    if (isIpAddress) return rawHostname === hostname ? hostname : null;
+
+    return hasValidTopLevelLabel ? hostname : null;
   }
 
   function matchesDomain(hostname, domain) {
