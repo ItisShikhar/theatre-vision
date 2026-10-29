@@ -11,6 +11,7 @@
   const WRAPPER_CLASS = "vpm-wrapper";
   const PAGE_MODE_CLASS = "vpm-page-mode";
   const BODY_LOCK_CLASS = "vpm-body-lock";
+  const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
   const TOOLTIP_EDGE_GUTTER = 8;
   const TOOLTIP_GAP = 8;
   const enterTheatreMessage = (() => {
@@ -37,23 +38,6 @@
 
   const ENTER_THEATRE_LABEL = enterTheatreMessage || "Enter Theatre Mode";
   const EXIT_THEATRE_LABEL = exitTheatreMessage || "Exit Theatre Mode";
-
-  const ENTER_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" aria-hidden="true">
-  <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
-    <line x1="8" y1="30" x2="40" y2="30"/>
-    <polyline points="21,16.5 17,20.5 21,24.5"/>
-    <polyline points="27,16.5 31,20.5 27,24.5"/>
-  </g>
-</svg>`;
-  const EXIT_THEATRE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" aria-hidden="true">
-  <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
-    <line x1="8" y1="30" x2="40" y2="30"/>
-    <polyline points="17,16.5 21,20.5 17,24.5"/>
-    <polyline points="31,16.5 27,20.5 31,24.5"/>
-  </g>
-</svg>`;
 
   let activeContainer = null;
   let activeFrame = null;
@@ -721,9 +705,52 @@
     }
   }
 
+  function createTheatreIcon(isActive) {
+    const svg = document.createElementNS(SVG_NAMESPACE, "svg");
+    svg.setAttribute("width", "96");
+    svg.setAttribute("height", "96");
+    svg.setAttribute("viewBox", "0 0 48 48");
+    svg.setAttribute("aria-hidden", "true");
+
+    const group = document.createElementNS(SVG_NAMESPACE, "g");
+    group.setAttribute("fill", "none");
+    group.setAttribute("stroke", "#ffffff");
+    group.setAttribute("stroke-width", "2.6");
+    group.setAttribute("stroke-linecap", "round");
+    group.setAttribute("stroke-linejoin", "round");
+
+    const frame = document.createElementNS(SVG_NAMESPACE, "path");
+    frame.setAttribute(
+      "d",
+      "M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z",
+    );
+
+    const divider = document.createElementNS(SVG_NAMESPACE, "line");
+    divider.setAttribute("x1", "8");
+    divider.setAttribute("y1", "30");
+    divider.setAttribute("x2", "40");
+    divider.setAttribute("y2", "30");
+
+    const leftChevron = document.createElementNS(SVG_NAMESPACE, "polyline");
+    leftChevron.setAttribute(
+      "points",
+      isActive ? "17,16.5 21,20.5 17,24.5" : "21,16.5 17,20.5 21,24.5",
+    );
+
+    const rightChevron = document.createElementNS(SVG_NAMESPACE, "polyline");
+    rightChevron.setAttribute(
+      "points",
+      isActive ? "31,16.5 27,20.5 31,24.5" : "27,16.5 31,20.5 27,24.5",
+    );
+
+    group.append(frame, divider, leftChevron, rightChevron);
+    svg.appendChild(group);
+    return svg;
+  }
+
   function setButtonMode(button, isActive) {
     const label = isActive ? EXIT_THEATRE_LABEL : ENTER_THEATRE_LABEL;
-    const icon = isActive ? EXIT_THEATRE_ICON : ENTER_THEATRE_ICON;
+    const icon = createTheatreIcon(isActive);
     const currentIcon = button.querySelector("svg");
 
     button.removeAttribute("title");
@@ -731,8 +758,8 @@
     if (isActive) button.setAttribute("aria-keyshortcuts", "Escape");
     else button.removeAttribute("aria-keyshortcuts");
 
-    if (currentIcon) currentIcon.outerHTML = icon;
-    else button.insertAdjacentHTML("afterbegin", icon);
+    if (currentIcon) currentIcon.replaceWith(icon);
+    else button.insertBefore(icon, button.firstChild);
 
     const tooltip = buttonTooltips.get(button);
     if (tooltip) {

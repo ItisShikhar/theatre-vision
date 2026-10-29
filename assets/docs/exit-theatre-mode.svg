@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 48 48" role="img" aria-label="Exit theatre mode">
+  <rect x="3" y="3" width="42" height="42" rx="10" fill="#18181b"/>
+  <g fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14.5 11 H33.5 C39.41 11 40 11.59 40 17.5 V30.5 C40 36.41 39.41 37 33.5 37 H14.5 C8.59 37 8 36.41 8 30.5 V17.5 C8 11.59 8.59 11 14.5 11 Z"/>
+    <line x1="8" y1="30" x2="40" y2="30"/>
+    <polyline points="17,16.5 21,20.5 17,24.5"/>
+    <polyline points="31,16.5 27,20.5 31,24.5"/>
+  </g>
+</svg>
