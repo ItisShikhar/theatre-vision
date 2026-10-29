@@ -354,6 +354,68 @@ h1 {
   stroke-width: 1.5;
 }
 
+.author-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+  color: var(--muted-foreground);
+  font-size: 11px;
+}
+
+.author-footer strong {
+  color: var(--strong-foreground);
+  font-weight: 500;
+}
+
+.author-name-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.author-name-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.author-footer-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.author-footer-links a {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 8px;
+  corner-shape: squircle;
+  color: var(--strong-foreground);
+}
+
+.author-footer-links a:hover {
+  background: var(--muted-surface);
+}
+
+.author-footer-links a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.author-footer-links img {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .author-footer-links img {
+    filter: invert(1);
+  }
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
