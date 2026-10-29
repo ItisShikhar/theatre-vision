@@ -12,7 +12,7 @@
       "id": "theatre-vision@itisshikhar.github.io",
       "strict_min_version": "142.0",
       "data_collection_permissions": {
-        "required": ["websiteActivity"]
+        "required": ["browsingActivity"]
       }
     }
   },
@@ -30,7 +30,7 @@
   "host_permissions": ["<all_urls>"],
 
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com;"
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self'; font-src 'self';"
   },
 
   "content_scripts": [
