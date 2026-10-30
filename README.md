@@ -10,6 +10,7 @@
   <a href="#features">Features</a> |
   <a href="#how-to-install">How To Install</a> |
   <a href="#usage">Usage</a> |
+  <a href="#how-it-works">How It Works</a> |
   <a href="#supported-browsers">Supported Browsers</a> |
   <a href="#privacy">Privacy</a>
 </p>
@@ -93,6 +94,15 @@ Firefox removes temporary add-ons when you close the browser.
 5. Changes save automatically when you add or remove a domain.
 
 The most specific matching domain rule wins. Add `video.example.com` under allowed subdomains to override a block for `example.com`.
+
+## How It Works
+
+Theatre Vision runs client-side in the browser without modifying video streams or intercepting network requests:
+
+- **Player Detection**: The content script scans the DOM for HTML5 `<video>` tags and computes the optimal player container using ancestor dimension and aspect ratio heuristics.
+- **Cross-Frame Handshake**: Content scripts execute across all frames (`all_frames: true`). A subframe reports detected video to its parent with `postMessage`. Parent windows add controls only after same-origin video inspection, a frame handshake, or a supported embed URL.
+- **Viewport Elevation**: Entering theatre mode temporarily elevates the container with high z-index and neutralizes clipping, transforms, and overflow restrictions on ancestor elements. The native controls, volume sliders, and subtitle overlays remain active.
+- **Domain Rules**: The extension stores allow and block rules with `chrome.storage.sync`. Browser sync can copy these rules to your other signed-in devices. The most specific matching domain rule takes priority.
 
 ## Languages
 

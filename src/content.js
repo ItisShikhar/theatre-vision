@@ -45,6 +45,7 @@
   let exitHint = null;
 
   const observedPlayers = new WeakSet();
+  const verifiedVideoFrames = new WeakSet();
   const buttonTooltips = new WeakMap();
 
   let disabledDomains = [];
@@ -172,6 +173,80 @@
       getComputedStyle(element).display !== "none" &&
       getComputedStyle(element).visibility !== "hidden"
     );
+  }
+
+  // ------------------------------------------------------------
+  // Frame Video Verification
+  // ------------------------------------------------------------
+
+  // Fast-path: saves ~100ms on major video sites before the button appears.
+  function isKnownVideoEmbed(frame) {
+    const src = (frame.src || frame.getAttribute("src") || frame.getAttribute("data-src") || "").toLowerCase();
+    if (!src) return false;
+
+    return (
+      src.includes("youtube.com/embed/") ||
+      src.includes("youtube-nocookie.com/embed/") ||
+      src.includes("player.vimeo.com/video/") ||
+      src.includes("dailymotion.com/embed/") ||
+      src.includes("player.twitch.tv") ||
+      src.includes("twitch.tv/embed") ||
+      src.includes("tiktok.com/embed") ||
+      src.includes("rumble.com/embed/") ||
+      src.includes("player.kick.com") ||
+      src.includes("kick.com/embed/") ||
+      src.includes("bilibili.com/player/") ||
+      src.includes("streamable.com/e/") ||
+      src.includes("wistia.net/embed/")
+    );
+  }
+
+  function isVerifiedVideoFrame(frame) {
+    if (verifiedVideoFrames.has(frame)) return true;
+
+    try {
+      if (frame.contentDocument?.querySelector("video")) {
+        verifiedVideoFrames.add(frame);
+        return true;
+      }
+    } catch {}
+
+    if (isKnownVideoEmbed(frame)) {
+      verifiedVideoFrames.add(frame);
+      return true;
+    }
+
+    return false;
+  }
+
+  function notifyParentVideoStatus(hasVideo) {
+    if (window !== window.top) {
+      try {
+        window.parent.postMessage(
+          {
+            source: "theatre-vision",
+            type: hasVideo ? "has-video" : "no-video",
+          },
+          "*",
+        );
+      } catch {}
+    }
+  }
+
+  function queryFrameVideo(frame) {
+    if (!(frame instanceof HTMLIFrameElement || frame instanceof HTMLFrameElement)) return;
+
+    if (isVerifiedVideoFrame(frame)) {
+      attachButton(frame);
+      return;
+    }
+
+    try {
+      frame.contentWindow?.postMessage(
+        { source: "theatre-vision", type: "query-video" },
+        "*",
+      );
+    } catch {}
   }
 
   // ============================================================
@@ -848,6 +923,13 @@
   function attachButton(player) {
     if (buttonStates.has(player) || !document.body || !isSiteEnabled()) return;
 
+    if (
+      (player instanceof HTMLIFrameElement || player instanceof HTMLFrameElement) &&
+      !isVerifiedVideoFrame(player)
+    ) {
+      return;
+    }
+
     const container = findPlayerContainer(player);
     const rect = player.getBoundingClientRect();
     const containerRect = container ? container.getBoundingClientRect() : null;
@@ -996,6 +1078,46 @@
         }
         return;
       }
+      if (message.type === "query-video") {
+        const hasVideo =
+          document.querySelector("video") !== null ||
+          Array.from(buttonStates.keys()).some((k) => k instanceof HTMLMediaElement);
+        if (hasVideo) {
+          notifyParentVideoStatus(true);
+        }
+        return;
+      }
+    }
+
+    if (message.type === "has-video") {
+      const frame = Array.from(document.querySelectorAll("iframe,frame")).find(
+        (element) => element.contentWindow === event.source,
+      );
+      if (frame) {
+        verifiedVideoFrames.add(frame);
+        notifyParentVideoStatus(true);
+        attachButton(frame);
+        scheduleButtonUpdate();
+      }
+      return;
+    }
+
+    if (message.type === "no-video") {
+      const frame = Array.from(document.querySelectorAll("iframe,frame")).find(
+        (element) => element.contentWindow === event.source,
+      );
+      if (frame) {
+        verifiedVideoFrames.delete(frame);
+        const state = buttonStates.get(frame);
+        if (state) {
+          state.abortController.abort();
+          state.button.remove();
+          state.tooltip.remove();
+          buttonStates.delete(frame);
+          scheduleButtonUpdate();
+        }
+      }
+      return;
     }
 
     if (message.type !== "enter" && message.type !== "exit") return;
@@ -1044,7 +1166,11 @@
 
       if (rect.width < 100 || rect.height < 60) continue;
 
-      attachButton(player);
+      if (player instanceof HTMLMediaElement || isVerifiedVideoFrame(player)) {
+        attachButton(player);
+      } else {
+        queryFrameVideo(player);
+      }
     }
   });
 
@@ -1056,19 +1182,27 @@
       if (player instanceof HTMLMediaElement) {
         ["loadeddata", "loadedmetadata", "canplay", "play", "playing"].forEach((evt) => {
           player.addEventListener(evt, () => {
+            notifyParentVideoStatus(true);
             attachButton(player);
             scheduleButtonUpdate();
           });
         });
       } else if (player instanceof HTMLIFrameElement || player instanceof HTMLFrameElement) {
         player.addEventListener("load", () => {
-          attachButton(player);
+          queryFrameVideo(player);
           scheduleButtonUpdate();
         });
       }
     }
 
-    attachButton(player);
+    if (player instanceof HTMLMediaElement) {
+      notifyParentVideoStatus(true);
+      attachButton(player);
+    } else if (isVerifiedVideoFrame(player)) {
+      attachButton(player);
+    } else {
+      queryFrameVideo(player);
+    }
   }
 
   function scanNode(root) {
@@ -1090,6 +1224,10 @@
       !(root instanceof ShadowRoot)
     ) {
       return;
+    }
+
+    if (window !== window.top && root.querySelector?.("video")) {
+      notifyParentVideoStatus(true);
     }
 
     const players = root.querySelectorAll("video,iframe,frame");
@@ -1129,7 +1267,11 @@
           target instanceof HTMLIFrameElement ||
           target instanceof HTMLFrameElement
         ) {
-          attachButton(target);
+          if (target instanceof HTMLIFrameElement || target instanceof HTMLFrameElement) {
+            queryFrameVideo(target);
+          } else {
+            attachButton(target);
+          }
           if (buttonStates.has(target)) shouldUpdateButtons = true;
         }
       } else if (mutation.type === "childList") {
@@ -1191,6 +1333,8 @@
     if (activeContainer || activeFrame) {
       exitPageMode();
     }
+
+    notifyParentVideoStatus(false);
 
     for (const [player, state] of buttonStates) {
       state.abortController.abort();
@@ -1270,6 +1414,7 @@
   });
 
   let previousHref = location.href;
+  let trackedVideoCount = 0;
 
   const pollInterval = setInterval(() => {
     if (!isExtensionValid()) {
@@ -1294,9 +1439,10 @@
       return;
     }
 
-    // If players are already active, only rescan if player count changed or if detached
-    const domPlayers = document.querySelectorAll("video,iframe,frame");
-    if (domPlayers.length !== buttonStates.size) {
+    // If players are already active, only rescan if video count changed or if detached
+    const domVideos = document.querySelectorAll("video");
+    if (domVideos.length !== trackedVideoCount) {
+      trackedVideoCount = domVideos.length;
       scanNode(document);
       scheduleButtonUpdate();
     }
