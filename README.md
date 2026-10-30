@@ -39,7 +39,8 @@ Theatre Vision targets current Chrome, Edge and Vivaldi: current versions. Firef
 
 ## How To Install
 
-1. Clone the repository, or download and extract its ZIP archive.
+1. Download the [latest extension ZIP](https://github.com/ItisShikhar/theatre-vision/releases/latest/download/theatre_vision_ext.zip), or clone the repository.
+2. If you downloaded the ZIP, extract it.
 
 ### Chrome, Edge, and Vivaldi
 

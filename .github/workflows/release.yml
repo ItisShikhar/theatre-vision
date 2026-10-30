@@ -30,7 +30,7 @@ jobs:
         shell: pwsh
         run: |
           $manifest = Get-Content -Raw -LiteralPath 'manifest.json' | ConvertFrom-Json
-          $archivePath = "theatre_vision_v$($manifest.version)_ext.zip"
+          $archivePath = 'theatre_vision_ext.zip'
           $packagePaths = @(
             'manifest.json',
             '_locales',
@@ -63,7 +63,7 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           $manifest = Get-Content -Raw -LiteralPath 'manifest.json' | ConvertFrom-Json
-          $archivePath = "theatre_vision_v$($manifest.version)_ext.zip"
+          $archivePath = 'theatre_vision_ext.zip'
           if (-not (Test-Path -LiteralPath $archivePath -PathType Leaf)) {
             throw "Release archive was not created: $archivePath"
           }
