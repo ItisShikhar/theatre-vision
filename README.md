@@ -20,9 +20,25 @@
 
 </div>
 
-![Theatre Vision animated demo](./demo_assets/animated_demo.gif)
+![Theatre Vision animated demo](./demo_assets/marketing/animated_demo.gif)
 
 Many sites have no theatre mode, so people resize the window or zoom the page just to get a bigger player. Theatre Vision adds a button to the player: click it to enter, press <kbd>Esc</kbd> to exit.
+
+<table>
+  <tr>
+    <td align="center" colspan="2">
+      <img src="./demo_assets/marketing/ss0.png" width="740" alt="Bigger video, no fullscreen">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./demo_assets/marketing/ss1.png" width="360" alt="Same controls, bigger picture">
+    </td>
+    <td align="center">
+      <img src="./demo_assets/marketing/ss2.png" width="360" alt="Your sites, your rules">
+    </td>
+  </tr>
+</table>
 
 ## Features
 
@@ -82,23 +98,6 @@ The most specific matching domain rule wins. Add `video.example.com` under allow
 
 Supported languages include English, Hindi, Spanish, Japanese, Korean, French, Portuguese, Bengali, Malayalam, German, Simplified Chinese, Arabic, and Russian. If your browser language is not listed, the extension uses English.
 
-## Screenshots
-
-<table>
-  <tr>
-    <th align="center">Toolbar popup</th>
-    <th align="center">Whitelist and blacklist rules</th>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="./demo_assets/popup.png" width="360" alt="Theatre Vision toolbar popup">
-    </td>
-    <td align="center">
-      <img src="./demo_assets/whitelist_blacklist.png" width="360" alt="Theatre Vision whitelist and blacklist rules">
-    </td>
-  </tr>
-</table>
-
 ## Privacy
 
 The extension reads the current site's hostname and page structure to find video players and apply rules. It stores blocked and allowed domains in `storage.sync`. When browser sync is enabled, your browser sends these domain rules to its account service. Theatre Vision does not send page content or rules to its developer. The popup can load the active site's favicon from that site.
@@ -140,6 +139,23 @@ the [Code of Conduct](./CODE_OF_CONDUCT.md) in project discussions.
 This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
 
 The bundled Oswald font uses the SIL Open Font License 1.1. See [OFL.txt](./assets/fonts/OFL.txt).
+
+## Screenshots
+
+<table>
+  <tr>
+    <th align="center">Toolbar popup</th>
+    <th align="center">Whitelist and blacklist rules</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./demo_assets/popup.png" width="360" alt="Theatre Vision toolbar popup">
+    </td>
+    <td align="center">
+      <img src="./demo_assets/whitelist_blacklist.png" width="360" alt="Theatre Vision whitelist and blacklist rules">
+    </td>
+  </tr>
+</table>
 
 ## Third-party media
 
