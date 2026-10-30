@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Verify tag matches manifest version
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $manifest = Get-Content -Raw -LiteralPath 'manifest.json' | ConvertFrom-Json
+          $expectedTag = "v$($manifest.version)"
+          if ($env:RELEASE_TAG -ne $expectedTag) {
+            throw "Release tag $env:RELEASE_TAG does not match manifest version $($manifest.version)."
+          }
+
+      - name: Package extension
+        shell: pwsh
+        run: |
+          $manifest = Get-Content -Raw -LiteralPath 'manifest.json' | ConvertFrom-Json
+          $archivePath = "theatre_vision_v$($manifest.version)_ext.zip"
+          $packagePaths = @(
+            'manifest.json',
+            '_locales',
+            'src',
+            'assets/logo_compact_bg_16.png',
+            'assets/logo_compact_bg_32.png',
+            'assets/logo_compact_bg_48.png',
+            'assets/logo_compact_bg_128.png',
+            'assets/logo_compact_bg_512.png',
+            'assets/logo_sm.png',
+            'assets/github.svg',
+            'assets/linkedin.svg',
+            'assets/fonts/oswald-cyrillic-ext.woff2',
+            'assets/fonts/oswald-cyrillic.woff2',
+            'assets/fonts/oswald-vietnamese.woff2',
+            'assets/fonts/oswald-latin-ext.woff2',
+            'assets/fonts/oswald-latin.woff2',
+            'assets/fonts/OFL.txt'
+          )
+
+          git archive --format=zip "--output=$archivePath" HEAD @packagePaths
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $manifest = Get-Content -Raw -LiteralPath 'manifest.json' | ConvertFrom-Json
+          $archivePath = "theatre_vision_v$($manifest.version)_ext.zip"
+          if (-not (Test-Path -LiteralPath $archivePath -PathType Leaf)) {
+            throw "Release archive was not created: $archivePath"
+          }
+
+          gh release create $env:RELEASE_TAG $archivePath --title "Theatre Vision $($manifest.version)" --generate-notes --verify-tag
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
