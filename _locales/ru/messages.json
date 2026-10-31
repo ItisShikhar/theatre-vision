@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "Выйти из театрального режима"
   },
+  "switchToTheatreMode": {
+    "message": "Переключиться в театральный режим"
+  },
   "optionsPageTitle": {
     "message": "Правила сайтов Theatre Vision"
   },

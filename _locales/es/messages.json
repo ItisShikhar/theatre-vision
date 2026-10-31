@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "Salir del modo teatro"
   },
+  "switchToTheatreMode": {
+    "message": "Cambiar a modo teatro"
+  },
   "optionsPageTitle": {
     "message": "Reglas de sitios de Theatre Vision"
   },

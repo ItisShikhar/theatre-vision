@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "थिएटर मोड से बाहर आएँ"
   },
+  "switchToTheatreMode": {
+    "message": "थिएटर मोड में स्विच करें"
+  },
   "optionsPageTitle": {
     "message": "Theatre Vision साइट नियम"
   },

@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "തിയേറ്റർ മോഡിൽ നിന്ന് പുറത്തുകടക്കുക"
   },
+  "switchToTheatreMode": {
+    "message": "തിയേറ്റർ മോഡിലേക്ക് മാറുക"
+  },
   "optionsPageTitle": {
     "message": "Theatre Vision സൈറ്റ് നിയമങ്ങൾ"
   },

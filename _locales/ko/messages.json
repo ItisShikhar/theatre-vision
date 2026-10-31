@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "극장 모드 종료"
   },
+  "switchToTheatreMode": {
+    "message": "극장 모드로 전환"
+  },
   "optionsPageTitle": {
     "message": "Theatre Vision 사이트 규칙"
   },

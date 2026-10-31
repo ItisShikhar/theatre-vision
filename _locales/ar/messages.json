@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "الخروج من وضع المسرح"
   },
+  "switchToTheatreMode": {
+    "message": "التبديل إلى وضع المسرح"
+  },
   "optionsPageTitle": {
     "message": "قواعد المواقع في Theatre Vision"
   },

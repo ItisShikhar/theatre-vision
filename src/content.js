@@ -34,6 +34,13 @@
       return null;
     }
   })();
+  const switchTheatreMessage = (() => {
+    try {
+      return chrome.i18n?.getMessage("switchToTheatreMode");
+    } catch {
+      return null;
+    }
+  })();
 
   if (!enterTheatreMessage) {
     console.error(
@@ -45,9 +52,15 @@
       "[Theatre Vision] Missing localization message: exitTheatreMode",
     );
   }
+  if (!switchTheatreMessage) {
+    console.error(
+      "[Theatre Vision] Missing localization message: switchToTheatreMode",
+    );
+  }
 
   const ENTER_THEATRE_LABEL = enterTheatreMessage || "Enter Theatre Mode";
   const EXIT_THEATRE_LABEL = exitTheatreMessage || "Exit Theatre Mode";
+  const SWITCH_THEATRE_LABEL = switchTheatreMessage || "Switch to Theatre Mode";
 
   let activeContainer = null;
   let activeFrame = null;
@@ -834,10 +847,20 @@
         state.container === activeContainer ||
         state.container === activeFrame ||
         player === activeFrame;
+      const isNativeFullscreen = Boolean(
+        document.fullscreenElement || document.webkitFullscreenElement,
+      );
 
-      if (state.isActive !== isActive) {
+      const targetMode = isActive
+        ? "theatre"
+        : isNativeFullscreen
+          ? "fullscreen"
+          : "normal";
+
+      if (state.mode !== targetMode) {
+        state.mode = targetMode;
         state.isActive = isActive;
-        setButtonMode(state.button, isActive);
+        setButtonMode(state.button, targetMode);
       }
 
       const isHovered =
@@ -1007,14 +1030,20 @@
     return svg;
   }
 
-  function setButtonMode(button, isActive) {
-    const label = isActive ? EXIT_THEATRE_LABEL : ENTER_THEATRE_LABEL;
-    const icon = createTheatreIcon(isActive);
+  function setButtonMode(button, mode) {
+    const isTheatre = mode === true || mode === "theatre";
+    const isFullscreen = mode === "fullscreen";
+    const label = isTheatre
+      ? EXIT_THEATRE_LABEL
+      : isFullscreen
+        ? SWITCH_THEATRE_LABEL
+        : ENTER_THEATRE_LABEL;
+    const icon = createTheatreIcon(isTheatre);
     const currentIcon = button.querySelector("svg");
 
     button.removeAttribute("title");
     button.setAttribute("aria-label", label);
-    if (isActive) button.setAttribute("aria-keyshortcuts", "Escape");
+    if (isTheatre) button.setAttribute("aria-keyshortcuts", "Escape");
     else button.removeAttribute("aria-keyshortcuts");
 
     if (currentIcon) currentIcon.replaceWith(icon);
@@ -1029,7 +1058,7 @@
       tooltipLabel.textContent = label;
       tooltip.appendChild(tooltipLabel);
 
-      if (isActive) {
+      if (isTheatre) {
         const shortcut = document.createElement("kbd");
         shortcut.textContent = "Esc";
         tooltip.appendChild(shortcut);
@@ -1052,7 +1081,7 @@
     document.body.appendChild(button);
     document.body.appendChild(tooltip);
 
-    button.addEventListener("click", (e) => {
+    button.addEventListener("click", async (e) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -1060,6 +1089,54 @@
         container && document.contains(container)
           ? container
           : buttonStates.get(video)?.container || findPlayerContainer(video);
+
+      const fsElement =
+        document.fullscreenElement || document.webkitFullscreenElement;
+
+      if (fsElement && !activeContainer && !activeFrame) {
+        try {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            await document.webkitExitFullscreen();
+          }
+        } catch (err) {
+          console.debug("[Theatre Vision] exitFullscreen error:", err);
+        }
+
+        try {
+          if (
+            video instanceof HTMLIFrameElement ||
+            video instanceof HTMLFrameElement
+          ) {
+            video.contentWindow?.postMessage(
+              { source: "theatre-vision", type: "exit-native-fullscreen" },
+              "*",
+            );
+          }
+        } catch {}
+
+        if (button.parentElement !== document.body && document.body) {
+          document.body.appendChild(button);
+          const currentTooltip = buttonTooltips.get(button);
+          if (currentTooltip && currentTooltip.parentElement !== document.body) {
+            document.body.appendChild(currentTooltip);
+          }
+        }
+
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+
+        if (
+          video instanceof HTMLIFrameElement ||
+          video instanceof HTMLFrameElement
+        ) {
+          enterFrameMode(video);
+        } else {
+          enterPageMode(currentContainer, button);
+        }
+        button.blur();
+        return;
+      }
 
       togglePageMode(currentContainer, button, video);
       button.blur();
@@ -1129,6 +1206,7 @@
       isIdle: false,
       hovering: false,
       isActive: false,
+      mode: "normal",
       isFocused: false,
       isHovered: false,
       tooltip: buttonTooltips.get(button),
@@ -1216,6 +1294,34 @@
     scheduleButtonUpdate();
   }
 
+  function handleFullscreenChange() {
+    const fsElement =
+      document.fullscreenElement || document.webkitFullscreenElement;
+
+    for (const [player, state] of buttonStates) {
+      if (
+        fsElement &&
+        !(
+          fsElement instanceof HTMLIFrameElement ||
+          fsElement instanceof HTMLFrameElement
+        )
+      ) {
+        if (fsElement.contains(player) || fsElement === player) {
+          if (state.button.parentElement !== fsElement) {
+            fsElement.appendChild(state.button);
+            fsElement.appendChild(state.tooltip);
+          }
+        }
+      } else {
+        if (state.button.parentElement !== document.body && document.body) {
+          document.body.appendChild(state.button);
+          document.body.appendChild(state.tooltip);
+        }
+      }
+    }
+    scheduleButtonUpdate();
+  }
+
   window.addEventListener("scroll", scheduleButtonUpdate, {
     capture: true,
     signal: globalAbortController.signal,
@@ -1226,6 +1332,12 @@
   window.addEventListener("pointermove", handlePointerActivity, {
     capture: true,
     passive: true,
+    signal: globalAbortController.signal,
+  });
+  document.addEventListener("fullscreenchange", handleFullscreenChange, {
+    signal: globalAbortController.signal,
+  });
+  document.addEventListener("webkitfullscreenchange", handleFullscreenChange, {
     signal: globalAbortController.signal,
   });
 
@@ -1280,12 +1392,29 @@
       }
 
       if (window !== window.top && event.source === window.parent) {
+        if (message.type === "exit-native-fullscreen") {
+          if (document.fullscreenElement || document.webkitFullscreenElement) {
+            try {
+              if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+              }
+            } catch {}
+          }
+          return;
+        }
         if (message.type === "exit") {
           exitPageMode();
           return;
         }
         if (message.type === "enter") {
           if (!activeContainer && !activeFrame) {
+            if (document.fullscreenElement || document.webkitFullscreenElement) {
+              try {
+                document.exitFullscreen?.();
+              } catch {}
+            }
             const firstPlayer =
               Array.from(buttonStates.keys())[0] ||
               document.querySelector("video,iframe");
@@ -1363,6 +1492,11 @@
 
       if (message.type === "enter") {
         if (!activeContainer && !activeFrame) {
+          if (document.fullscreenElement || document.webkitFullscreenElement) {
+            try {
+              document.exitFullscreen?.();
+            } catch {}
+          }
           enterFrameMode(frame);
           notifyParentFrameMode("enter");
         }

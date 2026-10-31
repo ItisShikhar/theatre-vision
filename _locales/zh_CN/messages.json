@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "退出影院模式"
   },
+  "switchToTheatreMode": {
+    "message": "切换到影院模式"
+  },
   "optionsPageTitle": {
     "message": "Theatre Vision 网站规则"
   },

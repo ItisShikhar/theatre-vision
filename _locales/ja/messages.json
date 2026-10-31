@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "シアターモードを終了"
   },
+  "switchToTheatreMode": {
+    "message": "シアターモードに切り替える"
+  },
   "optionsPageTitle": {
     "message": "Theatre Vision サイトルール"
   },

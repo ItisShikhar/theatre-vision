@@ -14,6 +14,9 @@
   "exitTheatreMode": {
     "message": "থিয়েটার মোড থেকে বেরিয়ে আসুন"
   },
+  "switchToTheatreMode": {
+    "message": "থিয়েটার মোডে স্যুইচ করুন"
+  },
   "optionsPageTitle": {
     "message": "Theatre Vision সাইটের নিয়ম"
   },
