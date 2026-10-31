@@ -56,11 +56,11 @@ git archive --format=zip --output=theatre_vision_ext.zip HEAD manifest.json _loc
 ```
 
 1. Update the version in `manifest.json`, then commit and push the change.
-2. Create and push a matching version tag. For version `1.2.0`, run:
+2. Create and push a matching version tag. For version `1.3.0`, run:
 
    ```bash
-   git tag v1.2.0
-   git push origin v1.2.0
+   git tag v1.3.0
+   git push origin v1.3.0
    ```
 
 The GitHub Actions release workflow checks that the tag matches the manifest

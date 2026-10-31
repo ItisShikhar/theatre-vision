@@ -68,7 +68,12 @@ jobs:
             throw "Release archive was not created: $archivePath"
           }
 
-          gh release create $env:RELEASE_TAG $archivePath --title "Theatre Vision $($manifest.version)" --generate-notes --verify-tag
+          $extraArgs = @()
+          if (Test-Path -LiteralPath 'RELEASE_NOTES.md' -PathType Leaf) {
+            $extraArgs += @('--notes-file', 'RELEASE_NOTES.md')
+          }
+
+          gh release create $env:RELEASE_TAG $archivePath --title "Theatre Vision $($manifest.version)" --generate-notes --verify-tag @extraArgs
           if ($LASTEXITCODE -ne 0) {
             exit $LASTEXITCODE
           }
