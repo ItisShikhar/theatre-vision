@@ -445,10 +445,54 @@
 
   let placeholder = null;
   let elevatedAncestors = [];
+  const savedMaxHeights = new Map();
+
+  function applyMaxHeightOverrides(target) {
+    restoreMaxHeightOverrides();
+    let curr = target;
+    while (
+      curr &&
+      curr !== document &&
+      curr !== document.documentElement.parentElement
+    ) {
+      const inlineMaxHeight = curr.style.getPropertyValue("max-height");
+      const computed = getComputedStyle(curr);
+
+      if (
+        inlineMaxHeight ||
+        (computed.maxHeight && computed.maxHeight !== "none")
+      ) {
+        savedMaxHeights.set(curr, {
+          value: inlineMaxHeight,
+          priority: curr.style.getPropertyPriority("max-height"),
+        });
+        curr.style.setProperty("max-height", "none", "important");
+      }
+      curr = curr.parentElement;
+    }
+  }
+
+  function restoreMaxHeightOverrides() {
+    for (const [node, original] of savedMaxHeights) {
+      if (document.contains(node)) {
+        if (original.value) {
+          node.style.setProperty(
+            "max-height",
+            original.value,
+            original.priority,
+          );
+        } else {
+          node.style.removeProperty("max-height");
+        }
+      }
+    }
+    savedMaxHeights.clear();
+  }
 
   function applyImportantStyles(element, styles) {
     for (const [prop, val] of Object.entries(styles)) {
-      element.style.setProperty(prop, val, "important");
+      const cssProp = prop.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+      element.style.setProperty(cssProp, val, "important");
     }
   }
 
@@ -485,7 +529,7 @@
     let curr = target.parentElement;
     while (curr && curr !== document.documentElement) {
       saveOriginalStyles(curr);
-      curr.style.setProperty("z-index", "2147483645", "important");
+      curr.style.setProperty("z-index", "2147483647", "important");
       const computed = getComputedStyle(curr);
       if (computed.position === "static") {
         curr.style.setProperty("position", "relative", "important");
@@ -540,6 +584,7 @@
 
     createPlaceholder(container);
     elevateAncestors(container);
+    applyMaxHeightOverrides(container);
 
     saveOriginalStyles(container);
     if (!isDedicatedPlayer(container)) {
@@ -554,7 +599,7 @@
       height: "100vh",
       maxWidth: "100vw",
       maxHeight: "100vh",
-      zIndex: "2147483645",
+      zIndex: "2147483647",
       margin: "0",
       padding: "0",
       overflow: "hidden",
@@ -619,6 +664,7 @@
     if (activeButton) setButtonMode(activeButton, true);
     createPlaceholder(frame);
     elevateAncestors(frame);
+    applyMaxHeightOverrides(frame);
 
     saveOriginalStyles(frame);
     saveOriginalStyles(document.body);
@@ -630,7 +676,7 @@
       height: "100%",
       maxWidth: "100%",
       maxHeight: "100%",
-      zIndex: "2147483645",
+      zIndex: "2147483647",
       margin: "0",
       border: "0",
     });
@@ -658,6 +704,7 @@
   function exitFrameMode() {
     if (!activeFrame) return;
 
+    restoreMaxHeightOverrides();
     const frame = activeFrame;
     try {
       frame.contentWindow?.postMessage(
@@ -689,6 +736,7 @@
 
     if (!activeContainer) return;
 
+    restoreMaxHeightOverrides();
     const container = activeContainer;
     restoreOriginalStyles(container);
     if (!isDedicatedPlayer(container)) {
@@ -806,6 +854,7 @@
       placeholder?.remove();
       placeholder = null;
       restoreElevatedAncestors();
+      restoreMaxHeightOverrides();
     }
     if (activeFrame && !document.contains(activeFrame)) {
       activeFrame = null;
@@ -813,6 +862,7 @@
       placeholder?.remove();
       placeholder = null;
       restoreElevatedAncestors();
+      restoreMaxHeightOverrides();
     }
 
     for (const [player, state] of buttonStates) {
@@ -1697,6 +1747,8 @@
     observer.disconnect();
     resizeObserver.disconnect();
     globalAbortController.abort();
+
+    restoreMaxHeightOverrides();
 
     if (activeContainer || activeFrame) {
       exitPageMode();
