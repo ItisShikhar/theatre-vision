@@ -11,13 +11,13 @@
     window === top ? "TOP" : "IFRAME",
   );
 
-  const BUTTON_CLASS = "vpm-button";
-  const BODY_LOCK_CLASS = "vpm-body-lock";
+  const BUTTON_CLASS = "theatre-vision-ext-button";
+  const BODY_LOCK_CLASS = "theatre-vision-ext-body-lock";
   const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
   const TOOLTIP_EDGE_GUTTER = 8;
   const TOOLTIP_GAP = 8;
   const BUTTON_IDLE_DELAY = 3000;
-  const BUTTON_IDLE_CLASS = "vpm-button-idle";
+  const BUTTON_IDLE_CLASS = "theatre-vision-ext-button-idle";
   const enterTheatreMessage = (() => {
     try {
       return chrome.i18n?.getMessage("enterTheatreMode");
@@ -158,7 +158,7 @@
 
     exitHint = document.createElement("div");
 
-    exitHint.className = "vpm-exit-hint";
+    exitHint.className = "theatre-vision-ext-exit-hint";
 
     const hint = document.createElement("p");
     const escapeKey = document.createElement("kbd");
@@ -180,12 +180,12 @@
     const hint = exitHint || createExitHint();
     if (!hint) return;
 
-    hint.classList.add("vpm-show");
+    hint.classList.add("theatre-vision-ext-show");
 
     clearTimeout(showExitHint.timer);
 
     showExitHint.timer = setTimeout(() => {
-      hint.classList.remove("vpm-show");
+      hint.classList.remove("theatre-vision-ext-show");
     }, 2500);
   }
 
@@ -539,7 +539,7 @@
 
   function createPlaceholder(element) {
     placeholder = document.createElement("div");
-    placeholder.className = "vpm-placeholder";
+    placeholder.className = "theatre-vision-ext-placeholder";
     placeholder.style.width = element.offsetWidth + "px";
     placeholder.style.height = element.offsetHeight + "px";
     element.parentNode.insertBefore(placeholder, element);
@@ -898,13 +898,13 @@
 
   function showTooltip(state) {
     state.tooltipVisible = true;
-    state.tooltip.classList.add("vpm-tooltip-visible");
+    state.tooltip.classList.add("theatre-vision-ext-tooltip-visible");
     positionTooltip(state.button, state.tooltip);
   }
 
   function hideTooltip(state) {
     state.tooltipVisible = false;
-    state.tooltip.classList.remove("vpm-tooltip-visible");
+    state.tooltip.classList.remove("theatre-vision-ext-tooltip-visible");
   }
 
   function updateButtons() {
@@ -987,7 +987,7 @@
 
       if (!isSiteEnabled()) {
         hideTooltip(state);
-        state.button.classList.remove("vpm-visible");
+        state.button.classList.remove("theatre-vision-ext-visible");
       } else if (
         state.isFocused ||
         (isTheatreExitButton
@@ -995,9 +995,9 @@
           : visible && isHovered && !state.isIdle)
       ) {
         positionButton(player, state.button, state.container);
-        state.button.classList.add("vpm-visible");
+        state.button.classList.add("theatre-vision-ext-visible");
       } else {
-        state.button.classList.remove("vpm-visible");
+        state.button.classList.remove("theatre-vision-ext-visible");
       }
 
       if (state.tooltipVisible) {
@@ -1172,7 +1172,7 @@
       tooltip.replaceChildren();
 
       const tooltipLabel = document.createElement("span");
-      tooltipLabel.className = "vpm-tooltip-label";
+      tooltipLabel.className = "theatre-vision-ext-tooltip-label";
       tooltipLabel.textContent = label;
       tooltip.appendChild(tooltipLabel);
 
@@ -1190,7 +1190,7 @@
 
     button.className = BUTTON_CLASS;
     button.type = "button";
-    tooltip.className = "vpm-tooltip";
+    tooltip.className = "theatre-vision-ext-tooltip";
     tooltip.setAttribute("aria-hidden", "true");
     tooltip.dir = "auto";
     buttonTooltips.set(button, tooltip);
