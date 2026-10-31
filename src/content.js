@@ -412,31 +412,58 @@
 
   const originalStyles = new WeakMap();
 
-  // ------------------------------------------------------------
-  // Save original inline styles
-  // ------------------------------------------------------------
+  function applyImportantStyles(element, styles) {
+    if (!originalStyles.has(element)) {
+      originalStyles.set(element, new Map());
+    }
+    const saved = originalStyles.get(element);
 
-  function saveOriginalStyles(container) {
-    if (originalStyles.has(container)) return;
-
-    originalStyles.set(container, {
-      style: container.getAttribute("style"),
-    });
+    for (const [prop, val] of Object.entries(styles)) {
+      const cssProp = prop.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
+      if (!saved.has(cssProp)) {
+        saved.set(cssProp, {
+          value: element.style.getPropertyValue(cssProp),
+          priority: element.style.getPropertyPriority(cssProp),
+        });
+      }
+      element.style.setProperty(cssProp, val, "important");
+    }
   }
 
-  // ------------------------------------------------------------
-  // Restore original inline styles
-  // ------------------------------------------------------------
-
-  function restoreOriginalStyles(container) {
-    const saved = originalStyles.get(container);
-
+  function restoreOriginalStyles(element) {
+    const saved = originalStyles.get(element);
     if (!saved) return;
 
-    if (saved.style === null) container.removeAttribute("style");
-    else container.setAttribute("style", saved.style);
+    for (const [cssProp, original] of saved) {
+      if (original.value) {
+        element.style.setProperty(cssProp, original.value, original.priority);
+      } else {
+        element.style.removeProperty(cssProp);
+      }
+    }
 
-    originalStyles.delete(container);
+    if (!element.getAttribute("style")) {
+      element.removeAttribute("style");
+    }
+
+    originalStyles.delete(element);
+  }
+
+  function clearImportantStyles(element) {
+    const saved = originalStyles.get(element);
+    if (!saved) return;
+
+    for (const cssProp of saved.keys()) {
+      if (element.style.getPropertyPriority(cssProp) === "important") {
+        element.style.removeProperty(cssProp);
+      }
+    }
+
+    if (!element.getAttribute("style")) {
+      element.removeAttribute("style");
+    }
+
+    originalStyles.delete(element);
   }
 
   // ============================================================
@@ -484,16 +511,26 @@
         } else {
           node.style.removeProperty("max-height");
         }
+        if (!node.getAttribute("style")) {
+          node.removeAttribute("style");
+        }
       }
     }
     savedMaxHeights.clear();
   }
 
-  function applyImportantStyles(element, styles) {
-    for (const [prop, val] of Object.entries(styles)) {
-      const cssProp = prop.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`);
-      element.style.setProperty(cssProp, val, "important");
+  function clearMaxHeightOverrides() {
+    for (const [node] of savedMaxHeights) {
+      if (document.contains(node)) {
+        if (node.style.getPropertyPriority("max-height") === "important") {
+          node.style.removeProperty("max-height");
+        }
+        if (!node.getAttribute("style")) {
+          node.removeAttribute("style");
+        }
+      }
     }
+    savedMaxHeights.clear();
   }
 
   function isDedicatedPlayer(container) {
@@ -528,33 +565,33 @@
   function elevateAncestors(target) {
     let curr = target.parentElement;
     while (curr && curr !== document.documentElement) {
-      saveOriginalStyles(curr);
-      curr.style.setProperty("z-index", "2147483647", "important");
       const computed = getComputedStyle(curr);
+      const overrides = { zIndex: "2147483647" };
       if (computed.position === "static") {
-        curr.style.setProperty("position", "relative", "important");
+        overrides.position = "relative";
       }
       if (computed.transform !== "none") {
-        curr.style.setProperty("transform", "none", "important");
+        overrides.transform = "none";
       }
       if (computed.contain !== "none") {
-        curr.style.setProperty("contain", "none", "important");
+        overrides.contain = "none";
       }
       if (computed.filter !== "none") {
-        curr.style.setProperty("filter", "none", "important");
+        overrides.filter = "none";
       }
       if (computed.perspective !== "none") {
-        curr.style.setProperty("perspective", "none", "important");
+        overrides.perspective = "none";
       }
       if (computed.clipPath !== "none") {
-        curr.style.setProperty("clip-path", "none", "important");
+        overrides.clipPath = "none";
       }
       if (
         computed.willChange.includes("transform") ||
         computed.willChange.includes("filter")
       ) {
-        curr.style.setProperty("will-change", "auto", "important");
+        overrides.willChange = "auto";
       }
+      applyImportantStyles(curr, overrides);
       elevatedAncestors.push(curr);
       curr = curr.parentElement;
     }
@@ -563,6 +600,13 @@
   function restoreElevatedAncestors() {
     for (const ancestor of elevatedAncestors) {
       restoreOriginalStyles(ancestor);
+    }
+    elevatedAncestors = [];
+  }
+
+  function clearElevatedAncestors() {
+    for (const ancestor of elevatedAncestors) {
+      clearImportantStyles(ancestor);
     }
     elevatedAncestors = [];
   }
@@ -585,12 +629,6 @@
     createPlaceholder(container);
     elevateAncestors(container);
     applyMaxHeightOverrides(container);
-
-    saveOriginalStyles(container);
-    if (!isDedicatedPlayer(container)) {
-      container.querySelectorAll("iframe,video").forEach(saveOriginalStyles);
-    }
-    saveOriginalStyles(document.body);
 
     applyImportantStyles(container, {
       position: "fixed",
@@ -639,8 +677,8 @@
       });
     }
 
+    applyImportantStyles(document.body, { overflow: "hidden" });
     document.body.classList.add(BODY_LOCK_CLASS);
-    document.body.style.overflow = "hidden";
     triggerPlayerResize();
     showExitHint();
     notifyParentFrameMode("enter");
@@ -662,12 +700,10 @@
     activeFrame = frame;
     activeButton = buttonStates.get(frame)?.button ?? null;
     if (activeButton) setButtonMode(activeButton, true);
+
     createPlaceholder(frame);
     elevateAncestors(frame);
     applyMaxHeightOverrides(frame);
-
-    saveOriginalStyles(frame);
-    saveOriginalStyles(document.body);
 
     applyImportantStyles(frame, {
       position: "fixed",
@@ -688,8 +724,8 @@
       );
     } catch {}
 
+    applyImportantStyles(document.body, { overflow: "hidden" });
     document.body.classList.add(BODY_LOCK_CLASS);
-    document.body.style.overflow = "hidden";
     showExitHint();
     resetButtonIdleTimer(getActiveButtonState());
     scheduleButtonUpdate();
@@ -701,10 +737,9 @@
     }
   }
 
-  function exitFrameMode() {
+  function exitFrameMode(triggerResize = true, enteringFullscreen = false) {
     if (!activeFrame) return;
 
-    restoreMaxHeightOverrides();
     const frame = activeFrame;
     try {
       frame.contentWindow?.postMessage(
@@ -713,10 +748,25 @@
       );
     } catch {}
 
-    restoreOriginalStyles(frame);
+    if (enteringFullscreen) {
+      clearImportantStyles(frame);
+      clearMaxHeightOverrides();
+      clearElevatedAncestors();
+      if (document.body.style.getPropertyPriority("overflow") === "important") {
+        document.body.style.removeProperty("overflow");
+      }
+      if (!document.body.getAttribute("style")) {
+        document.body.removeAttribute("style");
+      }
+      originalStyles.delete(document.body);
+    } else {
+      restoreOriginalStyles(frame);
+      restoreMaxHeightOverrides();
+      restoreElevatedAncestors();
+      restoreOriginalStyles(document.body);
+    }
+
     placeholder?.remove();
-    restoreOriginalStyles(document.body);
-    restoreElevatedAncestors();
     document.body.classList.remove(BODY_LOCK_CLASS);
 
     placeholder = null;
@@ -725,34 +775,62 @@
     activeButton = null;
 
     notifyParentFrameMode("exit");
+    if (triggerResize) {
+      triggerPlayerResize();
+    }
     scheduleButtonUpdate();
   }
 
-  function exitPageMode() {
+  function exitPageMode(triggerResize = true, enteringFullscreen = false) {
     if (activeFrame) {
-      exitFrameMode();
+      exitFrameMode(triggerResize, enteringFullscreen);
       return;
     }
 
     if (!activeContainer) return;
 
-    restoreMaxHeightOverrides();
     const container = activeContainer;
-    restoreOriginalStyles(container);
-    if (!isDedicatedPlayer(container)) {
-      container.querySelectorAll("iframe,video").forEach((el) => {
-        restoreOriginalStyles(el);
-        try {
-          el.contentWindow?.postMessage(
-            { source: "theatre-vision", type: "exit" },
-            "*",
-          );
-        } catch {}
-      });
+    if (enteringFullscreen) {
+      clearImportantStyles(container);
+      clearMaxHeightOverrides();
+      if (!isDedicatedPlayer(container)) {
+        container.querySelectorAll("iframe,video").forEach((el) => {
+          clearImportantStyles(el);
+          try {
+            el.contentWindow?.postMessage(
+              { source: "theatre-vision", type: "exit" },
+              "*",
+            );
+          } catch {}
+        });
+      }
+      clearElevatedAncestors();
+      if (document.body.style.getPropertyPriority("overflow") === "important") {
+        document.body.style.removeProperty("overflow");
+      }
+      if (!document.body.getAttribute("style")) {
+        document.body.removeAttribute("style");
+      }
+      originalStyles.delete(document.body);
+    } else {
+      restoreOriginalStyles(container);
+      restoreMaxHeightOverrides();
+      if (!isDedicatedPlayer(container)) {
+        container.querySelectorAll("iframe,video").forEach((el) => {
+          restoreOriginalStyles(el);
+          try {
+            el.contentWindow?.postMessage(
+              { source: "theatre-vision", type: "exit" },
+              "*",
+            );
+          } catch {}
+        });
+      }
+      restoreElevatedAncestors();
+      restoreOriginalStyles(document.body);
     }
+
     placeholder?.remove();
-    restoreOriginalStyles(document.body);
-    restoreElevatedAncestors();
     document.body.classList.remove(BODY_LOCK_CLASS);
 
     placeholder = null;
@@ -760,7 +838,9 @@
     activeContainer = null;
     activeButton = null;
 
-    triggerPlayerResize();
+    if (triggerResize) {
+      triggerPlayerResize();
+    }
     notifyParentFrameMode("exit");
     scheduleButtonUpdate();
   }
@@ -1082,7 +1162,12 @@
 
   function setButtonMode(button, mode) {
     const isTheatre = mode === true || mode === "theatre";
-    const isFullscreen = mode === "fullscreen";
+    const isFullscreen =
+      mode === "fullscreen" ||
+      (!isTheatre &&
+        Boolean(
+          document.fullscreenElement || document.webkitFullscreenElement,
+        ));
     const label = isTheatre
       ? EXIT_THEATRE_LABEL
       : isFullscreen
@@ -1145,7 +1230,7 @@
 
       if (fsElement) {
         if (activeContainer || activeFrame) {
-          exitPageMode();
+          exitPageMode(false, true);
         }
 
         try {
@@ -1353,7 +1438,7 @@
       document.fullscreenElement || document.webkitFullscreenElement;
 
     if (fsElement && (activeContainer || activeFrame)) {
-      exitPageMode();
+      exitPageMode(false, true);
     }
 
     for (const [player, state] of buttonStates) {
@@ -1376,6 +1461,7 @@
           document.body.appendChild(state.tooltip);
         }
       }
+      setButtonMode(state.button, false);
     }
     scheduleButtonUpdate();
   }
