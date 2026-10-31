@@ -901,10 +901,10 @@
         document.fullscreenElement || document.webkitFullscreenElement,
       );
 
-      const targetMode = isActive
-        ? "theatre"
-        : isNativeFullscreen
-          ? "fullscreen"
+      const targetMode = isNativeFullscreen
+        ? "fullscreen"
+        : isActive
+          ? "theatre"
           : "normal";
 
       if (state.mode !== targetMode) {
@@ -1143,7 +1143,11 @@
       const fsElement =
         document.fullscreenElement || document.webkitFullscreenElement;
 
-      if (fsElement && !activeContainer && !activeFrame) {
+      if (fsElement) {
+        if (activeContainer || activeFrame) {
+          exitPageMode();
+        }
+
         try {
           if (document.exitFullscreen) {
             await document.exitFullscreen();
@@ -1347,6 +1351,10 @@
   function handleFullscreenChange() {
     const fsElement =
       document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (fsElement && (activeContainer || activeFrame)) {
+      exitPageMode();
+    }
 
     for (const [player, state] of buttonStates) {
       if (
