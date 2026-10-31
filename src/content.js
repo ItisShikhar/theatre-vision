@@ -12,8 +12,6 @@
   );
 
   const BUTTON_CLASS = "vpm-button";
-  const WRAPPER_CLASS = "vpm-wrapper";
-  const PAGE_MODE_CLASS = "vpm-page-mode";
   const BODY_LOCK_CLASS = "vpm-body-lock";
   const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
   const TOOLTIP_EDGE_GUTTER = 8;
@@ -189,21 +187,6 @@
     showExitHint.timer = setTimeout(() => {
       hint.classList.remove("vpm-show");
     }, 2500);
-  }
-
-  // ------------------------------------------------------------
-  // Utility
-  // ------------------------------------------------------------
-
-  function isVisible(element) {
-    const rect = element.getBoundingClientRect();
-
-    return (
-      rect.width > 30 &&
-      rect.height > 30 &&
-      getComputedStyle(element).display !== "none" &&
-      getComputedStyle(element).visibility !== "hidden"
-    );
   }
 
   // ------------------------------------------------------------
