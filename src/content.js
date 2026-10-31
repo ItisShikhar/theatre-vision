@@ -537,6 +537,52 @@
     });
   }
 
+  function scrollPlayerIntoView(element) {
+    if (!element || !document.contains(element)) return;
+
+    const snap = () => {
+      if (!document.contains(element)) return;
+      try {
+        const rect = element.getBoundingClientRect();
+        if (rect.width <= 0 && rect.height <= 0) return;
+
+        const viewportHeight =
+          window.innerHeight || document.documentElement.clientHeight;
+        const viewportWidth =
+          window.innerWidth || document.documentElement.clientWidth;
+
+        const visibleHeight =
+          Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0);
+        const visibleWidth =
+          Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0);
+
+        const isSubstantiallyInView =
+          visibleHeight >= Math.min(rect.height * 0.5, 120) &&
+          visibleWidth >= Math.min(rect.width * 0.5, 160);
+
+        if (!isSubstantiallyInView) {
+          try {
+            element.scrollIntoView({
+              behavior: "instant",
+              block: "center",
+              inline: "nearest",
+            });
+          } catch {
+            try {
+              element.scrollIntoView({ block: "center" });
+            } catch {
+              element.scrollIntoView();
+            }
+          }
+          scheduleButtonUpdate();
+        }
+      } catch {}
+    };
+
+    snap();
+    requestAnimationFrame(snap);
+  }
+
   function createPlaceholder(element) {
     placeholder = document.createElement("div");
     placeholder.className = "theatre-vision-ext-placeholder";
@@ -757,6 +803,10 @@
     if (activeButton) setButtonMode(activeButton, false);
     activeButton = null;
 
+    if (!enteringFullscreen) {
+      scrollPlayerIntoView(frame);
+    }
+
     notifyParentFrameMode("exit");
     if (triggerResize) {
       triggerPlayerResize();
@@ -820,6 +870,10 @@
     if (activeButton) setButtonMode(activeButton, false);
     activeContainer = null;
     activeButton = null;
+
+    if (!enteringFullscreen) {
+      scrollPlayerIntoView(container);
+    }
 
     if (triggerResize) {
       triggerPlayerResize();
