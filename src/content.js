@@ -43,17 +43,17 @@
   })();
 
   if (!enterTheatreMessage) {
-    console.error(
+    console.warn(
       "[Theatre Vision] Missing localization message: enterTheatreMode",
     );
   }
   if (!exitTheatreMessage) {
-    console.error(
+    console.warn(
       "[Theatre Vision] Missing localization message: exitTheatreMode",
     );
   }
   if (!switchTheatreMessage) {
-    console.error(
+    console.warn(
       "[Theatre Vision] Missing localization message: switchToTheatreMode",
     );
   }
