@@ -5,7 +5,11 @@
 // ============================================================
 
 (() => {
-  console.log("[Theatre Vision] Loaded", location.href, window === top ? "TOP" : "IFRAME");
+  console.log(
+    "[Theatre Vision] Loaded",
+    location.href,
+    window === top ? "TOP" : "IFRAME",
+  );
 
   const BUTTON_CLASS = "vpm-button";
   const WRAPPER_CLASS = "vpm-wrapper";
@@ -14,6 +18,8 @@
   const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
   const TOOLTIP_EDGE_GUTTER = 8;
   const TOOLTIP_GAP = 8;
+  const BUTTON_IDLE_DELAY = 3000;
+  const BUTTON_IDLE_CLASS = "vpm-button-idle";
   const enterTheatreMessage = (() => {
     try {
       return chrome.i18n?.getMessage("enterTheatreMode");
@@ -30,10 +36,14 @@
   })();
 
   if (!enterTheatreMessage) {
-    console.error("[Theatre Vision] Missing localization message: enterTheatreMode");
+    console.error(
+      "[Theatre Vision] Missing localization message: enterTheatreMode",
+    );
   }
   if (!exitTheatreMessage) {
-    console.error("[Theatre Vision] Missing localization message: exitTheatreMode");
+    console.error(
+      "[Theatre Vision] Missing localization message: exitTheatreMode",
+    );
   }
 
   const ENTER_THEATRE_LABEL = enterTheatreMessage || "Enter Theatre Mode";
@@ -109,13 +119,21 @@
   function normalizeDomains(domains) {
     if (!Array.isArray(domains)) return [];
 
-    return [...new Set(domains.map(TheatreVisionSiteRules.normalizeDomain).filter(Boolean))];
+    return [
+      ...new Set(
+        domains.map(TheatreVisionSiteRules.normalizeDomain).filter(Boolean),
+      ),
+    ];
   }
 
   function isSiteEnabled() {
     return (
       settingsLoaded &&
-      TheatreVisionSiteRules.isEnabled(location.hostname, disabledDomains, enabledDomains)
+      TheatreVisionSiteRules.isEnabled(
+        location.hostname,
+        disabledDomains,
+        enabledDomains,
+      )
     );
   }
 
@@ -181,7 +199,12 @@
 
   // Fast-path: saves ~100ms on major video sites before the button appears.
   function isKnownVideoEmbed(frame) {
-    const src = (frame.src || frame.getAttribute("src") || frame.getAttribute("data-src") || "").toLowerCase();
+    const src = (
+      frame.src ||
+      frame.getAttribute("src") ||
+      frame.getAttribute("data-src") ||
+      ""
+    ).toLowerCase();
     if (!src) return false;
 
     return (
@@ -234,7 +257,10 @@
   }
 
   function queryFrameVideo(frame) {
-    if (!(frame instanceof HTMLIFrameElement || frame instanceof HTMLFrameElement)) return;
+    if (
+      !(frame instanceof HTMLIFrameElement || frame instanceof HTMLFrameElement)
+    )
+      return;
 
     if (isVerifiedVideoFrame(frame)) {
       attachButton(frame);
@@ -357,7 +383,12 @@
       node = node.parentElement;
     }
 
-    console.debug("[Theatre Vision] Selected container:", best, "Score:", bestScore);
+    console.debug(
+      "[Theatre Vision] Selected container:",
+      best,
+      "Score:",
+      bestScore,
+    );
 
     return best;
   }
@@ -542,7 +573,10 @@
         }
 
         try {
-          el.contentWindow?.postMessage({ source: "theatre-vision", type: "enter" }, "*");
+          el.contentWindow?.postMessage(
+            { source: "theatre-vision", type: "enter" },
+            "*",
+          );
         } catch {}
       });
     }
@@ -552,6 +586,7 @@
     triggerPlayerResize();
     showExitHint();
     notifyParentFrameMode("enter");
+    resetButtonIdleTimer(getActiveButtonState());
     scheduleButtonUpdate();
   }
 
@@ -588,12 +623,16 @@
     });
 
     try {
-      frame.contentWindow?.postMessage({ source: "theatre-vision", type: "enter" }, "*");
+      frame.contentWindow?.postMessage(
+        { source: "theatre-vision", type: "enter" },
+        "*",
+      );
     } catch {}
 
     document.body.classList.add(BODY_LOCK_CLASS);
     document.body.style.overflow = "hidden";
     showExitHint();
+    resetButtonIdleTimer(getActiveButtonState());
     scheduleButtonUpdate();
   }
 
@@ -608,7 +647,10 @@
 
     const frame = activeFrame;
     try {
-      frame.contentWindow?.postMessage({ source: "theatre-vision", type: "exit" }, "*");
+      frame.contentWindow?.postMessage(
+        { source: "theatre-vision", type: "exit" },
+        "*",
+      );
     } catch {}
 
     restoreOriginalStyles(frame);
@@ -640,7 +682,10 @@
       container.querySelectorAll("iframe,video").forEach((el) => {
         restoreOriginalStyles(el);
         try {
-          el.contentWindow?.postMessage({ source: "theatre-vision", type: "exit" }, "*");
+          el.contentWindow?.postMessage(
+            { source: "theatre-vision", type: "exit" },
+            "*",
+          );
         } catch {}
       });
     }
@@ -702,7 +747,8 @@
   function positionTooltip(button, tooltip) {
     const buttonRect = button.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
-    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+    const viewportWidth =
+      document.documentElement.clientWidth || window.innerWidth;
     const viewportHeight = window.innerHeight;
     const maxLeft = Math.max(
       TOOLTIP_EDGE_GUTTER,
@@ -759,6 +805,7 @@
     for (const [player, state] of buttonStates) {
       if (!document.contains(player)) {
         state.abortController.abort();
+        clearButtonIdleTimer(state);
         state.button.remove();
         state.tooltip.remove();
         buttonStates.delete(player);
@@ -770,10 +817,19 @@
       }
 
       const rect = player.getBoundingClientRect();
-      const containerRect = state.container ? state.container.getBoundingClientRect() : null;
+      const containerRect = state.container
+        ? state.container.getBoundingClientRect()
+        : null;
       const visible =
-        (rect.width > 80 && rect.height > 60 && rect.bottom > 0 && rect.top < window.innerHeight) ||
-        (containerRect && containerRect.width > 120 && containerRect.height > 80 && containerRect.bottom > 0 && containerRect.top < window.innerHeight);
+        (rect.width > 80 &&
+          rect.height > 60 &&
+          rect.bottom > 0 &&
+          rect.top < window.innerHeight) ||
+        (containerRect &&
+          containerRect.width > 120 &&
+          containerRect.height > 80 &&
+          containerRect.bottom > 0 &&
+          containerRect.top < window.innerHeight);
       const isActive =
         state.container === activeContainer ||
         state.container === activeFrame ||
@@ -789,13 +845,18 @@
         state.button.matches(":hover") ||
         (state.container && state.container.matches(":hover")) ||
         player.matches(":hover");
+      const isTheatreExitButton =
+        state.button === activeButton &&
+        Boolean(activeContainer || activeFrame);
 
       if (!isSiteEnabled()) {
         hideTooltip(state);
         state.button.classList.remove("vpm-visible");
       } else if (
         state.isFocused ||
-        (visible && isHovered)
+        (isTheatreExitButton
+          ? !state.isIdle
+          : visible && isHovered && !state.isIdle)
       ) {
         positionButton(player, state.button, state.container);
         state.button.classList.add("vpm-visible");
@@ -815,6 +876,92 @@
     if (!buttonUpdateFrame) {
       buttonUpdateFrame = requestAnimationFrame(updateButtons);
     }
+  }
+
+  function getActiveButtonState() {
+    for (const state of buttonStates.values()) {
+      if (state.button === activeButton) return state;
+    }
+
+    return null;
+  }
+
+  function resetButtonIdleTimer(state) {
+    if (!state) return;
+
+    clearTimeout(state.idleTimer);
+    state.idleTimer = 0;
+    const wasIdle = state.isIdle;
+    state.isIdle = false;
+    state.button.classList.remove(BUTTON_IDLE_CLASS);
+    if (wasIdle) scheduleButtonUpdate();
+
+    state.idleTimer = setTimeout(() => {
+      state.idleTimer = 0;
+      if (!state.button.isConnected || state.isFocused) return;
+
+      state.isIdle = true;
+      state.button.classList.add(BUTTON_IDLE_CLASS);
+      hideTooltip(state);
+      scheduleButtonUpdate();
+    }, BUTTON_IDLE_DELAY);
+  }
+
+  function clearButtonIdleTimer(state) {
+    clearTimeout(state.idleTimer);
+    state.idleTimer = 0;
+  }
+
+  function hideTheatreButtonForPointerExit() {
+    if (!activeContainer && !activeFrame) return;
+
+    const state = getActiveButtonState();
+    if (!state) return;
+
+    clearButtonIdleTimer(state);
+    state.isIdle = true;
+    state.button.classList.add(BUTTON_IDLE_CLASS);
+    hideTooltip(state);
+    scheduleButtonUpdate();
+  }
+
+  function notifyParentPointerActivity() {
+    if (window === window.top) return;
+
+    window.parent.postMessage(
+      { source: "theatre-vision", type: "pointer-activity" },
+      "*",
+    );
+  }
+
+  function handlePointerActivity(forceNotifyParent = false, interactedFrameState = null) {
+    let shouldNotifyParent = forceNotifyParent;
+
+    if (activeContainer || activeFrame) {
+      resetButtonIdleTimer(getActiveButtonState());
+      shouldNotifyParent = true;
+    }
+
+    for (const [player, state] of buttonStates) {
+      if (
+        state.button === activeButton &&
+        (activeContainer || activeFrame)
+      ) {
+        continue;
+      }
+
+      const isHovered =
+        state.hovering ||
+        state.button.matches(":hover") ||
+        (state.container && state.container.matches(":hover")) ||
+        player.matches(":hover");
+      if (state === interactedFrameState || isHovered) {
+        resetButtonIdleTimer(state);
+        shouldNotifyParent = true;
+      }
+    }
+
+    if (shouldNotifyParent) notifyParentPointerActivity();
   }
 
   function createTheatreIcon(isActive) {
@@ -909,9 +1056,10 @@
       e.preventDefault();
       e.stopPropagation();
 
-      const currentContainer = (container && document.contains(container))
-        ? container
-        : (buttonStates.get(video)?.container || findPlayerContainer(video));
+      const currentContainer =
+        container && document.contains(container)
+          ? container
+          : buttonStates.get(video)?.container || findPlayerContainer(video);
 
       togglePageMode(currentContainer, button, video);
       button.blur();
@@ -924,7 +1072,8 @@
     if (buttonStates.has(player) || !document.body || !isSiteEnabled()) return;
 
     if (
-      (player instanceof HTMLIFrameElement || player instanceof HTMLFrameElement) &&
+      (player instanceof HTMLIFrameElement ||
+        player instanceof HTMLFrameElement) &&
       !isVerifiedVideoFrame(player)
     ) {
       return;
@@ -934,21 +1083,37 @@
     const rect = player.getBoundingClientRect();
     const containerRect = container ? container.getBoundingClientRect() : null;
     const isPlayerVisible =
-      (rect.width > 30 && rect.height > 30 && getComputedStyle(player).display !== "none") ||
-      (containerRect && containerRect.width > 80 && containerRect.height > 60 && getComputedStyle(container).display !== "none");
+      (rect.width > 30 &&
+        rect.height > 30 &&
+        getComputedStyle(player).display !== "none") ||
+      (containerRect &&
+        containerRect.width > 80 &&
+        containerRect.height > 60 &&
+        getComputedStyle(container).display !== "none");
 
     if (!isPlayerVisible) {
-      if (player instanceof HTMLIFrameElement || player instanceof HTMLFrameElement) {
-        player.addEventListener("load", () => {
-          attachButton(player);
-          scheduleButtonUpdate();
-        }, { once: true });
-      } else if (player instanceof HTMLMediaElement) {
-        ["loadeddata", "loadedmetadata", "canplay", "play"].forEach((evt) => {
-          player.addEventListener(evt, () => {
+      if (
+        player instanceof HTMLIFrameElement ||
+        player instanceof HTMLFrameElement
+      ) {
+        player.addEventListener(
+          "load",
+          () => {
             attachButton(player);
             scheduleButtonUpdate();
-          }, { once: true });
+          },
+          { once: true },
+        );
+      } else if (player instanceof HTMLMediaElement) {
+        ["loadeddata", "loadedmetadata", "canplay", "play"].forEach((evt) => {
+          player.addEventListener(
+            evt,
+            () => {
+              attachButton(player);
+              scheduleButtonUpdate();
+            },
+            { once: true },
+          );
         });
       }
       return;
@@ -960,6 +1125,8 @@
       abortController,
       button,
       container,
+      idleTimer: 0,
+      isIdle: false,
       hovering: false,
       isActive: false,
       isFocused: false,
@@ -969,6 +1136,7 @@
     };
     const setHovering = (hovering) => {
       state.hovering = hovering;
+      if (hovering) resetButtonIdleTimer(state);
       scheduleButtonUpdate();
     };
 
@@ -997,33 +1165,53 @@
     }
 
     if (player instanceof HTMLMediaElement) {
-      ["loadeddata", "loadedmetadata", "canplay", "play", "playing"].forEach((evt) => {
-        player.addEventListener(evt, () => scheduleButtonUpdate(), {
-          signal: abortController.signal,
-        });
-      });
+      ["loadeddata", "loadedmetadata", "canplay", "play", "playing"].forEach(
+        (evt) => {
+          player.addEventListener(evt, () => scheduleButtonUpdate(), {
+            signal: abortController.signal,
+          });
+        },
+      );
     }
 
-    button.addEventListener("mouseenter", () => {
-      state.isHovered = true;
-      setHovering(true);
-      showTooltip(state);
-    }, { signal: abortController.signal });
-    button.addEventListener("mouseleave", () => {
-      state.isHovered = false;
-      setHovering(false);
-      hideTooltip(state);
-    }, { signal: abortController.signal });
-    button.addEventListener("focus", () => {
-      state.isFocused = true;
-      showTooltip(state);
-      scheduleButtonUpdate();
-    }, { signal: abortController.signal });
-    button.addEventListener("blur", () => {
-      state.isFocused = false;
-      if (!state.isHovered) hideTooltip(state);
-      scheduleButtonUpdate();
-    }, { signal: abortController.signal });
+    button.addEventListener(
+      "mouseenter",
+      () => {
+        state.isHovered = true;
+        setHovering(true);
+        showTooltip(state);
+      },
+      { signal: abortController.signal },
+    );
+    button.addEventListener(
+      "mouseleave",
+      () => {
+        state.isHovered = false;
+        setHovering(false);
+        hideTooltip(state);
+      },
+      { signal: abortController.signal },
+    );
+    button.addEventListener(
+      "focus",
+      () => {
+        state.isFocused = true;
+        resetButtonIdleTimer(state);
+        showTooltip(state);
+        scheduleButtonUpdate();
+      },
+      { signal: abortController.signal },
+    );
+    button.addEventListener(
+      "blur",
+      () => {
+        state.isFocused = false;
+        if (!state.isHovered) hideTooltip(state);
+        resetButtonIdleTimer(state);
+        scheduleButtonUpdate();
+      },
+      { signal: abortController.signal },
+    );
 
     scheduleButtonUpdate();
   }
@@ -1035,117 +1223,155 @@
   window.addEventListener("resize", scheduleButtonUpdate, {
     signal: globalAbortController.signal,
   });
+  window.addEventListener("pointermove", handlePointerActivity, {
+    capture: true,
+    passive: true,
+    signal: globalAbortController.signal,
+  });
 
-  document.documentElement.addEventListener("mouseleave", () => {
-    if (buttonStates.size === 0) return;
-    for (const state of buttonStates.values()) {
-      state.hovering = false;
-      state.isHovered = false;
-      hideTooltip(state);
-    }
+  document.documentElement.addEventListener(
+    "mouseleave",
+    (event) => {
+      if (event.relatedTarget === null) {
+        hideTheatreButtonForPointerExit();
+      }
 
-    scheduleButtonUpdate();
-  }, { signal: globalAbortController.signal });
+      if (buttonStates.size === 0) return;
+      for (const state of buttonStates.values()) {
+        state.hovering = false;
+        state.isHovered = false;
+        hideTooltip(state);
+      }
+
+      scheduleButtonUpdate();
+    },
+    { signal: globalAbortController.signal },
+  );
 
   // ------------------------------------------------------------
   // ESC exits page mode
   // ------------------------------------------------------------
 
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      exitPageMode();
-    }
-  }, { signal: globalAbortController.signal });
-
-  window.addEventListener("message", (event) => {
-    const message = event.data;
-
-    if (!message || message.source !== "theatre-vision") return;
-
-    if (window !== window.top && event.source === window.parent) {
-      if (message.type === "exit") {
+  document.addEventListener(
+    "keydown",
+    (e) => {
+      if (e.key === "Escape") {
         exitPageMode();
+      }
+    },
+    { signal: globalAbortController.signal },
+  );
+
+  window.addEventListener(
+    "message",
+    (event) => {
+      const message = event.data;
+
+      if (!message || message.source !== "theatre-vision") return;
+
+      if (message.type === "pointer-activity") {
+        const frame = Array.from(
+          document.querySelectorAll("iframe,frame"),
+        ).find((element) => element.contentWindow === event.source);
+        if (frame) {
+          handlePointerActivity(true, buttonStates.get(frame));
+        }
         return;
       }
-      if (message.type === "enter") {
-        if (!activeContainer && !activeFrame) {
-          const firstPlayer = Array.from(buttonStates.keys())[0] || document.querySelector("video,iframe");
-          if (firstPlayer) {
-            const container = buttonStates.get(firstPlayer)?.container || findPlayerContainer(firstPlayer);
-            const btn = buttonStates.get(firstPlayer)?.button;
-            enterPageMode(container, btn);
+
+      if (window !== window.top && event.source === window.parent) {
+        if (message.type === "exit") {
+          exitPageMode();
+          return;
+        }
+        if (message.type === "enter") {
+          if (!activeContainer && !activeFrame) {
+            const firstPlayer =
+              Array.from(buttonStates.keys())[0] ||
+              document.querySelector("video,iframe");
+            if (firstPlayer) {
+              const container =
+                buttonStates.get(firstPlayer)?.container ||
+                findPlayerContainer(firstPlayer);
+              const btn = buttonStates.get(firstPlayer)?.button;
+              enterPageMode(container, btn);
+            }
+          }
+          return;
+        }
+        if (message.type === "query-video") {
+          const hasVideo =
+            document.querySelector("video") !== null ||
+            Array.from(buttonStates.keys()).some(
+              (k) => k instanceof HTMLMediaElement,
+            );
+          if (hasVideo) {
+            notifyParentVideoStatus(true);
+          }
+          return;
+        }
+      }
+
+      if (message.type === "has-video") {
+        const frame = Array.from(
+          document.querySelectorAll("iframe,frame"),
+        ).find((element) => element.contentWindow === event.source);
+        if (frame) {
+          verifiedVideoFrames.add(frame);
+          notifyParentVideoStatus(true);
+          attachButton(frame);
+          scheduleButtonUpdate();
+        }
+        return;
+      }
+
+      if (message.type === "no-video") {
+        const frame = Array.from(
+          document.querySelectorAll("iframe,frame"),
+        ).find((element) => element.contentWindow === event.source);
+        if (frame) {
+          verifiedVideoFrames.delete(frame);
+          const state = buttonStates.get(frame);
+          if (state) {
+            state.abortController.abort();
+            clearButtonIdleTimer(state);
+            state.button.remove();
+            state.tooltip.remove();
+            buttonStates.delete(frame);
+            scheduleButtonUpdate();
           }
         }
         return;
       }
-      if (message.type === "query-video") {
-        const hasVideo =
-          document.querySelector("video") !== null ||
-          Array.from(buttonStates.keys()).some((k) => k instanceof HTMLMediaElement);
-        if (hasVideo) {
-          notifyParentVideoStatus(true);
-        }
-        return;
-      }
-    }
 
-    if (message.type === "has-video") {
+      if (message.type !== "enter" && message.type !== "exit") return;
+
+      if (activeFrame && !document.contains(activeFrame)) {
+        activeFrame = null;
+        activeButton = null;
+      }
+      if (activeContainer && !document.contains(activeContainer)) {
+        activeContainer = null;
+        activeButton = null;
+      }
+
       const frame = Array.from(document.querySelectorAll("iframe,frame")).find(
         (element) => element.contentWindow === event.source,
       );
-      if (frame) {
-        verifiedVideoFrames.add(frame);
-        notifyParentVideoStatus(true);
-        attachButton(frame);
-        scheduleButtonUpdate();
-      }
-      return;
-    }
 
-    if (message.type === "no-video") {
-      const frame = Array.from(document.querySelectorAll("iframe,frame")).find(
-        (element) => element.contentWindow === event.source,
-      );
-      if (frame) {
-        verifiedVideoFrames.delete(frame);
-        const state = buttonStates.get(frame);
-        if (state) {
-          state.abortController.abort();
-          state.button.remove();
-          state.tooltip.remove();
-          buttonStates.delete(frame);
-          scheduleButtonUpdate();
+      if (!frame) return;
+
+      if (message.type === "enter") {
+        if (!activeContainer && !activeFrame) {
+          enterFrameMode(frame);
+          notifyParentFrameMode("enter");
         }
+      } else if (frame === activeFrame) {
+        exitFrameMode();
       }
-      return;
-    }
-
-    if (message.type !== "enter" && message.type !== "exit") return;
-
-    if (activeFrame && !document.contains(activeFrame)) {
-      activeFrame = null;
-      activeButton = null;
-    }
-    if (activeContainer && !document.contains(activeContainer)) {
-      activeContainer = null;
-      activeButton = null;
-    }
-
-    const frame = Array.from(document.querySelectorAll("iframe,frame")).find(
-      (element) => element.contentWindow === event.source,
-    );
-
-    if (!frame) return;
-
-    if (message.type === "enter") {
-      if (!activeContainer && !activeFrame) {
-        enterFrameMode(frame);
-        notifyParentFrameMode("enter");
-      }
-    } else if (frame === activeFrame) {
-      exitFrameMode();
-    }
-  }, { signal: globalAbortController.signal });
+    },
+    { signal: globalAbortController.signal },
+  );
 
   // ============================================================
   // Video detection
@@ -1180,14 +1406,19 @@
       resizeObserver.observe(player);
 
       if (player instanceof HTMLMediaElement) {
-        ["loadeddata", "loadedmetadata", "canplay", "play", "playing"].forEach((evt) => {
-          player.addEventListener(evt, () => {
-            notifyParentVideoStatus(true);
-            attachButton(player);
-            scheduleButtonUpdate();
-          });
-        });
-      } else if (player instanceof HTMLIFrameElement || player instanceof HTMLFrameElement) {
+        ["loadeddata", "loadedmetadata", "canplay", "play", "playing"].forEach(
+          (evt) => {
+            player.addEventListener(evt, () => {
+              notifyParentVideoStatus(true);
+              attachButton(player);
+              scheduleButtonUpdate();
+            });
+          },
+        );
+      } else if (
+        player instanceof HTMLIFrameElement ||
+        player instanceof HTMLFrameElement
+      ) {
         player.addEventListener("load", () => {
           queryFrameVideo(player);
           scheduleButtonUpdate();
@@ -1241,7 +1472,7 @@
     }
 
     const shadowHosts = root.querySelectorAll(
-      "ytd-player, ytd-watch-flexy, video-js, media-player, [class*='player'], [id*='player']"
+      "ytd-player, ytd-watch-flexy, video-js, media-player, [class*='player'], [id*='player']",
     );
     for (let i = 0; i < shadowHosts.length; i++) {
       const host = shadowHosts[i];
@@ -1267,7 +1498,10 @@
           target instanceof HTMLIFrameElement ||
           target instanceof HTMLFrameElement
         ) {
-          if (target instanceof HTMLIFrameElement || target instanceof HTMLFrameElement) {
+          if (
+            target instanceof HTMLIFrameElement ||
+            target instanceof HTMLFrameElement
+          ) {
             queryFrameVideo(target);
           } else {
             attachButton(target);
@@ -1287,7 +1521,7 @@
               shouldUpdateButtons = true;
             } else if (
               node.querySelector(
-                "video,iframe,frame,ytd-player,video-js,media-player,[class*='player'],[id*='player']"
+                "video,iframe,frame,ytd-player,video-js,media-player,[class*='player'],[id*='player']",
               )
             ) {
               scanNode(node);
@@ -1338,6 +1572,7 @@
 
     for (const [player, state] of buttonStates) {
       state.abortController.abort();
+      clearButtonIdleTimer(state);
       state.button.remove();
       state.tooltip.remove();
       buttonStates.delete(player);
@@ -1350,31 +1585,35 @@
   }
 
   // Server switch / player swap clicks (common on streaming video sites)
-  document.addEventListener("click", (e) => {
-    const target = e.target;
-    if (
-      target &&
-      typeof target.closest === "function" &&
-      target.closest(
-        ".singlemv, [data-server], .server, .server-tab, .server-item, .episode, #h, #backup, [href*='#h'], [href*='#backup'], [href*='server']"
-      )
-    ) {
-      setTimeout(() => {
-        if (!isExtensionValid()) {
-          teardown();
-          return;
-        }
-        if (activeContainer && !document.contains(activeContainer)) {
-          exitPageMode();
-        }
-        if (activeFrame && !document.contains(activeFrame)) {
-          exitFrameMode();
-        }
-        scanNode(document);
-        scheduleButtonUpdate();
-      }, 350);
-    }
-  }, { capture: true, signal: globalAbortController.signal });
+  document.addEventListener(
+    "click",
+    (e) => {
+      const target = e.target;
+      if (
+        target &&
+        typeof target.closest === "function" &&
+        target.closest(
+          ".singlemv, [data-server], .server, .server-tab, .server-item, .episode, #h, #backup, [href*='#h'], [href*='#backup'], [href*='server']",
+        )
+      ) {
+        setTimeout(() => {
+          if (!isExtensionValid()) {
+            teardown();
+            return;
+          }
+          if (activeContainer && !document.contains(activeContainer)) {
+            exitPageMode();
+          }
+          if (activeFrame && !document.contains(activeFrame)) {
+            exitFrameMode();
+          }
+          scanNode(document);
+          scheduleButtonUpdate();
+        }, 350);
+      }
+    },
+    { capture: true, signal: globalAbortController.signal },
+  );
 
   // ============================================================
   // SPA navigation
@@ -1483,13 +1722,17 @@
 
           for (const [player, state] of buttonStates) {
             state.abortController.abort();
+            clearButtonIdleTimer(state);
             state.button.remove();
             state.tooltip.remove();
             buttonStates.delete(player);
           }
         })
         .catch((error) => {
-          console.error("[Theatre Vision] Could not update site settings.", error);
+          console.error(
+            "[Theatre Vision] Could not update site settings.",
+            error,
+          );
         });
     });
   } catch (error) {

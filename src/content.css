@@ -47,6 +47,11 @@
   opacity: 1;
 }
 
+.vpm-button.vpm-button-idle {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .vpm-button:focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.9);
   outline-offset: 3px;
